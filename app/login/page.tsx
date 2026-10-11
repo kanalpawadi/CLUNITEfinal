@@ -1,21 +1,13 @@
-"use client"
+import type { Metadata } from "next"
+import { Suspense } from "react"
+import { LoginForm } from "@/components/auth/LoginForm"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+export const metadata: Metadata = { title: "Sign in · Clunite" }
 
-export default function LoginRedirect() {
-  const router = useRouter()
-  
-  useEffect(() => {
-    router.replace('/auth/login')
-  }, [router])
-  
+export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className="mt-4 text-slate-600">Redirecting to login...</p>
-      </div>
-    </div>
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

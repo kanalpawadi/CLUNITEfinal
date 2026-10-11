@@ -35,6 +35,7 @@ import {
   Heart,
 } from 'lucide-react';
 import type { Club, Event as DbEvent } from '@/lib/supabase';
+import { redirectToLogin } from '@/lib/auth/client';
 
 type RecommendedEvent = DbEvent & { club: Club | null };
 
@@ -55,7 +56,7 @@ export default function StudentDashboard() {
     if (authLoading) return;
 
     if (!authUser) {
-      router.push('/login');
+      redirectToLogin(router);
       return;
     }
 

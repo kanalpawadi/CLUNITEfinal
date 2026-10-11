@@ -22,6 +22,7 @@ import { useClubs, useUserClubs, joinClubInstant, leaveClubInstant } from '@/hoo
 import { useEventsForClubIds } from '@/hooks/useEvents';
 import { useAuth } from '@/lib/auth-context';
 import type { Club, Event } from '@/lib/supabase';
+import { redirectToLogin } from '@/lib/auth/client';
 
 export default function App() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function App() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !authUser) {
-      router.push('/login');
+      redirectToLogin(router);
     }
   }, [authUser, authLoading, router]);
 
@@ -81,7 +82,7 @@ export default function App() {
   // --- ACTIONS (Real API calls) ---
   const handleJoin = async (id: string) => {
     if (!userId) {
-      router.push('/login');
+      redirectToLogin(router);
       return;
     }
 
@@ -101,7 +102,7 @@ export default function App() {
 
   const handleLeave = async (id: string) => {
     if (!userId) {
-      router.push('/login');
+      redirectToLogin(router);
       return;
     }
 

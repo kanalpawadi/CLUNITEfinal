@@ -8,6 +8,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Loader2 } from "lucide-react"
+import { redirectToLogin } from '@/lib/auth/client';
 
 export default function DashboardLayout({
   children,
@@ -21,7 +22,7 @@ export default function DashboardLayout({
     // If not loading and no user, redirect to login
     if (!loading && !user) {
       console.log('🔒 Dashboard layout: No authenticated user, redirecting to login')
-      router.push('/login')
+      redirectToLogin(router)
     }
   }, [user, loading, router])
 

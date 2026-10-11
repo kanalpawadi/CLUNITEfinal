@@ -1,9 +1,11 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import type { AuthError, Session, User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 import { supabase } from "./supabase"
+import { isProtectedPath } from "./auth/redirect"
+import { redirectToLogin } from "./auth/client"
 
 interface AuthContextType {
   user: User | null
@@ -27,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const signingOut = useRef(false)
 
   useEffect(() => {
     let active = true
@@ -38,16 +41,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession)
       setLoading(false)
+      // Session ended without the user asking (expired/revoked refresh token) on a protected page
+      if (event === "SIGNED_OUT" && !signingOut.current && isProtectedPath(window.location.pathname)) {
+        redirectToLogin(router, "session_expired")
+      }
+      signingOut.current = false
     })
 
     return () => {
       active = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [router])
 
   // The public.users profile row is created by a database trigger from this metadata.
   const signUp = useCallback<AuthContextType["signUp"]>(async (email, password, fullName, college, branch, gender) => {
@@ -68,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    signingOut.current = true
     await supabase.auth.signOut()
     setSession(null)
     router.push("/")
