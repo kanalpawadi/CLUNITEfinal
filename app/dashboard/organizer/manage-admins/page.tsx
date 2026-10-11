@@ -27,12 +27,16 @@ import {
 import { Users, Crown, UserPlus, Trash2, Mail, AlertCircle, Loader2, Shield } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
+import { getErrorMessage } from '@/lib/utils';
+import type { Club, ClubMembership, User } from '@/lib/supabase'
+
+type ClubAdmin = ClubMembership & { user: User | null }
 
 export default function ManageAdminsPage() {
   const { user: authUser } = useAuth()
   const [loading, setLoading] = useState(true)
-  const [currentClub, setCurrentClub] = useState<any>(null)
-  const [admins, setAdmins] = useState<any[]>([])
+  const [currentClub, setCurrentClub] = useState<Club | null>(null)
+  const [admins, setAdmins] = useState<ClubAdmin[]>([])
   const [isOwner, setIsOwner] = useState(false)
   const [newAdminEmail, setNewAdminEmail] = useState("")
   const [adding, setAdding] = useState(false)
@@ -65,7 +69,8 @@ export default function ManageAdminsPage() {
         `)
         .eq('user_id', authUser!.id)
         .eq('club_id', storedClubId)
-        .eq('role', 'admin')
+        .eq('status', 'active')
+        .in('role', ['owner', 'admin'])
         .single()
 
       if (membershipError || !membership) {
@@ -79,7 +84,7 @@ export default function ManageAdminsPage() {
       
       // Load admins for this club
       loadClubAdmins(storedClubId)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading club:', err)
       toast.error('Failed to load club data')
       setLoading(false)
@@ -98,7 +103,7 @@ export default function ManageAdminsPage() {
           user:users!club_memberships_user_id_fkey(*)
         `)
         .eq('club_id', clubId)
-        .eq('role', 'admin')
+        .in('role', ['owner', 'admin'])
         .order('is_owner', { ascending: false })
         .order('joined_at', { ascending: true })
 
@@ -109,7 +114,7 @@ export default function ManageAdminsPage() {
 
       console.log('Loaded admins:', data)
       setAdmins(data || [])
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading admins:', err)
       toast.error('Failed to load admins')
     } finally {
@@ -137,19 +142,6 @@ export default function ManageAdminsPage() {
     try {
       setAdding(true)
 
-      // Find user by email
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', newAdminEmail.toLowerCase())
-        .single()
-
-      if (userError || !userData) {
-        toast.error('User not found. They must sign up first.')
-        setAdding(false)
-        return
-      }
-
       const clubId = sessionStorage.getItem('selectedClubId')
       if (!clubId) {
         toast.error('No club selected')
@@ -157,62 +149,27 @@ export default function ManageAdminsPage() {
         return
       }
 
-      // Check if already has any membership in this club
-      const { data: existingMembership, error: fetchErr } = await supabase
-        .from('club_memberships')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('club_id', clubId)
-        .maybeSingle()
+      // Server-side RPC: checks the caller is owner/admin and looks the user up by email
+      const { data: added, error: addError } = await supabase.rpc('add_club_staff', {
+        p_club_id: clubId,
+        p_email: newAdminEmail.trim().toLowerCase(),
+        p_role: 'admin',
+      })
 
-      if (fetchErr) throw fetchErr
-
-      if (existingMembership) {
-        if (existingMembership.role === 'admin') {
-          toast.error('User is already an admin of this club')
-          setAdding(false)
-          return
-        }
-
-        // Upgrade membership to admin role
-        const { error: updateError } = await supabase
-          .from('club_memberships')
-          .update({
-            role: 'admin',
-            is_owner: false,
-            invited_by: authUser!.id,
-            invited_at: new Date().toISOString()
-          })
-          .eq('id', existingMembership.id)
-
-        if (updateError) throw updateError
-      } else {
-        // Add as admin
-        const { error: addError } = await supabase
-          .from('club_memberships')
-          .insert({
-            user_id: userData.id,
-            club_id: clubId,
-            role: 'admin',
-            is_owner: false,
-            verified_via_pin: false,
-            invited_by: authUser!.id,
-            invited_at: new Date().toISOString()
-          })
-
-        if (addError) throw addError
+      if (addError) {
+        toast.error(addError.message || 'Failed to add admin')
+        setAdding(false)
+        return
       }
 
-      // Update user role to organizer
-      await supabase
-        .from('users')
-        .update({ role: 'organizer' })
-        .eq('id', userData.id)
-
-      toast.success(`${userData.full_name || newAdminEmail} added as admin!`)
+      const addedName =
+        typeof added === 'object' && added !== null && !Array.isArray(added) && typeof added.full_name === 'string'
+          ? added.full_name
+          : null
+      toast.success(`${addedName || newAdminEmail} added as admin!`)
       setNewAdminEmail('')
       loadClubAdmins(clubId)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error adding admin:', err)
       toast.error('Failed to add admin')
     } finally {
@@ -244,7 +201,7 @@ export default function ManageAdminsPage() {
 
       toast.success(`${adminName} removed as admin`)
       loadClubAdmins(clubId)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error removing admin:', err)
       toast.error('Failed to remove admin')
     }
@@ -456,7 +413,7 @@ export default function ManageAdminsPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleRemoveAdmin(admin.user_id, admin.user?.full_name)}
+                              onClick={() => handleRemoveAdmin(admin.user_id, admin.user?.full_name ?? admin.user?.email ?? "this admin")}
                               className="text-red-600 hover:text-red-700 hover:bg-red-50"
                             >
                               <Trash2 className="h-4 w-4" />

@@ -10,10 +10,21 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Search, Lightbulb, Users, Calendar, Star, Building2, UserCheck, TrendingUp, Loader2 } from 'lucide-react'
 import Link from "next/link"
-import { supabase } from "@/lib/supabase"
+import { supabase, type Club } from "@/lib/supabase"
 import { useAuth } from "@/lib/auth-context"
 
-function calculateAccuracyScore(club: any, userInterests: string[], userSkills: string[]) {
+type ScoredClub = Club & {
+  matchScore: number
+  matchedInterests: string[]
+  isSameCollege: boolean
+  popularity: string
+}
+
+function calculateAccuracyScore(
+  club: Pick<Club, "name" | "description" | "tagline" | "category">,
+  userInterests: string[],
+  userSkills: string[],
+) {
   const queryTags = [...userInterests, ...userSkills].map(t => t.toLowerCase());
   if (queryTags.length === 0) {
     return { score: 50, matchedTags: [] };
@@ -73,8 +84,8 @@ export default function DiscoverClubsPage() {
   const [scopePreference, setScopePreference] = useState("same")
   const [userCollege, setUserCollege] = useState("")
   const [quizCompleted, setQuizCompleted] = useState(false)
-  const [suggestedClubs, setSuggestedClubs] = useState<any[]>([])
-  const [fallbackClubs, setFallbackClubs] = useState<any[]>([])
+  const [suggestedClubs, setSuggestedClubs] = useState<ScoredClub[]>([])
+  const [fallbackClubs, setFallbackClubs] = useState<ScoredClub[]>([])
   const [hasDirectMatches, setHasDirectMatches] = useState(true)
   const [loading, setLoading] = useState(false)
 
@@ -119,7 +130,7 @@ export default function DiscoverClubsPage() {
           .eq('id', authUser.id)
           .single()
         if (!error && data) {
-          setUserCollege(data.college)
+          setUserCollege(data.college ?? '')
         }
       }
     }
@@ -147,7 +158,7 @@ export default function DiscoverClubsPage() {
 
       const list = dbClubs || []
 
-      const scoredClubs = list.map((club: any) => {
+      const scoredClubs = list.map((club): ScoredClub => {
         const isSameCollege = club.college?.toLowerCase() === userCollege.toLowerCase()
         const { score, matchedTags } = calculateAccuracyScore(club, interests, skills)
         
@@ -166,7 +177,7 @@ export default function DiscoverClubsPage() {
       })
 
       // Partition by scope
-      const targetScopeClubs = scoredClubs.filter((club: any) => {
+      const targetScopeClubs = scoredClubs.filter((club) => {
         if (scopePreference === 'same') {
           return club.isSameCollege
         } else {
@@ -176,7 +187,7 @@ export default function DiscoverClubsPage() {
 
       // Accurately filter matches with matchScore >= 60% and matchedInterests
       const direct = targetScopeClubs
-        .filter((club: any) => club.matchedInterests.length > 0 && club.matchScore >= 60)
+        .filter((club) => club.matchedInterests.length > 0 && club.matchScore >= 60)
         .sort((a, b) => b.matchScore - a.matchScore)
 
       if (direct.length > 0) {
@@ -189,7 +200,7 @@ export default function DiscoverClubsPage() {
 
         // General recommendations fallback
         const fallbackList = scoredClubs
-          .sort((a: any, b: any) => {
+          .sort((a, b) => {
             if (b.matchScore !== a.matchScore) {
               return b.matchScore - a.matchScore
             }
@@ -332,10 +343,10 @@ export default function DiscoverClubsPage() {
             {!hasDirectMatches && (
               <Card className="p-6 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
                 <h3 className="text-lg font-bold text-amber-800 flex items-center">
-                  ⚠️ No exact matches found for "{scopePreference === 'same' ? 'My College Only' : 'Intercollege'}"
+                  ⚠️ No exact matches found for &quot;{scopePreference === 'same' ? 'My College Only' : 'Intercollege'}&quot;
                 </h3>
                 <p className="text-amber-700 text-sm">
-                  We couldn't find any direct matches fitting your interest tags in this scope. However, check out these highly recommended clubs from either your college or other colleges:
+                  We couldn&apos;t find any direct matches fitting your interest tags in this scope. However, check out these highly recommended clubs from either your college or other colleges:
                 </p>
               </Card>
             )}
@@ -382,7 +393,7 @@ export default function DiscoverClubsPage() {
                       </div>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {club.matchedInterests.length > 0 ? (
-                          club.matchedInterests.map((interest: any, idx: any) => (
+                          club.matchedInterests.map((interest: string, idx: number) => (
                             <Badge key={idx} variant="secondary" className="bg-blue-50 text-blue-700">
                               {interest}
                             </Badge>

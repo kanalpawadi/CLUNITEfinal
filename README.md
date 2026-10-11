@@ -60,42 +60,33 @@
    cd clunite
    ```
 
-2. **Install dependencies**
+2. **Install dependencies** (the repo uses pnpm; `pnpm-lock.yaml` is the lockfile)
 
    ```bash
-   npm install
-   # or
    pnpm install
-   # or
-   yarn install
    ```
 
 3. **Set up environment variables**
 
-   Create `.env.local` with your credentials:
-
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-   BLOB_READ_WRITE_TOKEN=your_blob_token
-   RESEND_API_KEY=your_resend_key
+   ```bash
+   cp .env.example .env.local
    ```
+
+   Fill in the values. `.env.example` documents every variable; anything without the
+   `NEXT_PUBLIC_` prefix is server-only.
 
 4. **Set up the database**
 
-   Run these SQL scripts in your Supabase SQL editor (in order):
-   - `scripts/init-database-v2.sql`
-   - `scripts/functions.sql`
-   - `scripts/rls-policies.sql`
-   - `scripts/seed-data-v2.sql` (optional demo data)
+   Follow [supabase/README.md](./supabase/README.md): run `supabase/schema.sql` on a fresh
+   Supabase project, optionally `supabase/seed.sql`, then configure Auth URLs.
 
 5. **Start the development server**
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
-   Open [http://localhost:3000](http://localhost:3000) in your browser
+   Open [http://localhost:3001](http://localhost:3001) in your browser
 
 ---
 

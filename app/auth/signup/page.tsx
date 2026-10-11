@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2, Mail, Lock, User, Building2, ArrowRight, AlertCircle, GraduationCap, BookOpen } from "lucide-react"
+import { getErrorMessage } from '@/lib/utils';
 
 export default function SignupPage() {
   const router = useRouter()
@@ -85,9 +86,9 @@ export default function SignupPage() {
       // Use window.location for hard redirect
       window.location.href = '/dashboard/student'
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Signup error:', error)
-      toast.error(error.message || "An error occurred during signup")
+      toast.error(getErrorMessage(error, "An error occurred during signup"))
       setLoading(false)
     }
   }

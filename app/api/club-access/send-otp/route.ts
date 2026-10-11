@@ -1,73 +1,55 @@
-import { NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
-import { supabaseAdmin } from "@/lib/supabase-admin"
+import { randomInt } from "node:crypto"
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { ApiError, enforceRateLimit, handler, parseJson, requireUser } from "@/lib/api"
+import { createAdminClient } from "@/lib/supabase/admin"
+import { codeEmail, sendEmail } from "@/lib/email"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const bodySchema = z.object({ clubId: z.string().uuid() })
 
-function generateOtp(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString()
-}
+/** Emails a 6-digit organizer-access code to the club's OFFICIAL email (never a caller-supplied address). */
+export const POST = handler(async (request) => {
+  const { supabase, user } = await requireUser()
+  enforceRateLimit("club-otp", user.id, { limit: 5, windowMs: 15 * 60 * 1000 })
+  const { clubId } = await parseJson(request, bodySchema)
 
-export async function POST(request: NextRequest) {
-  try {
-    const { clubId, userId, email } = await request.json()
-    if (!clubId || !userId || !email) {
-      return NextResponse.json({ error: "clubId, userId and email are required" }, { status: 400 })
-    }
-    if (!supabaseAdmin) {
-      return NextResponse.json({ error: "Server not configured for OTP (missing service key)" }, { status: 500 })
-    }
+  const { data: isStaff } = await supabase.rpc("is_club_role", {
+    club: clubId,
+    roles: ["owner", "admin", "organizer"],
+  })
+  if (!isStaff) throw new ApiError(403, "You are not an organizer of this club")
 
-    const { data: club, error: clubError } = await supabaseAdmin
-      .from("clubs")
-      .select("id, name")
-      .eq("id", clubId)
-      .single()
-    if (clubError || !club) return NextResponse.json({ error: "Club not found" }, { status: 404 })
+  const admin = createAdminClient()
+  const { data: club } = await admin.from("clubs").select("id, name, official_email, contact_email").eq("id", clubId).single()
+  const to = club?.official_email ?? club?.contact_email
+  if (!club || !to) throw new ApiError(404, "Club has no official email on file")
 
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
-    let lastError: any = null
-    let code = ""
-    for (let i = 0; i < 5; i++) {
-      code = generateOtp()
-      const { error: insertError } = await supabaseAdmin.from("club_access_otps").insert({
-        club_id: clubId,
-        sent_to_email: email,
-        code,
-        user_id: userId,
-        expires_at: expiresAt,
-        status: "pending",
-      })
-      if (!insertError) { lastError = null; break }
-      lastError = insertError
-      if (!/unique/i.test(insertError?.message || "")) break
-    }
-    if (lastError) return NextResponse.json({ error: `Failed to create OTP: ${lastError.message || lastError}` }, { status: 500 })
+  const code = randomInt(0, 1_000_000).toString().padStart(6, "0")
+  const { error } = await admin.from("club_access_otps").insert({
+    club_id: clubId,
+    user_id: user.id,
+    code,
+    sent_to_email: to,
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+  })
+  if (error) throw new ApiError(500, "Could not create a code, please retry")
 
-    if (!process.env.RESEND_API_KEY) return NextResponse.json({ success: true, message: "OTP generated (email not configured)" })
+  const emailed = await sendEmail({
+    to,
+    subject: `Organizer access code for ${club.name}`,
+    html: codeEmail({
+      heading: "Organizer access code",
+      intro: `Use this code to open the ${club.name} organizer panel. It expires in 10 minutes.`,
+      code,
+      footer: "If you did not request this code, you can ignore this email.",
+    }),
+  })
 
-    const { error: emailError } = await resend.emails.send({
-      from: "Clunite <onboarding@resend.dev>",
-      to: email,
-      subject: `Your OTP to access ${club.name} organizer panel`,
-      html: otpTemplate(club.name, code),
-    })
-    if (emailError) return NextResponse.json({ error: `Failed to send OTP email: ${emailError.message || emailError}` }, { status: 500 })
-    return NextResponse.json({ success: true })
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 500 })
-  }
-}
-
-function otpTemplate(clubName: string, code: string) {
-  return `<!doctype html><html><body style="font-family: Arial, sans-serif;">
-    <div style="max-width:600px;margin:0 auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px">
-      <h2 style="margin:0 0 8px;color:#111827">Organizer Access OTP</h2>
-      <p style="margin:0 0 16px;color:#374151">Use this code to access the ${clubName} organizer panel. It expires in 10 minutes.</p>
-      <div style="font-weight:700;font-size:28px;letter-spacing:8px;background:#f3f4f6;padding:16px;text-align:center;border-radius:8px;color:#111827">${code}</div>
-      <p style="margin:16px 0 0;color:#6b7280;font-size:12px">If you didn’t request this code, you can ignore this email.</p>
-    </div>
-  </body></html>`
-}
-
-
+  const maskedEmail = to.replace(/^(.).*(@.*)$/, "$1***$2")
+  return NextResponse.json({
+    success: true,
+    sentTo: maskedEmail,
+    emailed,
+    ...(process.env.NODE_ENV === "development" && !emailed ? { devCode: code } : {}),
+  })
+})

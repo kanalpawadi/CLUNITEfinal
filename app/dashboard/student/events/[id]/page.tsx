@@ -50,6 +50,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase, type Event, type Club } from '@/lib/supabase';
+import { parseContactInfo } from '@/lib/event-info';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 
@@ -129,43 +130,13 @@ export default function EventDetailsPage({
 
       if (error) throw error;
 
-      // Increment view count in database (run silently without blocking load)
-      try {
-        if (eventData) {
-          const currentViews = (eventData as any).views || 0;
-          await supabase
-            .from('events')
-            .update({ views: currentViews + 1 })
-            .eq('id', params.id);
-        }
-      } catch (viewErr) {
-        console.warn('Failed to update views count:', viewErr);
-      }
+      // Count the view (server-side RPC; failures are non-fatal)
+      void supabase.rpc('increment_event_views', { p_event_id: params.id }).then(({ error: viewErr }) => {
+        if (viewErr) console.warn('Failed to update views count:', viewErr.message);
+      });
 
-      // Get fresh registration count
-      const { data: regCount } = await supabase
-        .from('event_registrations')
-        .select('registration_data')
-        .eq('event_id', params.id);
-
-      // Calculate total participants including team members
-      const totalParticipants =
-        regCount?.reduce((total, reg) => {
-          if (reg.registration_data?.team_members) {
-            return total + reg.registration_data.team_members.length;
-          } else if (reg.registration_data?.participant_details) {
-            return total + 1;
-          }
-          return total;
-        }, 0) || 0;
-
-      // Update the event data with the fresh count
-      const updatedEvent = {
-        ...eventData,
-        current_participants: totalParticipants,
-      };
-
-      setEvent(updatedEvent);
+      // current_participants is maintained by a database trigger
+      setEvent(eventData);
     } catch (error) {
       console.error('Error fetching event:', error);
     } finally {
@@ -331,7 +302,7 @@ export default function EventDetailsPage({
         }
 
         // Check if already registered with this email
-        const { data: existingReg } = await (supabase as any)
+        const { data: existingReg } = await supabase
           .from('event_registrations')
           .select('id')
           .eq('event_id', params.id)
@@ -399,21 +370,19 @@ export default function EventDetailsPage({
       // Check if event is still open and has capacity
       const { data: currentEvent, error: eventError } = await supabase
         .from('events')
-        .select('current_participants, max_participants, registration_deadline')
+        .select('current_participants, capacity, registration_deadline')
         .eq('id', params.id)
         .single();
 
       if (eventError) throw eventError;
 
-      const now = new Date();
-      const deadline = new Date(currentEvent.registration_deadline);
-      if (now > deadline) {
+      if (currentEvent.registration_deadline && new Date() > new Date(currentEvent.registration_deadline)) {
         throw new Error('Registration deadline has passed');
       }
 
       if (
-        currentEvent.max_participants &&
-        currentEvent.current_participants >= currentEvent.max_participants
+        currentEvent.capacity &&
+        currentEvent.current_participants >= currentEvent.capacity
       ) {
         throw new Error('Event is full');
       }
@@ -474,8 +443,7 @@ export default function EventDetailsPage({
       const { data: newRegistration, error: registrationError } = await supabase
         .rpc('register_for_event', {
           p_event_id: params.id,
-          p_user_id: user.id,
-          p_team_name: event.team_size !== 'solo' ? registrationData.teamName : null,
+          p_team_name: event.team_size !== 'solo' ? registrationData.teamName : undefined,
           p_registration_data: registrationPayload.registration_data,
           p_participant_count: participantCount
         });
@@ -645,7 +613,7 @@ export default function EventDetailsPage({
             Event Not Found
           </h2>
           <p className="text-gray-600 mb-6">
-            The event you're looking for doesn't exist or has been removed.
+            The event you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Link href="/dashboard/student/browse">
             <Button>Back to Browse Events</Button>
@@ -655,7 +623,9 @@ export default function EventDetailsPage({
     );
   }
 
-  const urgency = getDeadlineUrgency(event.registration_deadline);
+  const urgency = getDeadlineUrgency(event.registration_deadline ?? event.starts_at);
+  const contactInfo = parseContactInfo(event.contact_info);
+  const eventType = event.type ?? 'event';
   const isRegistrationOpen = urgency.level !== 'expired';
 
   return (
@@ -692,7 +662,7 @@ export default function EventDetailsPage({
                 <div className="absolute bottom-6 left-6 right-6">
                   <div className="flex items-center space-x-3 mb-4">
                     <Badge className="bg-white/90 text-gray-800 font-semibold">
-                      {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                      {eventType.charAt(0).toUpperCase() + eventType.slice(1)}
                     </Badge>
                     <Badge className="bg-white/90 text-gray-800 font-semibold">
                       {getModeIcon(event.mode)}
@@ -790,18 +760,18 @@ export default function EventDetailsPage({
                           Start Date & Time
                         </div>
                         <div className="text-gray-600">
-                          {formatDate(event.start_date)} at{' '}
-                          {formatTime(event.start_date)}
+                          {formatDate(event.starts_at)} at{' '}
+                          {formatTime(event.starts_at)}
                         </div>
                       </div>
-                      {event.end_date && (
+                      {event.ends_at && (
                         <div>
                           <div className="font-semibold text-gray-900">
                             End Date & Time
                           </div>
                           <div className="text-gray-600">
-                            {formatDate(event.end_date)} at{' '}
-                            {formatTime(event.end_date)}
+                            {formatDate(event.ends_at)} at{' '}
+                            {formatTime(event.ends_at)}
                           </div>
                         </div>
                       )}
@@ -847,8 +817,8 @@ export default function EventDetailsPage({
                         </div>
                         <div className="text-gray-600">
                           {event.current_participants}
-                          {event.max_participants &&
-                            ` / ${event.max_participants}`}{' '}
+                          {event.capacity &&
+                            ` / ${event.capacity}`}{' '}
                           participants
                         </div>
                       </div>
@@ -944,13 +914,13 @@ export default function EventDetailsPage({
                             Registration Deadline
                           </span>
                           <span className="font-medium text-gray-900">
-                            {formatDate(event.registration_deadline)}
+                            {formatDate(event.registration_deadline ?? event.starts_at)}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Event Date</span>
                           <span className="font-medium text-gray-900">
-                            {formatDate(event.start_date)}
+                            {formatDate(event.starts_at)}
                           </span>
                         </div>
                         <div className="pt-2 border-t border-gray-200">
@@ -974,8 +944,8 @@ export default function EventDetailsPage({
                         <div className="flex justify-between">
                           <span className="text-gray-600">Event Type</span>
                           <Badge variant="outline">
-                            {event.type.charAt(0).toUpperCase() +
-                              event.type.slice(1)}
+                            {eventType.charAt(0).toUpperCase() +
+                              eventType.slice(1)}
                           </Badge>
                         </div>
                       </div>
@@ -1145,7 +1115,7 @@ export default function EventDetailsPage({
                   )}
 
                   {/* Contact Information */}
-                  {(event.contact_info?.email || event.contact_info?.phone) && (
+                  {(contactInfo.email || contactInfo.phone) && (
                     <Card className="border border-gray-200">
                       <CardHeader>
                         <CardTitle className="text-lg">
@@ -1153,25 +1123,25 @@ export default function EventDetailsPage({
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        {event.contact_info.email && (
+                        {contactInfo.email && (
                           <div className="flex items-center">
                             <Mail className="h-5 w-5 mr-3 text-gray-400" />
                             <a
-                              href={`mailto:${event.contact_info.email}`}
+                              href={`mailto:${contactInfo.email}`}
                               className="text-indigo-600 hover:text-indigo-800"
                             >
-                              {event.contact_info.email}
+                              {contactInfo.email}
                             </a>
                           </div>
                         )}
-                        {event.contact_info.phone && (
+                        {contactInfo.phone && (
                           <div className="flex items-center">
                             <Phone className="h-5 w-5 mr-3 text-gray-400" />
                             <a
-                              href={`tel:${event.contact_info.phone}`}
+                              href={`tel:${contactInfo.phone}`}
                               className="text-indigo-600 hover:text-indigo-800"
                             >
-                              {event.contact_info.phone}
+                              {contactInfo.phone}
                             </a>
                           </div>
                         )}
@@ -1192,7 +1162,7 @@ export default function EventDetailsPage({
                   {/* Price */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-3xl font-bold text-gray-900">
-                      {event.entry_fee > 0 ? `₹${event.entry_fee}` : 'Free'}
+                      {event.fee > 0 ? `₹${event.fee}` : 'Free'}
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button
@@ -1289,8 +1259,8 @@ export default function EventDetailsPage({
                       <span className="text-gray-600">Participants</span>
                       <span className="font-semibold text-gray-900">
                         {event.current_participants}
-                        {event.max_participants &&
-                          ` / ${event.max_participants}`}
+                        {event.capacity &&
+                          ` / ${event.capacity}`}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -1313,13 +1283,13 @@ export default function EventDetailsPage({
                   <CardTitle className="text-lg">Event Features</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {event.contact_info?.certificates_enabled && (
+                  {contactInfo.certificates_enabled && (
                     <div className="flex items-center text-sm">
                       <Award className="h-4 w-4 mr-2 text-green-500" />
                       <span>Digital Certificates</span>
                     </div>
                   )}
-                  {event.contact_info?.qr_enabled && (
+                  {contactInfo.qr_enabled && (
                     <div className="flex items-center text-sm">
                       <CheckCircle className="h-4 w-4 mr-2 text-blue-500" />
                       <span>QR Code Attendance</span>

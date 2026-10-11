@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { ensureUserExists } from '@/lib/sync-user';
-import { supabase } from '@/lib/supabase';
+import { supabase, type Json } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,6 +24,19 @@ import {
   Users,
   Clock,
 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/utils';
+
+interface PendingClubView {
+  official_email: string;
+  club_data: { name: string };
+}
+
+function pendingClubName(clubData: Json | null): string {
+  if (typeof clubData === 'object' && clubData !== null && !Array.isArray(clubData) && typeof clubData.name === 'string') {
+    return clubData.name;
+  }
+  return '';
+}
 
 export default function VerifyClubPage() {
   const router = useRouter();
@@ -33,7 +45,7 @@ export default function VerifyClubPage() {
   const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState('');
   const [clubName, setClubName] = useState('');
-  const [pendingClubData, setPendingClubData] = useState<any>(null);
+  const [pendingClubData, setPendingClubData] = useState<PendingClubView | null>(null);
   const [pendingClubId, setPendingClubId] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
 
@@ -65,12 +77,16 @@ export default function VerifyClubPage() {
         return;
       }
 
-      setPendingClubData(data);
+      const view: PendingClubView = {
+        official_email: data.official_email ?? '',
+        club_data: { name: pendingClubName(data.club_data) },
+      };
+      setPendingClubData(view);
       // Pre-populate club name for verification
-      if (data.club_data?.name) {
-        setClubName(data.club_data.name);
+      if (view.club_data.name) {
+        setClubName(view.club_data.name);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error loading pending club:', error);
       toast.error('Error loading club data');
     }
@@ -131,7 +147,7 @@ export default function VerifyClubPage() {
           // Upload to Club Banner bucket
           const formData = new FormData();
           formData.append('file', file);
-          formData.append('bucket', 'Club Banner');
+          formData.append('bucket', 'club-banners');
 
           const uploadResponse = await fetch('/api/upload', {
             method: 'POST',
@@ -158,7 +174,6 @@ export default function VerifyClubPage() {
         body: JSON.stringify({
           pendingClubId,
           pin,
-          userId: authUser.id,
           bannerUrl,
         }),
       });
@@ -189,9 +204,9 @@ export default function VerifyClubPage() {
       setTimeout(() => {
         router.push('/dashboard/organizer/host');
       }, 2000);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error verifying club:', error);
-      toast.error(`Failed to verify club: ${error.message || 'Unknown error'}`);
+      toast.error(`Failed to verify club: ${getErrorMessage(error, 'Unknown error')}`);
     } finally {
       setLoading(false);
     }
@@ -339,7 +354,7 @@ export default function VerifyClubPage() {
 
               <div className="text-center space-y-2 pt-4 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Didn't receive the PIN?
+                  Didn&apos;t receive the PIN?
                 </p>
                 <Button
                   type="button"

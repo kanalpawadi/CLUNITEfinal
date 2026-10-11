@@ -60,7 +60,7 @@ export function useClub(clubId: string) {
         .select("*")
         .eq("club_id", clubId)
         .eq("status", "published")
-        .order("start_date", { ascending: true })
+        .order("starts_at", { ascending: true })
 
       if (eventsError) throw eventsError
 
@@ -114,50 +114,32 @@ export function useUserClubs(userId: string) {
 }
 
 /**
- * Join a club instantly by creating a membership.
- * Also increments the club's members_count for quick feedback.
+ * Join a club on its Free plan. Active immediately unless the club requires approval
+ * (then pending until an admin approves). Paid plans go through /api/payments.
+ * Returns the resulting membership status.
  */
-export async function joinClubInstant(userId: string, clubId: string) {
+export async function joinClubInstant(userId: string, clubId: string): Promise<"active" | "pending"> {
   if (!userId || !clubId) {
     throw new Error("Missing userId or clubId")
   }
 
-  // 1) Ensure user exists to satisfy FK (dev fallback when not using auth)
-  const { data: existingUser, error: userFetchError } = await supabase
-    .from("users")
-    .select("id")
-    .eq("id", userId)
-    .maybeSingle()
+  const [{ data: club, error: clubError }, { data: freePlan, error: planError }] = await Promise.all([
+    supabase.from("clubs").select("requires_approval").eq("id", clubId).single(),
+    supabase.from("membership_plans").select("id").eq("club_id", clubId).eq("tier", "free").eq("is_active", true).maybeSingle(),
+  ])
+  if (clubError) throw clubError
+  if (planError) throw planError
 
-  if (userFetchError) {
-    throw userFetchError
-  }
-
-  if (!existingUser) {
-    const placeholder = {
-      id: userId,
-      email: `${userId}@example.local`,
-      full_name: "Student",
-      role: "student" as const,
-      college: "Unknown",
-    }
-    const { error: userInsertError } = await supabase.from("users").insert(placeholder)
-    if (userInsertError) {
-      // If concurrent creation happened, ignore unique violation
-      if (!userInsertError.message.toLowerCase().includes("duplicate")) {
-        throw userInsertError
-      }
-    }
-  }
-
-  // 2) Upsert membership to be idempotent
+  const status = club.requires_approval || !freePlan ? "pending" : "active"
   const { error: membershipError } = await supabase
     .from("club_memberships")
-    .upsert({ user_id: userId, club_id: clubId }, { onConflict: "user_id,club_id", ignoreDuplicates: true })
+    .insert({ user_id: userId, club_id: clubId, plan_id: freePlan?.id ?? null, status, role: "member" })
 
-  if (membershipError) {
+  // 23505 = already a member: joining is idempotent
+  if (membershipError && membershipError.code !== "23505") {
     throw membershipError
   }
+  return status
 }
 
 /**

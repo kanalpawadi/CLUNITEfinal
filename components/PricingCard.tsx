@@ -12,6 +12,16 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 
+export interface PricingCardSimpleProps {
+  name: string
+  price: string
+  period?: string
+  description: string
+  features: string[]
+  popular?: boolean
+  cta: string
+}
+
 /* --------------------------------------------------------
    SIMPLE CARD (Student + Institution)
 --------------------------------------------------------- */
@@ -24,7 +34,7 @@ export function PricingCardSimple({
   features,
   popular,
   cta,
-}: any) {
+}: PricingCardSimpleProps) {
   return (
     <div
       className="p-6 rounded-xl backdrop-blur-xl transition-all flex flex-col h-full w-full"

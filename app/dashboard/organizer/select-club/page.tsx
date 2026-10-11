@@ -10,11 +10,15 @@ import { Building2, Users, Calendar, ArrowRight, Loader2, Crown, Shield } from "
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
+import { getErrorMessage } from '@/lib/utils';
+import type { Club } from '@/lib/supabase'
+
+type SelectableClub = Club & { is_owner: boolean }
 
 export default function SelectClubPage() {
   const { user: authUser } = useAuth()
   const router = useRouter()
-  const [clubs, setClubs] = useState<any[]>([])
+  const [clubs, setClubs] = useState<SelectableClub[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -33,14 +37,13 @@ export default function SelectClubPage() {
           club:clubs(*)
         `)
         .eq('user_id', authUser!.id)
-        .eq('role', 'admin')
+        .in('role', ['owner', 'admin', 'organizer'])
 
       if (error) throw error
 
-      const userClubs = (data || []).map((m: any) => ({
-        ...m.club,
-        is_owner: m.is_owner
-      }))
+      const userClubs: SelectableClub[] = (data || []).flatMap((m) =>
+        m.club ? [{ ...m.club, is_owner: m.is_owner ?? false }] : []
+      )
 
       setClubs(userClubs)
 
@@ -53,7 +56,7 @@ export default function SelectClubPage() {
         // Redirect to Event Management Hub
         router.push('/dashboard/organizer/host')
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading clubs:', err)
       toast.error('Failed to load clubs')
       setLoading(false)

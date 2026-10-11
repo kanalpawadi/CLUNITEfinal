@@ -26,6 +26,7 @@ import {
   PieChart,
   Pie,
 } from "recharts"
+import { type EngagementPoint, type MetricValue, type MonthlyPoint, type NamedValue, type SatisfactionPoint, type TypeValue, type ChartTooltipProps, type PieLabelProps, payloadNumber, payloadString } from "./chart-types"
 
 // Modern gradient definitions
 const gradients = {
@@ -38,12 +39,12 @@ const gradients = {
 }
 
 // Custom tooltip with glassmorphism effect
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl p-4 shadow-2xl">
         <p className="font-semibold text-gray-900 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
@@ -60,7 +61,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 // Engagement Trends Chart with Gradient Area
-export function EngagementTrendsChart({ data }: { data: any[] }) {
+export function EngagementTrendsChart({ data }: { data: EngagementPoint[] }) {
   // Ensure minimum data for visibility
   const chartData = data.length > 0 ? data : [
     { month: 'No Data', engagement: 0 }
@@ -136,7 +137,7 @@ export function EngagementTrendsChart({ data }: { data: any[] }) {
 }
 
 // Multi-metric Performance Chart
-export function PerformanceOverviewChart({ data }: { data: any[] }) {
+export function PerformanceOverviewChart({ data }: { data: MetricValue[] }) {
   // Ensure minimum values for visibility
   const chartData = data.map(item => ({
     ...item,
@@ -207,7 +208,7 @@ export function PerformanceOverviewChart({ data }: { data: any[] }) {
 }
 
 // Monthly Trends with Dual Axis
-export function MonthlyTrendsChart({ data }: { data: any[] }) {
+export function MonthlyTrendsChart({ data }: { data: MonthlyPoint[] }) {
   const hasData = data.length > 0 && data.some(d => d.participants > 0 || d.revenue > 0)
   
   return (
@@ -293,7 +294,7 @@ export function MonthlyTrendsChart({ data }: { data: any[] }) {
 }
 
 // Event Categories Distribution with Modern Donut
-export function EventCategoriesChart({ data }: { data: any[] }) {
+export function EventCategoriesChart({ data }: { data: NamedValue[] }) {
   const COLORS = ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe", "#00f2fe"]
   
   const hasData = data.length > 0 && data.some(d => d.value > 0)
@@ -334,7 +335,7 @@ export function EventCategoriesChart({ data }: { data: any[] }) {
                 paddingAngle={3}
                 dataKey="value"
                 animationDuration={1500}
-                label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }: PieLabelProps) => `${name} ${(Number(percent ?? 0) * 100).toFixed(0)}%`}
                 labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
                 style={{ fontSize: '11px', fontWeight: 600 }}
               >
@@ -352,7 +353,7 @@ export function EventCategoriesChart({ data }: { data: any[] }) {
 }
 
 // Participants vs Satisfaction Scatter Plot
-export function ParticipantsSatisfactionChart({ data }: { data: any[] }) {
+export function ParticipantsSatisfactionChart({ data }: { data: SatisfactionPoint[] }) {
   const hasData = data.length > 0 && data.some(d => d.participants > 0)
   
   return (
@@ -423,7 +424,7 @@ export function ParticipantsSatisfactionChart({ data }: { data: any[] }) {
 }
 
 // Event Type Analysis with Gradient Bars
-export function EventTypeAnalysisChart({ data }: { data: any[] }) {
+export function EventTypeAnalysisChart({ data }: { data: TypeValue[] }) {
   const hasData = data.length > 0 && data.some(d => d.value > 0)
   
   return (

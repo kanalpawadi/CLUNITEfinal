@@ -207,7 +207,7 @@ export default function CreateEventPage() {
         throw new Error("Event start date must be after registration deadline")
       }
 
-      let bannerUrl = formData.bannerUrl || `/placeholder.svg?height=400&width=800&query=${encodeURIComponent(
+      const bannerUrl = formData.bannerUrl || `/placeholder.svg?height=400&width=800&query=${encodeURIComponent(
         formData.title + " event",
       )}`
 
@@ -233,17 +233,17 @@ export default function CreateEventPage() {
         club_id: selectedClubId,
         college: "Tech University",
         category: formData.category,
-        type: formData.type as any,
-        mode: formData.mode as any,
+        type: formData.type || null,
+        mode: formData.mode,
         venue: formData.venue.trim() || null,
-        start_date: startDateTime,
-        end_date: endDateTime,
+        starts_at: startDateTime,
+        ends_at: endDateTime,
         registration_deadline: registrationDeadline,
-        max_participants: formData.maxParticipants ? Number.parseInt(formData.maxParticipants) : null,
+        capacity: formData.maxParticipants ? Number.parseInt(formData.maxParticipants) : null,
         current_participants: 0,
-        entry_fee: formData.entryFee ? Number.parseFloat(formData.entryFee) : 0,
+        fee: formData.entryFee ? Number.parseFloat(formData.entryFee) : 0,
         prize_pool: formData.prizePool ? Number.parseFloat(formData.prizePool) : null,
-        status: (isDraft ? "draft" : "published") as any,
+        status: isDraft ? "draft" : "published",
         tags: formData.tags
           ? formData.tags
               .split(",")
@@ -262,8 +262,8 @@ export default function CreateEventPage() {
           qr_enabled: formData.enableQR,
           certificates_enabled: formData.enableCertificates,
         },
-        team_size: formData.teamSize as any,
-        level: formData.level as any,
+        team_size: formData.teamSize,
+        level: formData.level || null,
         duration: formData.endDate && formData.endTime ? "Multi-day" : "1 day",
         image_url: bannerUrl,
         created_by: userId,

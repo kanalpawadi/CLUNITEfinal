@@ -234,7 +234,7 @@ export default function BrowseEventsPage() {
                   <div className="rounded-lg bg-gray-50 p-3 space-y-2 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-indigo-500" />
-                      {formatDate(event.start_date)}
+                      {formatDate(event.starts_at)}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ export default function BrowseEventsPage() {
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                     <span className="font-medium">
-                      {event.entry_fee > 0 ? `₹${event.entry_fee}` : 'Free'}
+                      {event.fee > 0 ? `₹${event.fee}` : 'Free'}
                     </span>
 
                     {event.prize_pool && (

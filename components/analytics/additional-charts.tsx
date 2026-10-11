@@ -19,14 +19,16 @@ import {
   ComposedChart,
   Area,
 } from "recharts"
+import { type NamedShare, type NamedValue, type ChartTooltipProps, type PieLabelProps, payloadNumber, payloadString } from "./chart-types"
+import type { EventAnalytics, FinancialMetrics, TimeSeriesData } from "@/lib/analytics-data"
 
 // Custom tooltip with glassmorphism effect
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl p-4 shadow-2xl">
         <p className="font-semibold text-gray-900 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
@@ -43,7 +45,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 // Participants by Department Chart
-export function ParticipantsByDepartmentChart({ data }: { data: any[] }) {
+export function ParticipantsByDepartmentChart({ data }: { data: NamedShare[] }) {
   const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#6366f1", "#f97316", "#14b8a6"]
 
   return (
@@ -85,7 +87,7 @@ export function ParticipantsByDepartmentChart({ data }: { data: any[] }) {
 }
 
 // Participants by Year Chart
-export function ParticipantsByYearChart({ data }: { data: any[] }) {
+export function ParticipantsByYearChart({ data }: { data: NamedShare[] }) {
   const COLORS = ["#f59e0b", "#ef4444", "#8b5cf6", "#3b82f6", "#10b981", "#6366f1", "#f97316", "#14b8a6"]
 
   if (!data || data.length === 0) {
@@ -132,7 +134,7 @@ export function ParticipantsByYearChart({ data }: { data: any[] }) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={(props: any) => `${props.name}: ${(props.payload?.percentage || 0).toFixed(0)}%`}
+              label={(props: PieLabelProps) => `${props.name}: ${payloadNumber(props, "percentage").toFixed(0)}%`}
               outerRadius={100}
               fill="#8884d8"
               dataKey="count"
@@ -151,7 +153,7 @@ export function ParticipantsByYearChart({ data }: { data: any[] }) {
 }
 
 // Event Comparison Chart
-export function EventComparisonChart({ data }: { data: any[] }) {
+export function EventComparisonChart({ data }: { data: EventAnalytics[] }) {
   return (
     <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-white">
       <CardHeader>
@@ -190,7 +192,7 @@ export function EventComparisonChart({ data }: { data: any[] }) {
 }
 
 // Registration by Category Chart
-export function RegistrationByCategoryChart({ data }: { data: any[] }) {
+export function RegistrationByCategoryChart({ data }: { data: NamedValue[] }) {
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
 
   return (
@@ -218,7 +220,7 @@ export function RegistrationByCategoryChart({ data }: { data: any[] }) {
               paddingAngle={5}
               dataKey="value"
               animationDuration={1500}
-              label={(props: any) => `${props.name} (${(props.percent * 100).toFixed(0)}%)`}
+              label={(props: PieLabelProps) => `${props.name} (${(Number(props.percent ?? 0) * 100).toFixed(0)}%)`}
               labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
             >
               {data.map((entry, index) => (
@@ -234,7 +236,7 @@ export function RegistrationByCategoryChart({ data }: { data: any[] }) {
 }
 
 // Income vs Expenses Chart
-export function IncomeVsExpensesChart({ data }: { data: any }) {
+export function IncomeVsExpensesChart({ data }: { data: FinancialMetrics }) {
   const chartData = [
     { name: "Total Income", value: data.totalIncome, fill: "#10b981" },
     { name: "Total Expenses", value: data.totalExpenses, fill: "#ef4444" },
@@ -301,7 +303,7 @@ export function IncomeVsExpensesChart({ data }: { data: any }) {
 }
 
 // Expense Breakdown Chart
-export function ExpenseBreakdownChart({ data }: { data: any[] }) {
+export function ExpenseBreakdownChart({ data }: { data: FinancialMetrics["expenseBreakdown"] }) {
   const COLORS = ["#ef4444", "#f59e0b", "#8b5cf6", "#3b82f6", "#10b981"]
 
   return (
@@ -325,7 +327,7 @@ export function ExpenseBreakdownChart({ data }: { data: any[] }) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={(props: any) => `${props.payload?.category || props.name}: ${(props.payload?.percentage || 0).toFixed(0)}%`}
+              label={(props: PieLabelProps) => `${payloadString(props, "category") || props.name}: ${payloadNumber(props, "percentage").toFixed(0)}%`}
               outerRadius={100}
               fill="#8884d8"
               dataKey="amount"
@@ -361,7 +363,7 @@ export function ExpenseBreakdownChart({ data }: { data: any[] }) {
 }
 
 // Participants by Gender Chart
-export function ParticipantsByGenderChart({ data }: { data: any[] }) {
+export function ParticipantsByGenderChart({ data }: { data: NamedShare[] }) {
   const COLORS = ["#3b82f6", "#ec4899", "#8b5cf6"]
 
   return (
@@ -389,7 +391,7 @@ export function ParticipantsByGenderChart({ data }: { data: any[] }) {
               paddingAngle={5}
               dataKey="count"
               animationDuration={1500}
-              label={(props: any) => `${props.name}: ${(props.payload?.percentage || 0).toFixed(0)}%`}
+              label={(props: PieLabelProps) => `${props.name}: ${payloadNumber(props, "percentage").toFixed(0)}%`}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -404,7 +406,7 @@ export function ParticipantsByGenderChart({ data }: { data: any[] }) {
 }
 
 // Engagement Trends Over Time
-export function EngagementTrendsOverTimeChart({ data }: { data: any[] }) {
+export function EngagementTrendsOverTimeChart({ data }: { data: TimeSeriesData[] }) {
   return (
     <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-white">
       <CardHeader>

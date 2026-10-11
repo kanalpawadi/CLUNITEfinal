@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { User as DbUser } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
@@ -33,11 +34,14 @@ import {
   Share2,
   Heart,
 } from 'lucide-react';
+import type { Club, Event as DbEvent } from '@/lib/supabase';
+
+type RecommendedEvent = DbEvent & { club: Club | null };
 
 export default function StudentDashboard() {
   const router = useRouter();
   const { user: authUser, loading: authLoading } = useAuth();
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<DbUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     registeredEvents: 0,
@@ -45,7 +49,7 @@ export default function StudentDashboard() {
     certificates: 0,
     qrScans: 0
   });
-  const [recommended, setRecommended] = useState<any[]>([]);
+  const [recommended, setRecommended] = useState<RecommendedEvent[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -62,20 +66,26 @@ export default function StudentDashboard() {
         setUserData(dbUser);
 
         // Fetch user registration stats
-        const { data: regs, error: regsError } = await supabase
-          .from('event_registrations')
-          .select(`
-            id,
-            status,
-            event:events(id, certificates_enabled)
-          `)
-          .eq('user_id', authUser!.id);
+        const [{ data: regs, error: regsError }, { data: checkIns }] = await Promise.all([
+          supabase
+            .from('event_registrations')
+            .select('id, status')
+            .eq('user_id', authUser!.id)
+            .neq('status', 'cancelled'),
+          supabase
+            .from('attendance')
+            .select('event_id, event:events(contact_info)')
+            .eq('user_id', authUser!.id),
+        ]);
 
         if (!regsError && regs) {
           const registeredEvents = regs.length;
-          const attendedEvents = regs.filter((r) => r.status === 'attended').length;
-          const certificates = regs.filter((r) => r.status === 'attended' && (r.event as any)?.certificates_enabled).length;
-          const qrScans = regs.filter((r) => r.status === 'attended').length;
+          const attendedEvents = checkIns?.length ?? 0;
+          const certificates = (checkIns ?? []).filter((c) => {
+            const info = c.event?.contact_info;
+            return typeof info === 'object' && info !== null && !Array.isArray(info) && info.certificates_enabled === true;
+          }).length;
+          const qrScans = attendedEvents;
 
           setStats({
             registeredEvents,
@@ -100,7 +110,7 @@ export default function StudentDashboard() {
           const userCollege = dbUser?.college?.toLowerCase() || '';
           const userBranch = dbUser?.branch?.toLowerCase() || '';
           
-          const sorted = [...allEvents].sort((a: any, b: any) => {
+          const sorted = [...allEvents].sort((a, b) => {
             let scoreA = 0;
             let scoreB = 0;
 
@@ -261,9 +271,9 @@ export default function StudentDashboard() {
             </Card>
           ) : (
             recommended.map((event) => {
-              const eventDate = new Date(event.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-              const eventTime = new Date(event.start_date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-              const eventVenue = event.venue || event.location || 'TBD';
+              const eventDate = new Date(event.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              const eventTime = new Date(event.starts_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+              const eventVenue = event.venue || event.venue || 'TBD';
               const clubName = event.club?.name || 'Unknown Club';
               const rating = (event.club?.credibility_score || 4.8).toFixed(1);
 
@@ -337,9 +347,9 @@ export default function StudentDashboard() {
                         🔥 Popular
                       </Badge>
 
-                      {event.max_participants && (
+                      {event.capacity && (
                         <Badge className="bg-emerald-100 text-emerald-700">
-                          🎯 Max: {event.max_participants}
+                          🎯 Max: {event.capacity}
                         </Badge>
                       )}
                     </div>

@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "sonner"
 import { Loader2, Mail, Lock, LogIn, LogOut, AlertCircle } from "lucide-react"
+import { getErrorMessage } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter()
@@ -64,9 +65,9 @@ export default function LoginPage() {
       // Use window.location for hard redirect (more reliable)
       window.location.href = '/dashboard/student'
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error)
-      toast.error(error.message || "An error occurred during login")
+      toast.error(getErrorMessage(error, "An error occurred during login"))
       setLoading(false)
     }
   }
@@ -161,7 +162,7 @@ export default function LoginPage() {
               {/* Signup Link */}
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link 
                     href="/auth/signup" 
                     className="font-semibold text-orange-500 hover:text-orange-600 transition-colors"

@@ -3,8 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
-import { ensureUserExists } from "@/lib/sync-user"
-import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2, Building2, Mail, User, Calendar, Shield, Image as ImageIcon, Upload, X } from "lucide-react"
+import { getErrorMessage } from '@/lib/utils';
 
 export default function CreateClubPage() {
   const router = useRouter()
@@ -51,45 +50,6 @@ export default function CreateClubPage() {
     "Other"
   ]
 
-  const generatePIN = async () => {
-    // Characters to use: digits only (0-9)
-    const chars = '0123456789'
-    let pin = ''
-    
-    // Generate a unique 8-digit PIN
-    let isUnique = false
-    let attempts = 0
-    const maxAttempts = 10
-    
-    while (!isUnique && attempts < maxAttempts) {
-      // Generate random 8-digit PIN
-      pin = ''
-      for (let i = 0; i < 8; i++) {
-        pin += chars.charAt(Math.floor(Math.random() * chars.length))
-      }
-      
-      // Check if PIN already exists in database
-      const { data, error } = await supabase
-        .from('pending_clubs')
-        .select('pin')
-        .eq('pin', pin)
-        .maybeSingle()
-      
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking PIN uniqueness:', error)
-        // Continue anyway if there's an error
-        isUnique = true
-      } else if (!data) {
-        // PIN doesn't exist, it's unique
-        isUnique = true
-      }
-      
-      attempts++
-    }
-    
-    return pin
-  }
-
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -127,33 +87,10 @@ export default function CreateClubPage() {
         setUploading(false)
       }
       reader.readAsDataURL(file)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload error:', error)
-      toast.error(`Failed to process banner: ${error.message}`)
+      toast.error(`Failed to process banner: ${getErrorMessage(error)}`)
       setUploading(false)
-    }
-  }
-
-  const sendPINEmail = async (email: string, clubName: string, pin: string) => {
-    try {
-      const response = await fetch('/api/send-club-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, clubName, pin })
-      })
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Failed to send PIN email:', errorData)
-        toast.error(`Email service error: ${errorData.error || 'Failed to send PIN'}`)
-        return false
-      }
-      
-      return true
-    } catch (error: any) {
-      console.error('Failed to send email:', error)
-      toast.error(`Network error while sending PIN: ${error.message}`)
-      return false
     }
   }
 
@@ -184,89 +121,55 @@ export default function CreateClubPage() {
         return
       }
 
-      // Ensure user exists in database (prevent foreign key errors)
-      console.log('Ensuring user exists in database...')
-      const userSyncResult = await ensureUserExists(authUser, { college: formData.college })
-      
-      if (!userSyncResult.success) {
-        console.error('Failed to sync user:', userSyncResult.error)
-        toast.error("Failed to verify user account. Please try again.")
-        setLoading(false)
-        return
-      }
-
-      console.log('Creating club for user:', authUser.id)
-
-      // Generate unique 8-digit PIN
-      const clubPIN = await generatePIN()
-
-      // Store pending club in database with PIN
-      const { data: pendingClub, error: pendingError } = await supabase
-        .from('pending_clubs')
-        .insert({
-          pin: clubPIN,
+      // The server generates the PIN and emails it to the official address; the PIN never reaches the browser
+      const response = await fetch('/api/clubs/pending', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           official_email: formData.official_email,
           president_name: formData.president_name,
           president_email: formData.president_email,
           president_phone: formData.president_phone,
-          status: 'pending',
-          expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-          created_by: authUser.id,
-          used_count: 0,
-          max_uses: 5,
-          club_data: {
+          club: {
             name: formData.name,
             tagline: formData.tagline,
             description: formData.description,
             vision: formData.vision,
             category: formData.category,
             college: formData.college,
-            founding_date: formData.founding_date || null,
-            contact_email: formData.official_email,
+            founding_date: formData.founding_date,
             faculty_in_charge: formData.faculty_in_charge,
-          }
-        })
-        .select()
-        .single()
+          },
+        }),
+      })
+      const result: { id?: string; emailed?: boolean; devPin?: string; error?: string } = await response
+        .json()
+        .catch(() => ({}))
 
-      if (pendingError || !pendingClub) {
-        console.error('Failed to store pending club:', pendingError)
-        toast.error('Failed to prepare club data. Please try again.')
+      if (!response.ok || !result.id) {
+        toast.error(result.error || 'Failed to prepare club data. Please try again.')
         setLoading(false)
         return
       }
 
-      // Store pending club ID in sessionStorage for verification
-      sessionStorage.setItem('pendingClubId', pendingClub.id)
-      console.log('Club data stored in database, awaiting PIN verification')
+      sessionStorage.setItem('pendingClubId', result.id)
 
-      // Send PIN via email (non-blocking - don't wait)
-      sendPINEmail(formData.official_email, formData.name, clubPIN)
-        .then(sent => {
-          if (sent) {
-            console.log('PIN email sent successfully')
-          } else {
-            console.log('PIN email failed')
-          }
-        })
-        .catch(err => console.error('Email error:', err))
-
-      // Show success message (PIN only sent to email, not displayed)
-      toast.success(`Club data prepared!`, {
-        duration: 5000
-      })
-      toast.info(`Verification PIN has been sent to ${formData.official_email}. Club and banner will be created after verification.`, {
-        duration: 8000
-      })
+      if (result.emailed) {
+        toast.success(`Verification PIN sent to ${formData.official_email}.`, { duration: 8000 })
+      } else if (result.devPin) {
+        toast.info(`Dev mode (email not configured): your PIN is ${result.devPin}`, { duration: 20000 })
+      } else {
+        toast.warning('Club saved, but the PIN email could not be sent. Check the email configuration.', { duration: 8000 })
+      }
 
       // Redirect to PIN verification page
       setTimeout(() => {
         router.push(`/dashboard/organizer/verify-club`)
       }, 2000)
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating club:', error)
-      const errorMessage = error.message || error.toString() || "Unknown error occurred"
+      const errorMessage = getErrorMessage(error, "Unknown error occurred")
       toast.error(`Failed to create club: ${errorMessage}`)
     } finally {
       setLoading(false)
@@ -570,7 +473,7 @@ export default function CreateClubPage() {
 
             <div className="mt-6 p-4 bg-orange-50 rounded-xl border-2 border-orange-200">
               <p className="text-sm text-gray-700 text-center font-medium">
-                After submission, you'll receive an <strong>8-digit PIN</strong> via email. Use this PIN to verify your club and gain organizer access.
+                After submission, you&apos;ll receive an <strong>8-digit PIN</strong> via email. Use this PIN to verify your club and gain organizer access.
               </p>
             </div>
           </form>

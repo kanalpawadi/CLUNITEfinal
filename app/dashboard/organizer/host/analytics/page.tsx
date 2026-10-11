@@ -76,13 +76,14 @@ import {
   type FinancialMetrics,
   type TimeSeriesData,
 } from '@/lib/analytics-data';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function ModernAnalyticsPage() {
   const router = useRouter();
   const [selectedClubId, setSelectedClubId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [expenseOpen, setExpenseOpen] = useState(false);
-  const [eventsForClub, setEventsForClub] = useState<any[]>([]);
+  const [eventsForClub, setEventsForClub] = useState<{ id: string; title: string; starts_at: string }[]>([]);
   const [expenseForm, setExpenseForm] = useState({
     eventId: '',
     type: 'expense' as 'income' | 'expense',
@@ -118,7 +119,7 @@ export default function ModernAnalyticsPage() {
     incomeByEvent: [],
   });
   const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([]);
-  const [insights, setInsights] = useState<any[]>([]);
+  const [insights, setInsights] = useState<ReturnType<typeof generateInsights>>([]);
 
   useEffect(() => {
     const clubId = sessionStorage.getItem('selectedClubId');
@@ -132,9 +133,9 @@ export default function ModernAnalyticsPage() {
     (async () => {
       const { data } = await (await import('@/lib/supabase')).supabase
         .from('events')
-        .select('id,title,start_date')
+        .select('id,title,starts_at')
         .eq('club_id', clubId)
-        .order('start_date', { ascending: false });
+        .order('starts_at', { ascending: false });
       setEventsForClub(data || []);
     })();
   }, []);
@@ -199,7 +200,7 @@ export default function ModernAnalyticsPage() {
     participants: e.registrations,
     satisfaction: 3.5 + Math.random() * 1.5,
   }));
-  const eventTypeData = eventComparison.reduce((acc: any[], event) => {
+  const eventTypeData = eventComparison.reduce<{ type: string; value: number }[]>((acc, event) => {
     const existing = acc.find((item) => item.type === event.type);
     if (existing) {
       existing.value += event.registrations;
@@ -482,7 +483,7 @@ export default function ModernAnalyticsPage() {
                         } catch (e) {
                           console.error(e);
                           toast.error(
-                            (e as any)?.message || 'Failed to save expense'
+                            getErrorMessage(e, 'Failed to save expense')
                           );
                         } finally {
                           setSavingExpense(false);

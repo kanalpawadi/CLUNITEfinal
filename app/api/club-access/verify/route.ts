@@ -1,39 +1,41 @@
-import { NextRequest, NextResponse } from "next/server"
-import { supabaseAdmin } from "@/lib/supabase-admin"
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { ApiError, enforceRateLimit, handler, parseJson, requireUser } from "@/lib/api"
+import { createAdminClient } from "@/lib/supabase/admin"
 
-export async function POST(request: NextRequest) {
-  try {
-    const { clubId, userId, code } = await request.json()
-    if (!clubId || !userId || !code) return NextResponse.json({ error: "clubId, userId and code are required" }, { status: 400 })
-    if (!supabaseAdmin) return NextResponse.json({ error: "Server not configured for OTP (missing service key)" }, { status: 500 })
+const bodySchema = z.object({
+  clubId: z.string().uuid(),
+  code: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+})
 
-    const { data: otp, error: fetchError } = await supabaseAdmin
-      .from("club_access_otps")
-      .select("id, status, expires_at")
-      .eq("club_id", clubId)
-      .eq("code", code)
-      .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single()
+export const POST = handler(async (request) => {
+  const { user } = await requireUser()
+  enforceRateLimit("club-otp-verify", user.id, { limit: 10, windowMs: 15 * 60 * 1000 })
+  const { clubId, code } = await parseJson(request, bodySchema)
+  const admin = createAdminClient()
 
-    if (fetchError || !otp) return NextResponse.json({ error: fetchError?.message || "Invalid or already used code" }, { status: 400 })
+  const { data: otp } = await admin
+    .from("club_access_otps")
+    .select("id, expires_at")
+    .eq("club_id", clubId)
+    .eq("user_id", user.id)
+    .eq("code", code)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (!otp) throw new ApiError(400, "Invalid or already used code")
 
-    if (new Date(otp.expires_at) < new Date()) {
-      await supabaseAdmin.from("club_access_otps").update({ status: "expired" }).eq("id", otp.id)
-      return NextResponse.json({ error: "Code expired" }, { status: 400 })
-    }
-
-    const { error: updateError } = await supabaseAdmin
-      .from("club_access_otps")
-      .update({ status: "used", used_at: new Date().toISOString() })
-      .eq("id", otp.id)
-    if (updateError) return NextResponse.json({ error: updateError.message || "Failed to mark OTP used" }, { status: 500 })
-
-    return NextResponse.json({ success: true })
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unexpected error" }, { status: 500 })
+  if (new Date(otp.expires_at) < new Date()) {
+    await admin.from("club_access_otps").update({ status: "expired" }).eq("id", otp.id)
+    throw new ApiError(400, "Code expired")
   }
-}
 
-
+  const { error } = await admin
+    .from("club_access_otps")
+    .update({ status: "used", used_at: new Date().toISOString() })
+    .eq("id", otp.id)
+    .eq("status", "pending")
+  if (error) throw new ApiError(500, "Could not verify the code")
+  return NextResponse.json({ success: true })
+})

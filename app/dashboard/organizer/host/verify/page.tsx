@@ -12,12 +12,12 @@ import { Lock, AlertCircle, ArrowLeft, Shield, Mail, User, Clock } from "lucide-
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
+import { getErrorMessage } from '@/lib/utils';
 
 export default function HostVerificationPage() {
   const router = useRouter()
   const { user: authUser } = useAuth()
   const [userEmail, setUserEmail] = useState("")
-  const [clubEmail, setClubEmail] = useState("")
   const [clubName, setClubName] = useState("")
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
@@ -60,10 +60,10 @@ export default function HostVerificationPage() {
           .from('club_memberships')
           .select('club_id, club:clubs(name)')
           .eq('user_id', authUser.id)
-          .eq('role', 'admin')
+          .in('role', ['owner', 'admin', 'organizer'])
           
         const match = (memberships || []).find(
-          (m: any) => (m.club?.name || '').toLowerCase() === clubName.trim().toLowerCase()
+          (m) => (m.club?.name || '').toLowerCase() === clubName.trim().toLowerCase()
         )
         
         if (!match) {
@@ -87,16 +87,17 @@ export default function HostVerificationPage() {
       const res = await fetch('/api/club-access/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId: resolvedClubId, userId: authUser.id, email: clubEmail })
+        body: JSON.stringify({ clubId: resolvedClubId })
       })
+      const j: { error?: string; sentTo?: string; devCode?: string } = await res.json().catch(() => ({}))
       if (!res.ok) {
-        const j = await res.json().catch(() => ({}))
         throw new Error(j.error || 'Failed to send OTP')
       }
-      toast.success('OTP sent to the official club email')
+      toast.success(`OTP sent to the official club email${j.sentTo ? ` (${j.sentTo})` : ''}`)
+      if (j.devCode) toast.info(`Dev mode (email not configured): code ${j.devCode}`, { duration: 15000 })
       setSecondsLeft(60)
-    } catch (e: any) {
-      setError(e.message || 'Failed to send OTP')
+    } catch (e) {
+      setError(getErrorMessage(e, 'Failed to send OTP'))
     } finally {
       setIsSending(false)
     }
@@ -137,10 +138,10 @@ export default function HostVerificationPage() {
           .from('club_memberships')
           .select('club_id, club:clubs(name)')
           .eq('user_id', authUser.id)
-          .eq('role', 'admin')
+          .in('role', ['owner', 'admin', 'organizer'])
         
         const match = (memberships || []).find(
-          (m: any) => (m.club?.name || '').toLowerCase() === clubName.trim().toLowerCase()
+          (m) => (m.club?.name || '').toLowerCase() === clubName.trim().toLowerCase()
         )
         
         if (!match) {
@@ -168,7 +169,7 @@ export default function HostVerificationPage() {
       const res = await fetch('/api/club-access/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId, userId: authUser.id, code: otp })
+        body: JSON.stringify({ clubId, code: otp })
       })
       if (!res.ok) {
         const j = await res.json().catch(() => ({}))
@@ -181,7 +182,7 @@ export default function HostVerificationPage() {
         .select('*')
         .eq('user_id', authUser.id)
         .eq('club_id', clubId)
-        .eq('role', 'admin')
+        .in('role', ['owner', 'admin', 'organizer'])
         .single()
       if (membershipError || !membership) {
         setError("You are not an admin of this club")
@@ -193,9 +194,9 @@ export default function HostVerificationPage() {
       toast.success(`Access granted for ${selectedName || 'club'}!`)
       router.push('/dashboard/organizer/host')
 
-    } catch (err: any) {
+    } catch (err) {
       console.error('Verification error:', err)
-      setError(err.message || 'Verification failed')
+      setError(getErrorMessage(err, 'Verification failed'))
     } finally {
       setIsSubmitting(false)
     }
@@ -264,28 +265,15 @@ export default function HostVerificationPage() {
                 />
               </div>
 
-              {/* Club Official Email */}
-              <div className="space-y-2">
-                <Label htmlFor="clubEmail" className="flex items-center gap-2 text-sm font-medium">
-                  <Mail className="h-4 w-4 text-indigo-600" />
-                  Club Official Email
-                </Label>
-                <Input
-                  id="clubEmail"
-                  type="email"
-                  value={clubEmail}
-                  onChange={(e) => setClubEmail(e.target.value)}
-                  placeholder="club@college.edu"
-                  className="h-12 border-2 focus:border-indigo-500"
-                  required
-                />
-                <p className="text-xs text-slate-500">The email used when creating the club</p>
-              </div>
+              <p className="flex items-center gap-2 text-xs text-slate-500">
+                <Mail className="h-4 w-4 text-indigo-600" />
+                The code is sent to the club&apos;s official email on file.
+              </p>
 
               {/* Send OTP */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Button type="button" onClick={sendOtp} disabled={isSending || secondsLeft > 0 || !clubEmail} className="bg-indigo-600 hover:bg-indigo-700">
+                  <Button type="button" onClick={sendOtp} disabled={isSending || secondsLeft > 0} className="bg-indigo-600 hover:bg-indigo-700">
                     {isSending ? 'Sending...' : 'Send OTP'}
                   </Button>
                   {secondsLeft > 0 && (
@@ -343,7 +331,7 @@ export default function HostVerificationPage() {
 
             <div className="mt-6 pt-6 border-t">
               <p className="text-sm text-center text-slate-600 mb-3">
-                Don't have a club yet?
+                Don&apos;t have a club yet?
               </p>
               <Link href="/dashboard/organizer/create-club">
                 <Button

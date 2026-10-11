@@ -411,7 +411,7 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto">
           <p className="text-center text-sm mb-8" style={{ color: '#EEF2FF' }}>
-            Trusted by students from India's top institutions
+            Trusted by students from India&apos;s top institutions
           </p>
           <div className="flex flex-wrap items-center justify-center gap-12 opacity-60">
             {[
@@ -475,7 +475,7 @@ export default function LandingPage() {
               className="text-base sm:text-lg max-w-3xl"
               style={{ color: '#9AA0C7' }}
             >
-              Whether you're a student, organizer, or club leader — Clunite has
+              Whether you&apos;re a student, organizer, or club leader — Clunite has
               the tools you need.
             </p>
           </div>
@@ -635,9 +635,9 @@ export default function LandingPage() {
                 className="text-lg md:text-xl font-medium mb-4 leading-relaxed"
                 style={{ color: '#EEF2FF' }}
               >
-                "Clunite completely transformed how I discover and participate
-                in campus events. I've connected with amazing people and built
-                skills I never thought possible."
+                &quot;Clunite completely transformed how I discover and participate
+                in campus events. I&apos;ve connected with amazing people and built
+                skills I never thought possible.&quot;
               </p>
 
               {/* User Info */}
@@ -697,7 +697,7 @@ export default function LandingPage() {
                   className="mb-3 leading-relaxed text-xs"
                   style={{ color: '#EEF2FF' }}
                 >
-                  "{testimonial.content}"
+                  &quot;{testimonial.content}&quot;
                 </p>
 
                 <div
@@ -760,7 +760,7 @@ export default function LandingPage() {
                 className="mt-2 text-sm md:text-base"
                 style={{ color: '#9AA0C7' }}
               >
-                Got questions? We've got answers
+                Got questions? We&apos;ve got answers
               </p>
             </div>
 
@@ -934,7 +934,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="leading-relaxed" style={{ color: '#9AA0C7' }}>
-                Connecting students with opportunities across India's top
+                Connecting students with opportunities across India&apos;s top
                 colleges.
               </p>
             </div>

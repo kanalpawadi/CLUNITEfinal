@@ -70,7 +70,7 @@ export function useClubEvents(clubId: string) {
         `)
         .eq("club_id", clubId)
         .eq("status", "published")
-        .order("start_date", { ascending: true })
+        .order("starts_at", { ascending: true })
 
       if (fetchError) throw fetchError
 
@@ -120,7 +120,7 @@ export function useEventsForClubIds(clubIds: string[]) {
         `)
         .in("club_id", clubIds)
         .eq("status", "published")
-        .order("start_date", { ascending: true })
+        .order("starts_at", { ascending: true })
 
       if (fetchError) throw fetchError
 

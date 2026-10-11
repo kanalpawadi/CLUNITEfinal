@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { User as DbUser } from '@/lib/supabase';
 import { useAuth } from "@/lib/auth-context"
 import { getUserFromDatabase } from "@/lib/sync-user"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,7 +25,7 @@ import { useOrganizerEvents } from "@/hooks/useEventParticipants"
 
 export default function OrganizerDashboardPage() {
   const { user: authUser, loading: authLoading } = useAuth()
-  const [userData, setUserData] = useState<any>(null)
+  const [userData, setUserData] = useState<DbUser | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClubId, setSelectedClubId] = useState<string | null>(null)
   const { events, userClubs, loading, error } = useOrganizerEvents(authUser?.id)
@@ -248,11 +249,11 @@ export default function OrganizerDashboardPage() {
                         <div className="flex items-center space-x-3 text-sm text-gray-600">
                           <div className="flex items-center">
                             <MapPin className="h-4 w-4 mr-1" />
-                            <span>{event.location || 'Location TBD'}</span>
+                            <span>{event.venue || 'Location TBD'}</span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-1" />
-                            <span>{formatDate(event.start_date)}</span>
+                            <span>{formatDate(event.starts_at)}</span>
                           </div>
                         </div>
                       </div>

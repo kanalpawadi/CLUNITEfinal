@@ -34,6 +34,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import type { Club } from '@/lib/supabase';
 
 export default function HostEventPage() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function HostEventPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [selectedClubId, setSelectedClubId] = useState<string | null>(null);
   const [selectedClubName, setSelectedClubName] = useState<string | null>(null);
-  const [userClubs, setUserClubs] = useState<any[]>([]);
+  const [userClubs, setUserClubs] = useState<Pick<Club, 'id' | 'name'>[]>([]);
   const [stats, setStats] = useState({
     totalEvents: 0,
     totalRegistrations: 0,
@@ -82,7 +83,7 @@ export default function HostEventPage() {
           club:clubs(id, name)
         `)
         .eq('user_id', authUser.id)
-        .eq('role', 'admin');
+        .in('role', ['owner', 'admin', 'organizer']);
 
       const { data: createdClubs, error: createdClubsError } = await supabase
         .from('clubs')
@@ -91,8 +92,8 @@ export default function HostEventPage() {
 
       if (!membershipsError || !createdClubsError) {
         const clubsFromMemberships = (memberships || [])
-          .map((m: any) => m.club)
-          .filter((club: any) => club && club.id);
+          .map((m) => m.club)
+          .filter((club): club is Pick<Club, 'id' | 'name'> => !!club && !!club.id);
         const clubsFromCreated = createdClubs || [];
 
         // Combine and deduplicate
@@ -129,10 +130,10 @@ export default function HostEventPage() {
 
       if (eventsError) throw eventsError;
 
-      const eventIds = events?.map((e: any) => e.id) || [];
+      const eventIds = events?.map((e) => e.id) || [];
 
       // Fetch registrations for these events
-      let registrations: any[] = [];
+      let registrations: { id: string; status: string }[] = [];
       let attendedCount = 0;
 
       if (eventIds.length > 0) {
@@ -143,10 +144,12 @@ export default function HostEventPage() {
 
         if (!regsError && regs) {
           registrations = regs;
-          attendedCount = regs.filter(
-            (r: any) => r.status === 'attended'
-          ).length;
         }
+        const { count } = await supabase
+          .from('attendance')
+          .select('id', { count: 'exact', head: true })
+          .in('event_id', eventIds);
+        attendedCount = count ?? 0;
       }
 
       const totalEvents = events?.length || 0;
@@ -323,7 +326,7 @@ export default function HostEventPage() {
               </div>
 
               <div className="mb-10">
-                <div className="text-5xl mb-4 text-gray-300 font-serif">"</div>
+                <div className="text-5xl mb-4 text-gray-300 font-serif">&quot;</div>
                 <h3 className="text-3xl font-light text-gray-900 leading-tight mb-6">
                   Host New Event
                 </h3>
@@ -383,7 +386,7 @@ export default function HostEventPage() {
               </div>
 
               <div className="mb-10">
-                <div className="text-5xl mb-4 text-gray-300 font-serif">"</div>
+                <div className="text-5xl mb-4 text-gray-300 font-serif">&quot;</div>
                 <h3 className="text-3xl font-light text-gray-900 leading-tight mb-6">
                   Organizers Panel
                 </h3>
@@ -445,7 +448,7 @@ export default function HostEventPage() {
               </div>
 
               <div className="mb-10">
-                <div className="text-5xl mb-4 text-gray-300 font-serif">"</div>
+                <div className="text-5xl mb-4 text-gray-300 font-serif">&quot;</div>
                 <h3 className="text-3xl font-light text-gray-900 leading-tight mb-6">
                   Event Participants Dashboard
                 </h3>

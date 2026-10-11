@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import type { User as DbUser } from '@/lib/supabase';
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { getUserFromDatabase } from "@/lib/sync-user"
@@ -19,7 +20,7 @@ import { Badge } from "@/components/ui/badge"
 
 export function DashboardHeader() {
   const { user: authUser, signOut } = useAuth()
-  const [userData, setUserData] = useState<any>(null)
+  const [userData, setUserData] = useState<DbUser | null>(null)
 
   useEffect(() => {
     async function loadUserData() {

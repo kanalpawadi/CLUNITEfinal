@@ -28,7 +28,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { useEventParticipants } from "@/hooks/useEventParticipants"
+import { useEventParticipants, type ParticipantStatus } from "@/hooks/useEventParticipants"
 
 export default function EventParticipantsPage() {
   const params = useParams()
@@ -125,7 +125,7 @@ export default function EventParticipantsPage() {
       }, {} as Record<string, typeof participants>)
     : {}
 
-  const handleStatusUpdate = async (participantId: string, newStatus: "registered" | "waitlisted" | "cancelled" | "attended") => {
+  const handleStatusUpdate = async (participantId: string, newStatus: ParticipantStatus) => {
     const result = await updateParticipantStatus(participantId, newStatus)
     if (!result.success) {
       // Handle error - you might want to show a toast notification here
@@ -146,7 +146,7 @@ export default function EventParticipantsPage() {
           `"${leader.user?.email || ""}"`,
           `"${leader.user?.college || ""}"`,
           `"${leader.registration_data?.participant_details?.branch || leader.registration_data?.additional_info?.branch || ""}"`,
-          `"${(leader.user as any)?.phone || ""}"`,
+          `"${leader.user?.phone || ""}"`,
         ]
         
         // Add member details (up to 3 more members for max team size of 4)
@@ -157,7 +157,7 @@ export default function EventParticipantsPage() {
               `"${members[i].user?.email || ""}"`,
               `"${members[i].user?.college || ""}"`,
               `"${members[i].registration_data?.participant_details?.branch || members[i].registration_data?.additional_info?.branch || ""}"`,
-              `"${(members[i].user as any)?.phone || ""}"`
+              `"${members[i].user?.phone || ""}"`
             )
           } else {
             row.push('""', '""', '""', '""', '""') // Empty member slots
@@ -198,7 +198,7 @@ export default function EventParticipantsPage() {
           `"${p.user?.email || ""}"`,
           `"${p.user?.college || ""}"`,
           `"${p.registration_data?.participant_details?.branch || p.registration_data?.additional_info?.branch || ""}"`,
-          `"${(p.user as any)?.phone || ""}"`,
+          `"${p.user?.phone || ""}"`,
           `"${p.status}"`
         ].join(","))
       ].join("\n")
@@ -511,7 +511,7 @@ export default function EventParticipantsPage() {
                                 <div className="flex items-center space-x-2">
                                   <Select
                                     value={participant.status}
-                                    onValueChange={(value) => handleStatusUpdate(participant.id, value as any)}
+                                    onValueChange={(value) => handleStatusUpdate(participant.id, value as ParticipantStatus)}
                                   >
                                     <SelectTrigger className="w-32">
                                       <SelectValue />
@@ -627,7 +627,7 @@ export default function EventParticipantsPage() {
                         <div className="flex items-center space-x-2">
                           <Select
                             value={participant.status}
-                            onValueChange={(value) => handleStatusUpdate(participant.id, value as any)}
+                            onValueChange={(value) => handleStatusUpdate(participant.id, value as ParticipantStatus)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />

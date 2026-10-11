@@ -63,8 +63,8 @@ export default function ClubProfilePage() {
 
   // Separate upcoming and past events
   const now = new Date()
-  const upcomingEvents = events.filter((event) => new Date(event.start_date) > now)
-  const pastEvents = events.filter((event) => new Date(event.start_date) <= now)
+  const upcomingEvents = events.filter((event) => new Date(event.starts_at) > now)
+  const pastEvents = events.filter((event) => new Date(event.starts_at) <= now)
 
   if (loading) {
     return (
@@ -335,10 +335,10 @@ export default function ClubProfilePage() {
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-slate-900 truncate">{event.title}</div>
                           <div className="text-sm text-slate-600">
-                            {formatDate(event.start_date)} • {event.current_participants} registered
+                            {formatDate(event.starts_at)} • {event.current_participants} registered
                           </div>
                         </div>
-                        <Badge className={getEventTypeColor(event.type)}>{event.type}</Badge>
+                        <Badge className={getEventTypeColor(event.type ?? 'event')}>{event.type ?? 'event'}</Badge>
                       </div>
                     ))}
                   </div>
@@ -381,8 +381,8 @@ export default function ClubProfilePage() {
                                   : "💻"}
                       </div>
                       <div className="absolute top-3 left-3">
-                        <Badge className={getEventTypeColor(event.type)}>
-                          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                        <Badge className={getEventTypeColor(event.type ?? 'event')}>
+                          {(event.type ?? 'event').charAt(0).toUpperCase() + (event.type ?? 'event').slice(1)}
                         </Badge>
                       </div>
                       <div className="absolute top-3 right-3">
@@ -412,7 +412,7 @@ export default function ClubProfilePage() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
                         <span>
-                          {formatDate(event.start_date)} at {formatTime(event.start_date)}
+                          {formatDate(event.starts_at)} at {formatTime(event.starts_at)}
                         </span>
                       </div>
                       {event.venue && (
@@ -425,18 +425,18 @@ export default function ClubProfilePage() {
                         <Users className="h-4 w-4" />
                         <span>
                           {event.current_participants}
-                          {event.max_participants && `/${event.max_participants}`} registered
+                          {event.capacity && `/${event.capacity}`} registered
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4" />
-                        <span>Register by {formatDate(event.registration_deadline)}</span>
+                        <span>Register by {formatDate(event.registration_deadline ?? event.starts_at)}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div className="text-lg font-bold text-slate-900">
-                        {event.entry_fee > 0 ? `₹${event.entry_fee}` : "Free"}
+                        {event.fee > 0 ? `₹${event.fee}` : "Free"}
                       </div>
                       <Link href={`/dashboard/student/events/${event.id}`}>
                         <Button
@@ -460,7 +460,7 @@ export default function ClubProfilePage() {
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📚</div>
               <h3 className="text-2xl font-bold text-slate-900 mb-2">No past events</h3>
-              <p className="text-slate-600">This club hasn't hosted any events yet.</p>
+              <p className="text-slate-600">This club hasn&apos;t hosted any events yet.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -487,7 +487,7 @@ export default function ClubProfilePage() {
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center space-x-3">
                           <h3 className="text-lg font-bold text-slate-900">{event.title}</h3>
-                          <Badge className={getEventTypeColor(event.type)}>{event.type}</Badge>
+                          <Badge className={getEventTypeColor(event.type ?? 'event')}>{event.type ?? 'event'}</Badge>
                           <Badge variant="outline" className="text-slate-600">
                             Completed
                           </Badge>
@@ -496,7 +496,7 @@ export default function ClubProfilePage() {
                         <div className="flex items-center space-x-6 text-sm text-slate-500">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
-                            <span>{formatDate(event.start_date)}</span>
+                            <span>{formatDate(event.starts_at)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Users className="h-4 w-4" />

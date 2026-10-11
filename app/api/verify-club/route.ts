@@ -1,63 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { ApiError, enforceRateLimit, handler, parseJson, requireUser } from "@/lib/api"
 
-// Create Supabase client with service role key (bypasses RLS)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
+const bodySchema = z.object({
+  pendingClubId: z.string().uuid(),
+  pin: z.string().regex(/^\d{8}$/, "PIN must be 8 digits"),
+  bannerUrl: z.string().url().max(2048).nullable().optional(),
+})
 
-export async function POST(request: NextRequest) {
-  try {
-    const { pendingClubId, pin, userId, bannerUrl } = await request.json();
+/** Verifies the PIN and creates the club; the caller (from the session) becomes the owner. */
+export const POST = handler(async (request) => {
+  const { supabase, user } = await requireUser()
+  enforceRateLimit("verify-club", user.id, { limit: 10, windowMs: 15 * 60 * 1000 })
+  const { pendingClubId, pin, bannerUrl } = await parseJson(request, bodySchema)
 
-    console.log('API: Verifying and creating club with RPC:', {
-      pendingClubId,
-      pin,
-      userId,
-      bannerUrl: bannerUrl ? 'provided' : 'none',
-    });
-
-    if (!pendingClubId || !pin || !userId) {
-      return NextResponse.json(
-        { error: 'Missing required fields: pendingClubId, pin, and userId are required.' },
-        { status: 400 }
-      );
-    }
-
-    // Call the PostgreSQL atomic function via RPC
-    const { data, error } = await supabaseAdmin.rpc('verify_and_create_club', {
-      p_pending_club_id: pendingClubId,
-      p_user_id: userId,
-      p_banner_url: bannerUrl || null,
-      p_pin: pin,
-    });
-
-    if (error) {
-      console.error('API: RPC Error executing verify_and_create_club:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to verify and create club.' },
-        { status: 400 }
-      );
-    }
-
-    console.log('API: RPC success, created club:', data);
-
-    return NextResponse.json({
-      success: true,
-      club: data,
-    });
-  } catch (error: any) {
-    console.error('API: Unexpected Error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
-      { status: 500 }
-    );
-  }
-}
+  const { data: club, error } = await supabase.rpc("verify_and_create_club", {
+    p_pending_club_id: pendingClubId,
+    p_pin: pin,
+    p_banner_url: bannerUrl ?? undefined,
+  })
+  if (error) throw new ApiError(400, error.message || "Failed to verify and create club")
+  if (!club || !club.id) throw new ApiError(400, "Invalid PIN", "invalid_pin")
+  return NextResponse.json({ success: true, club })
+})

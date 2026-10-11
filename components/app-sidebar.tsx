@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { User as DbUser } from '@/lib/supabase';
 import {
   Home,
   Trophy,
@@ -49,7 +50,7 @@ export function AppSidebar() {
   const isCollapsed = state === 'collapsed';
 
   const { user: authUser, signOut } = useAuth();
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<DbUser | null>(null);
 
   useEffect(() => {
     if (!authUser) return;

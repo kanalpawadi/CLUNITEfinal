@@ -21,6 +21,7 @@ import {
 import { useClubs, useUserClubs, joinClubInstant, leaveClubInstant } from '@/hooks/useClubs';
 import { useEventsForClubIds } from '@/hooks/useEvents';
 import { useAuth } from '@/lib/auth-context';
+import type { Club, Event } from '@/lib/supabase';
 
 export default function App() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function App() {
           (club.description?.toLowerCase() ?? '').includes(
             searchTerm.toLowerCase()
           ) ||
-          club.category.toLowerCase().includes(searchTerm.toLowerCase())
+          (club.category ?? '').toLowerCase().includes(searchTerm.toLowerCase())
       ),
     [userClubs, searchTerm]
   );
@@ -71,7 +72,7 @@ export default function App() {
           (club.description?.toLowerCase() ?? '').includes(
             searchTerm.toLowerCase()
           ) ||
-          club.category.toLowerCase().includes(searchTerm.toLowerCase());
+          (club.category ?? '').toLowerCase().includes(searchTerm.toLowerCase());
         return isNotMember && matchesSearch;
       }),
     [allClubs, userClubs, searchTerm]
@@ -278,7 +279,17 @@ export default function App() {
 
 // --- SUB-COMPONENTS ---
 
-function ClubCard({ club, isMember, loading, onAction }: any) {
+function ClubCard({
+  club,
+  isMember,
+  loading,
+  onAction,
+}: {
+  club: Club
+  isMember?: boolean
+  loading?: boolean
+  onAction: () => void
+}) {
   return (
     <div className="group bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300 hover:-translate-y-1 flex flex-col">
       <div className="h-40 relative overflow-hidden">
@@ -365,7 +376,7 @@ function ClubCard({ club, isMember, loading, onAction }: any) {
   );
 }
 
-function EventListItem({ event }: any) {
+function EventListItem({ event }: { event: Event }) {
   return (
     <div className="flex items-center gap-4 p-4 bg-white border border-zinc-200 rounded-xl hover:border-indigo-200 hover:shadow-md transition-all group">
       <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
@@ -392,12 +403,12 @@ function EventListItem({ event }: any) {
         <div className="flex items-center gap-3 text-[11px] text-zinc-400 font-medium">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            {event.start_date ? new Date(event.start_date).toLocaleDateString() : 'TBD'}
+            {event.starts_at ? new Date(event.starts_at).toLocaleDateString() : 'TBD'}
           </span>
           <span className="w-0.5 h-0.5 rounded-full bg-zinc-300" />
           <span className="flex items-center gap-1">
             <Users className="w-3 h-3" />
-            {event.current_participants || 0}/{event.max_participants || '∞'}
+            {event.current_participants || 0}/{event.capacity || '∞'}
           </span>
         </div>
       </div>

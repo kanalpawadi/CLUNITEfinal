@@ -23,24 +23,9 @@ import {
 } from "lucide-react"
 import { EventImage } from "./EventImage"
 import Link from "next/link"
-import { supabase } from "@/lib/supabase"
+import { supabase, type Tables } from "@/lib/supabase"
 
-interface Event {
-  id: string
-  title: string
-  description: string
-  start_date: string
-  end_date: string | null
-  status: "draft" | "published" | "cancelled" | "completed"
-  venue: string | null
-  entry_fee: number
-  current_participants: number
-  max_participants: number | null
-  mode: "online" | "offline" | "hybrid"
-  type: string
-  category: string
-  image_url: string | null
-} 
+type Event = Tables<"events"> 
 
 export default function EventManagementHub() {
   const [events, setEvents] = useState<Event[]>([])
@@ -115,7 +100,7 @@ export default function EventManagementHub() {
 
   const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.type.toLowerCase().includes(searchQuery.toLowerCase())
+    (event.type ?? "").toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   if (loading) {
@@ -282,7 +267,7 @@ export default function EventManagementHub() {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Calendar className="h-4 w-4 text-blue-500" />
-                    <span>{new Date(event.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span>{new Date(event.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="h-4 w-4 text-green-500" />
@@ -291,7 +276,7 @@ export default function EventManagementHub() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <IndianRupee className="h-4 w-4 text-amber-500" />
-                      <span>{event.entry_fee === 0 ? "Free" : `₹${event.entry_fee}`}</span>
+                      <span>{event.fee === 0 ? "Free" : `₹${event.fee}`}</span>
                     </div>
                     <Badge variant="outline" className="capitalize">{event.type}</Badge>
                   </div>
@@ -304,7 +289,7 @@ export default function EventManagementHub() {
                     <div>
                       <p className="text-xs text-gray-500">Participants</p>
                       <p className="text-lg font-bold text-gray-900">
-                        {event.current_participants}{event.max_participants && `/${event.max_participants}`}
+                        {event.current_participants}{event.capacity && `/${event.capacity}`}
                       </p>
                     </div>
                   </div>
