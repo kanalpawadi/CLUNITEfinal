@@ -1,5 +1,6 @@
 import "server-only"
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto"
+import { randomBytes } from "node:crypto"
+import { hmacHex, safeEqual } from "@/lib/crypto"
 import { ConfigError, requireServerEnv, serverEnv } from "@/lib/env.server"
 import { publicEnv } from "@/lib/env"
 
@@ -13,14 +14,7 @@ export function paymentsMode(): PaymentsMode {
   return serverEnv.PAYMENTS_MODE
 }
 
-/** Constant-time comparison of two hex/base64url strings. */
-export function safeEqual(a: string, b: string): boolean {
-  const ab = Buffer.from(a)
-  const bb = Buffer.from(b)
-  return ab.length === bb.length && timingSafeEqual(ab, bb)
-}
-
-export const hmacHex = (secret: string, payload: string) => createHmac("sha256", secret).update(payload).digest("hex")
+export { safeEqual }
 
 export type CreatedOrder = {
   orderId: string

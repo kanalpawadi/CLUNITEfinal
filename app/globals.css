@@ -158,4 +158,18 @@
   body {
     background: white;
   }
+  /* ID card page prints only the card */
+  body:has(.id-card-print) * {
+    visibility: hidden;
+  }
+  body:has(.id-card-print) .id-card-print,
+  body:has(.id-card-print) .id-card-print * {
+    visibility: visible;
+  }
+  body:has(.id-card-print) .id-card-print {
+    position: absolute;
+    inset: 0 0 auto 0;
+    margin: 2cm auto;
+    max-width: 9.5cm;
+  }
 }

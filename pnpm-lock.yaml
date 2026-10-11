@@ -192,6 +192,9 @@ importers:
         specifier: ^3.24.1
         version: 3.25.76
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.3.16
+        version: 0.3.16
       '@eslint/eslintrc':
         specifier: ^3.3.1
         version: 3.3.1
@@ -255,6 +258,9 @@ packages:
 
   '@date-fns/tz@1.4.1':
     resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
+
+  '@electric-sql/pglite@0.3.16':
+    resolution: {integrity: sha512-mZkZfOd9OqTMHsK+1cje8OSzfAQcpD7JmILXTl5ahdempjUDdmg4euf1biDex5/LfQIDJ3gvCu6qDgdnDxfJmA==}
 
   '@emnapi/core@1.6.0':
     resolution: {integrity: sha512-zq/ay+9fNIJJtJiZxdTnXS20PllcYMX3OE23ESc4HK/bdYu3cOWYVhsOhVnXALfU/uqJIxn5NBPd9z4v+SfoSg==}
@@ -3770,6 +3776,8 @@ snapshots:
     optional: true
 
   '@date-fns/tz@1.4.1': {}
+
+  '@electric-sql/pglite@0.3.16': {}
 
   '@emnapi/core@1.6.0':
     dependencies:

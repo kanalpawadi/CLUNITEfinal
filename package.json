@@ -27,7 +27,9 @@
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "eslint .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings \"tests/**/*.test.ts\"",
+    "test:db": "node supabase/tests/run-pglite.mjs"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -97,6 +99,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.16",
     "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^22.18.1",
     "@types/qrcode": "^1.5.6",
