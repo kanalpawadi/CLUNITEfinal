@@ -919,7 +919,7 @@ begin
 
   if not p_success then
     update public.payments
-       set status = 'failed', razorpay_payment_id = coalesce(p_payment_id, razorpay_payment_id),
+       set status = 'failed', razorpay_payment_id = coalesce(nullif(p_payment_id, ''), razorpay_payment_id),
            failure_reason = left(p_failure_reason, 500)
      where id = v_pay.id
     returning * into v_pay;
@@ -931,7 +931,7 @@ begin
   end if;
 
   update public.payments
-     set status = 'paid', razorpay_payment_id = p_payment_id, paid_at = now(), failure_reason = null,
+     set status = 'paid', razorpay_payment_id = coalesce(nullif(p_payment_id, ''), razorpay_payment_id), paid_at = now(), failure_reason = null,
          receipt_no = coalesce(receipt_no, 'RCPT-' || to_char(now(), 'YYYYMMDD') || '-' || upper(substr(replace(id::text, '-', ''), 1, 8)))
    where id = v_pay.id
   returning * into v_pay;
