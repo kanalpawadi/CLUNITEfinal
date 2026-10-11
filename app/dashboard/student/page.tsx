@@ -138,7 +138,7 @@ export default function StudentDashboard() {
 
   if (authLoading || loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -157,39 +157,39 @@ export default function StudentDashboard() {
       value: stats.registeredEvents.toString(),
       change: `${stats.registeredEvents} total`,
       icon: Calendar,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-primary',
+      bg: 'bg-primary/5',
     },
     {
       title: 'Certificates Earned',
       value: stats.certificates.toString(),
       change: `${stats.certificates} total`,
       icon: Award,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50',
+      color: 'text-success',
+      bg: 'bg-success/5',
     },
     {
       title: 'Events Attended',
       value: stats.attendedEvents.toString(),
       change: `${stats.attendedEvents} total`,
       icon: Users,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
+      color: 'text-primary',
+      bg: 'bg-primary/5',
     },
     {
       title: 'QR Scans',
       value: stats.qrScans.toString(),
       change: `${stats.qrScans} total`,
       icon: QrCode,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50',
+      color: 'text-primary',
+      bg: 'bg-primary/5',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] px-8 py-6 space-y-10">
+    <div className="min-h-screen bg-background px-8 py-6 space-y-10">
       {/* HERO */}
-      <div className="relative rounded-2xl bg-gradient-to-br from-blue-100 via-blue-50 to-white border border-black/5 p-10 overflow-hidden">
+      <div className="relative rounded-2xl bg-background border border-border/5 p-10 overflow-hidden">
         <div className="max-w-xl">
           <p className="text-sm text-muted-foreground">Dashboard Overview</p>
 
@@ -202,11 +202,11 @@ export default function StudentDashboard() {
           </p>
 
           <div className="mt-4 space-y-2 font-medium">
-            <Badge className="bg-blue-100 text-blue-700">
+            <Badge className="bg-primary/10 text-primary">
               <Sparkles className="h-3 w-3 mr-1" /> {recommended.length} recommendations
             </Badge>
 
-            <Badge className="bg-indigo-100 text-indigo-700 ml-2">
+            <Badge className="bg-primary/10 text-primary ml-2">
               <Target className="h-3 w-3 mr-1" /> {stats.registeredEvents} events registered
             </Badge>
           </div>
@@ -224,15 +224,15 @@ export default function StudentDashboard() {
       </div>
 
       {/* ACHIEVEMENTS */}
-      <div className="rounded-2xl bg-white border border-black/5 p-10">
+      <div className="rounded-2xl bg-card border border-border/5 p-10">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {achievementsList.map((item, index) => (
             <div
               key={index}
-              className={`rounded-xl border border-black/5 p-6 space-y-4 ${item.bg}`}
+              className={`rounded-xl border border-border/5 p-6 space-y-4 ${item.bg}`}
             >
               <div className="flex items-center justify-between">
-                <div className="h-10 w-10 rounded-md bg-white flex items-center justify-center">
+                <div className="h-10 w-10 rounded-md bg-card flex items-center justify-center">
                   <item.icon className={`h-5 w-5 ${item.color}`} />
                 </div>
                 <span className="text-xs text-muted-foreground">
@@ -263,11 +263,11 @@ export default function StudentDashboard() {
               Recommended Events for You
             </h2>
 
-            <Badge className="bg-blue-100 text-blue-700">Personalized</Badge>
+            <Badge className="bg-primary/10 text-primary">Personalized</Badge>
           </div>
 
           {recommended.length === 0 ? (
-            <Card className="rounded-2xl border border-black/5 bg-white p-8 text-center text-muted-foreground">
+            <Card className="rounded-2xl border border-border/5 bg-card p-8 text-center text-muted-foreground">
               No recommended events found right now. Check back later!
             </Card>
           ) : (
@@ -283,10 +283,10 @@ export default function StudentDashboard() {
                   key={event.id}
                   className="
                     rounded-xl
-                    border border-black/10
-                    bg-white
-                    shadow-sm
-                    hover:shadow-xl
+                    border border-border/10
+                    bg-card
+                    shadow-soft
+                    hover:shadow-soft-lg
                     hover:-translate-y-0.5
                     transition
                     overflow-hidden
@@ -295,7 +295,7 @@ export default function StudentDashboard() {
                   {/* CARD HEADER */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-indigo-200 flex items-center justify-center font-semibold">
+                      <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center font-semibold">
                         {clubName[0]}
                       </div>
 
@@ -307,13 +307,13 @@ export default function StudentDashboard() {
                       </div>
                     </div>
 
-                    <Badge className="bg-purple-100 text-purple-700">
+                    <Badge className="bg-primary/10 text-primary">
                       ⭐ {rating}
                     </Badge>
                   </div>
 
                   {/* EVENT IMAGE */}
-                  <div className="h-44 bg-gray-100">
+                  <div className="h-44 bg-muted">
                     <img
                       src={event.image_url || "https://images.unsplash.com/photo-1523240795612-9a054b0db644"}
                       className="w-full h-full object-cover"
@@ -344,12 +344,12 @@ export default function StudentDashboard() {
 
                     {/* TAGS */}
                     <div className="flex gap-2 mt-2">
-                      <Badge className="bg-orange-100 text-orange-700">
+                      <Badge className="bg-primary/10 text-primary">
                         🔥 Popular
                       </Badge>
 
                       {event.capacity && (
-                        <Badge className="bg-emerald-100 text-emerald-700">
+                        <Badge className="bg-success/10 text-success">
                           🎯 Max: {event.capacity}
                         </Badge>
                       )}
@@ -365,20 +365,20 @@ export default function StudentDashboard() {
                     {/* ACTION BAR */}
                     <div className="flex justify-between items-center mt-3 pt-3 border-t">
                       <div className="flex gap-4 text-sm text-muted-foreground">
-                        <button className="flex items-center gap-1 hover:text-red-500">
+                        <button className="flex items-center gap-1 hover:text-destructive">
                           <Heart className="h-4 w-4" /> Like
                         </button>
 
-                        <button className="flex items-center gap-1 hover:text-gray-900">
+                        <button className="flex items-center gap-1 hover:text-foreground">
                           <Share2 className="h-4 w-4" /> Share
                         </button>
                       </div>
 
-                      <Link href={`/dashboard/student/events/${event.id}`}>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
+                        <Link href={`/dashboard/student/events/${event.id}`}>
                           Register
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -390,41 +390,41 @@ export default function StudentDashboard() {
         {/* SIDE */}
         <div className="space-y-6">
           {/* Quick actions */}
-          <Card className="rounded-2xl overflow-hidden border border-black/10 bg-white">
-            <CardHeader className="bg-gradient-to-r from-gray-50 to-white">
+          <Card className="rounded-2xl overflow-hidden border border-border/10 bg-card">
+            <CardHeader className="bg-background">
               <CardTitle>Quick actions</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-3 mt-2">
-              <Button className="w-full justify-start rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="w-full justify-start rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
                 <QrCode className="h-4 w-4 mr-2" />
                 Scan event QR
               </Button>
 
-              <Link href="/dashboard/student/events" className="block w-full">
-                <Button
+              <Button asChild
                   variant="outline"
                   className="w-full justify-start rounded-lg"
                 >
-                  <Award className="h-4 w-4 mr-2 text-emerald-600" />
+                <Link href="/dashboard/student/events" className="block w-full">
+                  <Award className="h-4 w-4 mr-2 text-success" />
                   Certificates
-                </Button>
-              </Link>
+                </Link>
+              </Button>
 
-              <Link href="/dashboard/student/events" className="block w-full">
-                <Button
+              <Button asChild
                   variant="outline"
                   className="w-full justify-start rounded-lg"
                 >
-                  <Calendar className="h-4 w-4 mr-2 text-indigo-600" />
+                <Link href="/dashboard/student/events" className="block w-full">
+                  <Calendar className="h-4 w-4 mr-2 text-primary" />
                   My events
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
           {/* Invite */}
-          <Card className="rounded-2xl overflow-hidden border border-blue-200 bg-blue-50">
+          <Card className="rounded-2xl overflow-hidden border border-primary/20 bg-primary/5">
             <CardContent className="p-6 space-y-2">
               <p className="font-medium">Invite friends</p>
               <p className="text-sm text-muted-foreground">
@@ -432,7 +432,7 @@ export default function StudentDashboard() {
               </p>
               <Button
                 size="sm"
-                className="rounded-lg bg-blue-600 hover:bg-blue-700"
+                className="rounded-lg bg-primary hover:bg-primary/90"
               >
                 Share invite
               </Button>
@@ -440,10 +440,10 @@ export default function StudentDashboard() {
           </Card>
 
           {/* Achievement */}
-          <Card className="rounded-2xl overflow-hidden border border-emerald-200 bg-emerald-50">
+          <Card className="rounded-2xl overflow-hidden border border-success/20 bg-success/5">
             <CardContent className="p-6 space-y-2">
               <div className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-emerald-700" />
+                <Target className="h-5 w-5 text-success" />
                 <p className="font-medium">Achievement unlocked</p>
               </div>
               <p className="text-sm text-muted-foreground">

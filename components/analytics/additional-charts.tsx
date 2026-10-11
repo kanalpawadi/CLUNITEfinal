@@ -26,16 +26,16 @@ import type { EventAnalytics, FinancialMetrics, TimeSeriesData } from "@/lib/ana
 const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl p-4 shadow-2xl">
-        <p className="font-semibold text-gray-900 mb-2">{label}</p>
+      <div className="bg-card/90 backdrop-blur-xl border border-border rounded-xl p-4 shadow-soft-lg">
+        <p className="font-semibold text-foreground mb-2">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-gray-600">{entry.name}:</span>
-            <span className="font-bold text-gray-900">{entry.value}</span>
+            <span className="text-muted-foreground">{entry.name}:</span>
+            <span className="font-bold text-foreground">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -46,14 +46,14 @@ const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
 
 // Participants by Department Chart
 export function ParticipantsByDepartmentChart({ data }: { data: NamedShare[] }) {
-  const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#6366f1", "#f97316", "#14b8a6"]
+  const COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-2))", "hsl(var(--chart-5))", "hsl(var(--chart-1))", "hsl(var(--chart-3))", "hsl(var(--chart-2))", "hsl(var(--chart-1))", "hsl(var(--chart-2))"]
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-            <Users className="h-6 w-6 text-white" />
+          <div className="p-3 bg-primary rounded-xl shadow-soft-lg">
+            <Users className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Participants by Department</CardTitle>
@@ -64,12 +64,12 @@ export function ParticipantsByDepartmentChart({ data }: { data: NamedShare[] }) 
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data} layout="horizontal">
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis type="number" stroke="#9ca3af" style={{ fontSize: "12px", fontWeight: 500 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis type="number" stroke="hsl(var(--muted-foreground))" style={{ fontSize: "12px", fontWeight: 500 }} />
             <YAxis
               type="category"
               dataKey="name"
-              stroke="#9ca3af"
+              stroke="hsl(var(--muted-foreground))"
               style={{ fontSize: "12px", fontWeight: 500 }}
               width={120}
             />
@@ -88,15 +88,15 @@ export function ParticipantsByDepartmentChart({ data }: { data: NamedShare[] }) 
 
 // Participants by Year Chart
 export function ParticipantsByYearChart({ data }: { data: NamedShare[] }) {
-  const COLORS = ["#f59e0b", "#ef4444", "#8b5cf6", "#3b82f6", "#10b981", "#6366f1", "#f97316", "#14b8a6"]
+  const COLORS = ["hsl(var(--chart-1))", "hsl(var(--destructive))", "hsl(var(--chart-2))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-2))", "hsl(var(--chart-1))", "hsl(var(--chart-2))"]
 
   if (!data || data.length === 0) {
     return (
-      <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-amber-50 to-white">
+      <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
-              <Calendar className="h-6 w-6 text-white" />
+            <div className="p-3 bg-warning rounded-xl shadow-soft-lg">
+              <Calendar className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
               <CardTitle className="text-xl">Participants by Year of Study</CardTitle>
@@ -114,11 +114,11 @@ export function ParticipantsByYearChart({ data }: { data: NamedShare[] }) {
   }
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-amber-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
-            <Calendar className="h-6 w-6 text-white" />
+          <div className="p-3 bg-warning rounded-xl shadow-soft-lg">
+            <Calendar className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Participants by Year of Study</CardTitle>
@@ -136,7 +136,7 @@ export function ParticipantsByYearChart({ data }: { data: NamedShare[] }) {
               labelLine={false}
               label={(props: PieLabelProps) => `${props.name}: ${payloadNumber(props, "percentage").toFixed(0)}%`}
               outerRadius={100}
-              fill="#8884d8"
+              fill="hsl(var(--chart-2))"
               dataKey="count"
               animationDuration={1500}
             >
@@ -155,11 +155,11 @@ export function ParticipantsByYearChart({ data }: { data: NamedShare[] }) {
 // Event Comparison Chart
 export function EventComparisonChart({ data }: { data: EventAnalytics[] }) {
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg">
-            <BarChart3 className="h-6 w-6 text-white" />
+          <div className="p-3 bg-primary rounded-xl shadow-soft-lg">
+            <BarChart3 className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Event Performance Comparison</CardTitle>
@@ -170,20 +170,20 @@ export function EventComparisonChart({ data }: { data: EventAnalytics[] }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
           <ComposedChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
               dataKey="title"
-              stroke="#9ca3af"
+              stroke="hsl(var(--muted-foreground))"
               style={{ fontSize: "11px", fontWeight: 500 }}
               angle={-45}
               textAnchor="end"
               height={100}
             />
-            <YAxis stroke="#9ca3af" style={{ fontSize: "12px", fontWeight: 500 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" style={{ fontSize: "12px", fontWeight: 500 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ paddingTop: "20px", fontSize: "13px", fontWeight: 600 }} />
-            <Bar dataKey="registrations" fill="#8b5cf6" radius={[8, 8, 0, 0]} name="Registrations" />
-            <Bar dataKey="attendance" fill="#ec4899" radius={[8, 8, 0, 0]} name="Attendance" />
+            <Bar dataKey="registrations" fill="hsl(var(--chart-2))" radius={[8, 8, 0, 0]} name="Registrations" />
+            <Bar dataKey="attendance" fill="hsl(var(--chart-5))" radius={[8, 8, 0, 0]} name="Attendance" />
           </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
@@ -193,14 +193,14 @@ export function EventComparisonChart({ data }: { data: EventAnalytics[] }) {
 
 // Registration by Category Chart
 export function RegistrationByCategoryChart({ data }: { data: NamedValue[] }) {
-  const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
+  const COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-1))", "hsl(var(--destructive))", "hsl(var(--chart-2))", "hsl(var(--chart-5))"]
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-            <PieChartIcon className="h-6 w-6 text-white" />
+          <div className="p-3 bg-success rounded-xl shadow-soft-lg">
+            <PieChartIcon className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Registrations by Category</CardTitle>
@@ -221,7 +221,7 @@ export function RegistrationByCategoryChart({ data }: { data: NamedValue[] }) {
               dataKey="value"
               animationDuration={1500}
               label={(props: PieLabelProps) => `${props.name} (${(Number(props.percent ?? 0) * 100).toFixed(0)}%)`}
-              labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
+              labelLine={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1 }}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -238,17 +238,17 @@ export function RegistrationByCategoryChart({ data }: { data: NamedValue[] }) {
 // Income vs Expenses Chart
 export function IncomeVsExpensesChart({ data }: { data: FinancialMetrics }) {
   const chartData = [
-    { name: "Total Income", value: data.totalIncome, fill: "#10b981" },
-    { name: "Total Expenses", value: data.totalExpenses, fill: "#ef4444" },
-    { name: "Net Profit", value: data.netProfit, fill: data.netProfit >= 0 ? "#3b82f6" : "#f59e0b" },
+    { name: "Total Income", value: data.totalIncome, fill: "hsl(var(--chart-3))" },
+    { name: "Total Expenses", value: data.totalExpenses, fill: "hsl(var(--destructive))" },
+    { name: "Net Profit", value: data.netProfit, fill: data.netProfit >= 0 ? "hsl(var(--chart-2))" : "hsl(var(--chart-1))" },
   ]
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-emerald-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
-            <DollarSign className="h-6 w-6 text-white" />
+          <div className="p-3 bg-success rounded-xl shadow-soft-lg">
+            <DollarSign className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Income vs Expenses</CardTitle>
@@ -259,14 +259,14 @@ export function IncomeVsExpensesChart({ data }: { data: FinancialMetrics }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
               dataKey="name"
-              stroke="#9ca3af"
+              stroke="hsl(var(--muted-foreground))"
               style={{ fontSize: "12px", fontWeight: 500 }}
             />
             <YAxis
-              stroke="#9ca3af"
+              stroke="hsl(var(--muted-foreground))"
               style={{ fontSize: "12px", fontWeight: 500 }}
               tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
             />
@@ -282,17 +282,17 @@ export function IncomeVsExpensesChart({ data }: { data: FinancialMetrics }) {
           </BarChart>
         </ResponsiveContainer>
         <div className="mt-4 grid grid-cols-3 gap-4">
-          <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-            <p className="text-xs text-green-600 font-semibold mb-1">Total Income</p>
-            <p className="text-lg font-bold text-green-900">₹{data.totalIncome.toLocaleString()}</p>
+          <div className="p-3 bg-success/5 rounded-lg border border-success/20">
+            <p className="text-xs text-success font-semibold mb-1">Total Income</p>
+            <p className="text-lg font-bold text-success">₹{data.totalIncome.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-            <p className="text-xs text-red-600 font-semibold mb-1">Total Expenses</p>
-            <p className="text-lg font-bold text-red-900">₹{data.totalExpenses.toLocaleString()}</p>
+          <div className="p-3 bg-destructive/5 rounded-lg border border-destructive/20">
+            <p className="text-xs text-destructive font-semibold mb-1">Total Expenses</p>
+            <p className="text-lg font-bold text-destructive">₹{data.totalExpenses.toLocaleString()}</p>
           </div>
-          <div className={`p-3 rounded-lg border ${data.netProfit >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-orange-50 border-orange-200'}`}>
-            <p className={`text-xs font-semibold mb-1 ${data.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>Net Profit</p>
-            <p className={`text-lg font-bold ${data.netProfit >= 0 ? 'text-blue-900' : 'text-orange-900'}`}>
+          <div className={`p-3 rounded-lg border ${data.netProfit >= 0 ? 'bg-primary/5 border-primary/20' : 'bg-primary/5 border-primary/20'}`}>
+            <p className={`text-xs font-semibold mb-1 ${data.netProfit >= 0 ? 'text-primary' : 'text-primary'}`}>Net Profit</p>
+            <p className={`text-lg font-bold ${data.netProfit >= 0 ? 'text-primary' : 'text-primary'}`}>
               ₹{data.netProfit.toLocaleString()}
             </p>
           </div>
@@ -304,14 +304,14 @@ export function IncomeVsExpensesChart({ data }: { data: FinancialMetrics }) {
 
 // Expense Breakdown Chart
 export function ExpenseBreakdownChart({ data }: { data: FinancialMetrics["expenseBreakdown"] }) {
-  const COLORS = ["#ef4444", "#f59e0b", "#8b5cf6", "#3b82f6", "#10b981"]
+  const COLORS = ["hsl(var(--destructive))", "hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-2))", "hsl(var(--chart-3))"]
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-red-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl shadow-lg">
-            <PieChartIcon className="h-6 w-6 text-white" />
+          <div className="p-3 bg-destructive rounded-xl shadow-soft-lg">
+            <PieChartIcon className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Expense Breakdown</CardTitle>
@@ -329,7 +329,7 @@ export function ExpenseBreakdownChart({ data }: { data: FinancialMetrics["expens
               labelLine={false}
               label={(props: PieLabelProps) => `${payloadString(props, "category") || props.name}: ${payloadNumber(props, "percentage").toFixed(0)}%`}
               outerRadius={100}
-              fill="#8884d8"
+              fill="hsl(var(--chart-2))"
               dataKey="amount"
               animationDuration={1500}
             >
@@ -345,15 +345,15 @@ export function ExpenseBreakdownChart({ data }: { data: FinancialMetrics["expens
         </ResponsiveContainer>
         <div className="mt-4 space-y-2">
           {data.map((item, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+            <div key={index} className="flex items-center justify-between p-2 bg-background rounded-lg">
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: COLORS[index % COLORS.length] }}
                 />
-                <span className="text-sm font-medium text-gray-700">{item.category}</span>
+                <span className="text-sm font-medium text-foreground">{item.category}</span>
               </div>
-              <span className="text-sm font-bold text-gray-900">₹{item.amount.toLocaleString()}</span>
+              <span className="text-sm font-bold text-foreground">₹{item.amount.toLocaleString()}</span>
             </div>
           ))}
         </div>
@@ -364,14 +364,14 @@ export function ExpenseBreakdownChart({ data }: { data: FinancialMetrics["expens
 
 // Participants by Gender Chart
 export function ParticipantsByGenderChart({ data }: { data: NamedShare[] }) {
-  const COLORS = ["#3b82f6", "#ec4899", "#8b5cf6"]
+  const COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-5))", "hsl(var(--chart-2))"]
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-pink-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg">
-            <Users className="h-6 w-6 text-white" />
+          <div className="p-3 bg-primary rounded-xl shadow-soft-lg">
+            <Users className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Participants by Gender</CardTitle>
@@ -408,11 +408,11 @@ export function ParticipantsByGenderChart({ data }: { data: NamedShare[] }) {
 // Engagement Trends Over Time
 export function EngagementTrendsOverTimeChart({ data }: { data: TimeSeriesData[] }) {
   return (
-    <Card className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-white">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-background">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-            <TrendingUp className="h-6 w-6 text-white" />
+          <div className="p-3 bg-primary rounded-xl shadow-soft-lg">
+            <TrendingUp className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-xl">Engagement Trends Over Time</CardTitle>
@@ -425,24 +425,24 @@ export function EngagementTrendsOverTimeChart({ data }: { data: TimeSeriesData[]
           <ComposedChart data={data}>
             <defs>
               <linearGradient id="registrationsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1} />
+                <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
               dataKey="date"
-              stroke="#9ca3af"
+              stroke="hsl(var(--muted-foreground))"
               style={{ fontSize: "12px", fontWeight: 500 }}
             />
-            <YAxis stroke="#9ca3af" style={{ fontSize: "12px", fontWeight: 500 }} />
+            <YAxis stroke="hsl(var(--muted-foreground))" style={{ fontSize: "12px", fontWeight: 500 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ paddingTop: "20px", fontSize: "13px", fontWeight: 600 }} />
             <Area
               type="monotone"
               dataKey="registrations"
               fill="url(#registrationsGradient)"
-              stroke="#8b5cf6"
+              stroke="hsl(var(--chart-2))"
               strokeWidth={2}
               name="Registrations"
               animationDuration={2000}
@@ -450,9 +450,9 @@ export function EngagementTrendsOverTimeChart({ data }: { data: TimeSeriesData[]
             <Line
               type="monotone"
               dataKey="attendance"
-              stroke="#ec4899"
+              stroke="hsl(var(--chart-5))"
               strokeWidth={3}
-              dot={{ fill: "#ec4899", r: 4 }}
+              dot={{ fill: "hsl(var(--chart-5))", r: 4 }}
               name="Attendance"
               animationDuration={1500}
             />

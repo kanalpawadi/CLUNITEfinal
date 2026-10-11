@@ -30,28 +30,28 @@ import { type EngagementPoint, type MetricValue, type MonthlyPoint, type NamedVa
 
 // Modern gradient definitions
 const gradients = {
-  orange: { start: "#FF6B35", end: "#F7931E" },
-  purple: { start: "#667eea", end: "#764ba2" },
-  blue: { start: "#4facfe", end: "#00f2fe" },
-  green: { start: "#11998e", end: "#38ef7d" },
-  pink: { start: "#f093fb", end: "#f5576c" },
-  teal: { start: "#0ba360", end: "#3cba92" },
+  orange: { start: "hsl(var(--chart-1))", end: "hsl(var(--chart-1))" },
+  purple: { start: "hsl(var(--chart-2))", end: "hsl(var(--chart-5))" },
+  blue: { start: "hsl(var(--chart-2))", end: "hsl(var(--chart-2))" },
+  green: { start: "hsl(var(--chart-2))", end: "hsl(var(--chart-3))" },
+  pink: { start: "hsl(var(--chart-5))", end: "hsl(var(--destructive))" },
+  teal: { start: "hsl(var(--chart-3))", end: "hsl(var(--chart-3))" },
 }
 
 // Custom tooltip with glassmorphism effect
 const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl p-4 shadow-2xl">
-        <p className="font-semibold text-gray-900 mb-2">{label}</p>
+      <div className="bg-card/90 backdrop-blur-xl border border-border rounded-xl p-4 shadow-soft-lg">
+        <p className="font-semibold text-foreground mb-2">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-gray-600">{entry.name}:</span>
-            <span className="font-bold text-gray-900">{entry.value}</span>
+            <span className="text-muted-foreground">{entry.name}:</span>
+            <span className="font-bold text-foreground">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -73,11 +73,11 @@ export function EngagementTrendsChart({ data }: { data: EngagementPoint[] }) {
   const hasData = data.length > 0 && data.some(d => d.engagement > 0)
   
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-orange-50 to-red-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md">
-            <Zap className="h-5 w-5 text-white" />
+          <div className="p-2.5 bg-primary rounded-lg shadow-soft">
+            <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-base font-bold">Engagement Trends</CardTitle>
@@ -88,30 +88,30 @@ export function EngagementTrendsChart({ data }: { data: EngagementPoint[] }) {
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[300px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-3">
-              <Zap className="h-8 w-8 text-orange-500" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <Zap className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No engagement data yet</p>
-            <p className="text-xs text-gray-500">Data will appear as participants register</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No engagement data yet</p>
+            <p className="text-xs text-muted-foreground">Data will appear as participants register</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="engagementGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#F7931E" stopOpacity={0.1} />
+                  <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
                 dataKey="month"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
               />
               <YAxis 
-                stroke="#6b7280" 
+                stroke="hsl(var(--muted-foreground))" 
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
                 domain={[0, maxValue + 2]}
@@ -121,11 +121,11 @@ export function EngagementTrendsChart({ data }: { data: EngagementPoint[] }) {
               <Area
                 type="monotone"
                 dataKey="engagement"
-                stroke="#FF6B35"
+                stroke="hsl(var(--chart-1))"
                 strokeWidth={2.5}
                 fill="url(#engagementGradient)"
                 animationDuration={1500}
-                dot={{ fill: '#FF6B35', r: 4 }}
+                dot={{ fill: 'hsl(var(--chart-1))', r: 4 }}
                 activeDot={{ r: 6 }}
               />
             </AreaChart>
@@ -147,11 +147,11 @@ export function PerformanceOverviewChart({ data }: { data: MetricValue[] }) {
   const hasData = data.some(d => d.value > 0)
   
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-green-50 to-teal-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg shadow-md">
-            <Target className="h-5 w-5 text-white" />
+          <div className="p-2.5 bg-success rounded-lg shadow-soft">
+            <Target className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-base font-bold">Performance Overview</CardTitle>
@@ -162,41 +162,41 @@ export function PerformanceOverviewChart({ data }: { data: MetricValue[] }) {
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[350px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-              <Target className="h-8 w-8 text-green-600" />
+            <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mb-3">
+              <Target className="h-8 w-8 text-success" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No performance data yet</p>
-            <p className="text-xs text-gray-500">Metrics will appear as you host events</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No performance data yet</p>
+            <p className="text-xs text-muted-foreground">Metrics will appear as you host events</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={350}>
             <RadarChart data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
               <defs>
                 <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#11998e" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#38ef7d" stopOpacity={0.3} />
+                  <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-3))" stopOpacity={0.3} />
                 </linearGradient>
               </defs>
-              <PolarGrid stroke="#d1d5db" strokeWidth={1} />
+              <PolarGrid stroke="hsl(var(--muted-foreground))" strokeWidth={1} />
               <PolarAngleAxis
                 dataKey="metric"
-                tick={{ fontSize: 12, fontWeight: 600, fill: "#374151" }}
+                tick={{ fontSize: 12, fontWeight: 600, fill: "hsl(var(--chart-2))" }}
               />
               <PolarRadiusAxis 
                 angle={90} 
                 domain={[0, 100]} 
-                stroke="#9ca3af"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 10 }}
               />
               <Radar
                 name="Performance"
                 dataKey="value"
-                stroke="#11998e"
+                stroke="hsl(var(--chart-2))"
                 fill="url(#radarGradient)"
                 fillOpacity={0.6}
                 strokeWidth={2.5}
                 animationDuration={1500}
-                dot={{ fill: '#11998e', r: 4 }}
+                dot={{ fill: 'hsl(var(--chart-2))', r: 4 }}
               />
               <Tooltip content={<CustomTooltip />} />
             </RadarChart>
@@ -212,12 +212,12 @@ export function MonthlyTrendsChart({ data }: { data: MonthlyPoint[] }) {
   const hasData = data.length > 0 && data.some(d => d.participants > 0 || d.revenue > 0)
   
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-cyan-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-md">
-              <Activity className="h-5 w-5 text-white" />
+            <div className="p-2.5 bg-primary rounded-lg shadow-soft">
+              <Activity className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <CardTitle className="text-base font-bold">Monthly Trends</CardTitle>
@@ -229,38 +229,38 @@ export function MonthlyTrendsChart({ data }: { data: MonthlyPoint[] }) {
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[300px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-              <Activity className="h-8 w-8 text-blue-600" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <Activity className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No monthly data yet</p>
-            <p className="text-xs text-gray-500">Trends will appear as you host events</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No monthly data yet</p>
+            <p className="text-xs text-muted-foreground">Trends will appear as you host events</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="participantsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4facfe" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#00f2fe" stopOpacity={0.1} />
+                  <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
                 dataKey="month"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
               />
               <YAxis
                 yAxisId="left"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
               />
@@ -273,15 +273,15 @@ export function MonthlyTrendsChart({ data }: { data: MonthlyPoint[] }) {
                 type="monotone"
                 dataKey="participants"
                 fill="url(#participantsGradient)"
-                stroke="#4facfe"
+                stroke="hsl(var(--chart-2))"
                 strokeWidth={2.5}
                 animationDuration={1500}
-                dot={{ fill: '#4facfe', r: 3 }}
+                dot={{ fill: 'hsl(var(--chart-2))', r: 3 }}
               />
               <Bar
                 yAxisId="right"
                 dataKey="revenue"
-                fill="#11998e"
+                fill="hsl(var(--chart-2))"
                 radius={[6, 6, 0, 0]}
                 animationDuration={1500}
               />
@@ -295,17 +295,17 @@ export function MonthlyTrendsChart({ data }: { data: MonthlyPoint[] }) {
 
 // Event Categories Distribution with Modern Donut
 export function EventCategoriesChart({ data }: { data: NamedValue[] }) {
-  const COLORS = ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe", "#00f2fe"]
+  const COLORS = ["hsl(var(--chart-2))", "hsl(var(--chart-5))", "hsl(var(--chart-5))", "hsl(var(--destructive))", "hsl(var(--chart-2))", "hsl(var(--chart-2))"]
   
   const hasData = data.length > 0 && data.some(d => d.value > 0)
 
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-indigo-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg shadow-md">
-              <Users className="h-5 w-5 text-white" />
+            <div className="p-2.5 bg-primary rounded-lg shadow-soft">
+              <Users className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <CardTitle className="text-base font-bold">Event Categories</CardTitle>
@@ -317,11 +317,11 @@ export function EventCategoriesChart({ data }: { data: NamedValue[] }) {
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[300px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-              <Users className="h-8 w-8 text-purple-600" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <Users className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No category data yet</p>
-            <p className="text-xs text-gray-500">Create events to see distribution</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No category data yet</p>
+            <p className="text-xs text-muted-foreground">Create events to see distribution</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
@@ -336,7 +336,7 @@ export function EventCategoriesChart({ data }: { data: NamedValue[] }) {
                 dataKey="value"
                 animationDuration={1500}
                 label={({ name, percent }: PieLabelProps) => `${name} ${(Number(percent ?? 0) * 100).toFixed(0)}%`}
-                labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
+                labelLine={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1 }}
                 style={{ fontSize: '11px', fontWeight: 600 }}
               >
                 {data.map((entry, index) => (
@@ -357,11 +357,11 @@ export function ParticipantsSatisfactionChart({ data }: { data: SatisfactionPoin
   const hasData = data.length > 0 && data.some(d => d.participants > 0)
   
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-pink-50 to-rose-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg shadow-md">
-            <TrendingUp className="h-5 w-5 text-white" />
+          <div className="p-2.5 bg-primary rounded-lg shadow-soft">
+            <TrendingUp className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-base font-bold">Participants vs Satisfaction</CardTitle>
@@ -372,20 +372,20 @@ export function ParticipantsSatisfactionChart({ data }: { data: SatisfactionPoin
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[300px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-3">
-              <TrendingUp className="h-8 w-8 text-pink-600" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+              <TrendingUp className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No satisfaction data yet</p>
-            <p className="text-xs text-gray-500">Data will appear after events complete</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No satisfaction data yet</p>
+            <p className="text-xs text-muted-foreground">Data will appear after events complete</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
                 dataKey="participants"
                 name="Participants"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
                 label={{ value: 'Participants', position: 'insideBottom', offset: -5, fontSize: 11 }}
@@ -393,7 +393,7 @@ export function ParticipantsSatisfactionChart({ data }: { data: SatisfactionPoin
               <YAxis
                 dataKey="satisfaction"
                 name="Satisfaction"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
                 domain={[0, 5]}
@@ -403,14 +403,14 @@ export function ParticipantsSatisfactionChart({ data }: { data: SatisfactionPoin
               <Scatter
                 name="Events"
                 dataKey="satisfaction"
-                fill="#f093fb"
+                fill="hsl(var(--chart-5))"
                 shape="circle"
                 animationDuration={1500}
               >
                 {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={`rgba(240, 147, 251, ${0.5 + (entry.satisfaction / 10) * 0.5})`}
+                    fill={`hsl(var(--chart-5) / ${0.5 + (entry.satisfaction / 10) * 0.5})`}
                     r={6}
                   />
                 ))}
@@ -428,11 +428,11 @@ export function EventTypeAnalysisChart({ data }: { data: TypeValue[] }) {
   const hasData = data.length > 0 && data.some(d => d.value > 0)
   
   return (
-    <Card className="border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-      <CardHeader className="border-b bg-gradient-to-r from-red-50 to-orange-50">
+    <Card className="border-none shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 bg-card">
+      <CardHeader className="border-b bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg shadow-md">
-            <BarChart3 className="h-5 w-5 text-white" />
+          <div className="p-2.5 bg-destructive rounded-lg shadow-soft">
+            <BarChart3 className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
             <CardTitle className="text-base font-bold">Event Type Analysis</CardTitle>
@@ -443,32 +443,32 @@ export function EventTypeAnalysisChart({ data }: { data: TypeValue[] }) {
       <CardContent className="pt-6">
         {!hasData ? (
           <div className="h-[300px] flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
-              <BarChart3 className="h-8 w-8 text-red-600" />
+            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-3">
+              <BarChart3 className="h-8 w-8 text-destructive" />
             </div>
-            <p className="text-sm font-semibold text-gray-700 mb-1">No event type data yet</p>
-            <p className="text-xs text-gray-500">Create different event types to see analysis</p>
+            <p className="text-sm font-semibold text-foreground mb-1">No event type data yet</p>
+            <p className="text-xs text-muted-foreground">Create different event types to see analysis</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data} layout="vertical" margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
               <defs>
                 <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="5%" stopColor="#f5576c" stopOpacity={0.9} />
-                  <stop offset="95%" stopColor="#f093fb" stopOpacity={0.9} />
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.9} />
+                  <stop offset="95%" stopColor="hsl(var(--chart-5))" stopOpacity={0.9} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
               <XAxis 
                 type="number" 
-                stroke="#6b7280" 
+                stroke="hsl(var(--muted-foreground))" 
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
               />
               <YAxis
                 type="category"
                 dataKey="type"
-                stroke="#6b7280"
+                stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 11, fontWeight: 500 }}
                 tickLine={false}
                 width={90}

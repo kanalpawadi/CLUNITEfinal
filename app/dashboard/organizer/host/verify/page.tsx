@@ -204,27 +204,27 @@ export default function HostVerificationPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-white p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-md mx-auto space-y-6">
         <Link
           href="/dashboard/student"
-          className="inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5 mr-2" />
           Back to Dashboard
         </Link>
 
-        <Card className="border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="border-2 shadow-soft-lg hover:shadow-soft-lg transition-shadow duration-300">
           <CardHeader className="space-y-1 pb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-3 mx-auto shadow-lg">
-              <Lock className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-3 mx-auto shadow-soft-lg">
+              <Lock className="h-8 w-8 text-primary-foreground" />
             </div>
             <CardTitle className="text-2xl text-center">Host Event Access</CardTitle>
-            <div className="flex items-center justify-center gap-2 text-sm text-slate-600">
-              <Shield className="h-4 w-4 text-orange-500" />
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Shield className="h-4 w-4 text-primary" />
               <p>Secure Access Required</p>
             </div>
-            <p className="text-sm text-slate-600 text-center mt-2">
+            <p className="text-sm text-muted-foreground text-center mt-2">
               Verify your admin access for {clubName || 'your club'}
             </p>
           </CardHeader>
@@ -233,7 +233,7 @@ export default function HostVerificationPage() {
               {/* User Email */}
               <div className="space-y-2">
                 <Label htmlFor="userEmail" className="flex items-center gap-2 text-sm font-medium">
-                  <User className="h-4 w-4 text-indigo-600" />
+                  <User className="h-4 w-4 text-primary" />
                   Your Email
                 </Label>
                 <Input
@@ -242,17 +242,17 @@ export default function HostVerificationPage() {
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                   placeholder="your.email@example.com"
-                  className="h-12 border-2 focus:border-indigo-500"
+                  className="h-12 border-2 focus:border-primary"
                   required
                   disabled={!!authUser?.email}
                 />
-                <p className="text-xs text-slate-500">Must match your logged-in account</p>
+                <p className="text-xs text-muted-foreground">Must match your logged-in account</p>
               </div>
 
               {/* Club Name (optional if already selected) */}
               <div className="space-y-2">
                 <Label htmlFor="clubName" className="flex items-center gap-2 text-sm font-medium">
-                  <Shield className="h-4 w-4 text-indigo-600" />
+                  <Shield className="h-4 w-4 text-primary" />
                   Club Name
                 </Label>
                 <Input
@@ -265,19 +265,19 @@ export default function HostVerificationPage() {
                 />
               </div>
 
-              <p className="flex items-center gap-2 text-xs text-slate-500">
-                <Mail className="h-4 w-4 text-indigo-600" />
+              <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Mail className="h-4 w-4 text-primary" />
                 The code is sent to the club&apos;s official email on file.
               </p>
 
               {/* Send OTP */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Button type="button" onClick={sendOtp} disabled={isSending || secondsLeft > 0} className="bg-indigo-600 hover:bg-indigo-700">
+                  <Button type="button" onClick={sendOtp} disabled={isSending || secondsLeft > 0} className="bg-primary hover:bg-primary/90">
                     {isSending ? 'Sending...' : 'Send OTP'}
                   </Button>
                   {secondsLeft > 0 && (
-                    <div className="text-xs text-slate-600 flex items-center gap-1">
+                    <div className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="h-3 w-3" /> Resend in {secondsLeft}s
                     </div>
                   )}
@@ -287,7 +287,7 @@ export default function HostVerificationPage() {
               {/* 6-digit OTP */}
               <div className="space-y-2">
                 <Label htmlFor="otp" className="flex items-center gap-2 text-sm font-medium">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                  <Lock className="h-4 w-4 text-primary" />
                   6-digit OTP
                 </Label>
                 <Input
@@ -296,11 +296,11 @@ export default function HostVerificationPage() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="123456"
-                  className="h-12 text-center text-xl tracking-widest font-mono border-2 focus:border-indigo-500"
+                  className="h-12 text-center text-xl tracking-widest font-mono border-2 focus:border-primary"
                   maxLength={6}
                   required
                 />
-                <p className="text-xs text-slate-500">Enter the code sent to the official club email</p>
+                <p className="text-xs text-muted-foreground">Enter the code sent to the official club email</p>
               </div>
 
               {error && (
@@ -312,12 +312,12 @@ export default function HostVerificationPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-lg py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                className="w-full bg-primary hover:bg-primary/90 text-lg py-6 rounded-xl shadow-soft-lg hover:shadow-soft-lg transition-all duration-300 transform hover:scale-[1.02]"
                 disabled={isSubmitting || !userEmail || otp.length !== 6}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-border border-t-transparent" />
                     Verifying Access...
                   </div>
                 ) : (
@@ -330,18 +330,18 @@ export default function HostVerificationPage() {
             </form>
 
             <div className="mt-6 pt-6 border-t">
-              <p className="text-sm text-center text-slate-600 mb-3">
+              <p className="text-sm text-center text-muted-foreground mb-3">
                 Don&apos;t have a club yet?
               </p>
-              <Link href="/dashboard/organizer/create-club">
-                <Button
+              <Button asChild
                   variant="outline"
-                  className="w-full border-2 border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50 text-indigo-700 py-6 rounded-xl transition-all duration-300"
+                  className="w-full border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-primary py-6 rounded-xl transition-all duration-300"
                 >
+                <Link href="/dashboard/organizer/create-club">
                   <Shield className="h-5 w-5 mr-2" />
                   Create New Club
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

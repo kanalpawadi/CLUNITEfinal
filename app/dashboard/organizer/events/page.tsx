@@ -14,11 +14,11 @@ export default function MyHostedEventsPage() {
   }, [router])
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <Card className="border-0 shadow-lg bg-white max-w-md">
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <Card className="border-0 shadow-soft-lg bg-card max-w-md">
         <CardContent className="p-12 text-center">
-          <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Redirecting to dashboard...</p>
+          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">Redirecting to dashboard...</p>
         </CardContent>
       </Card>
     </div>

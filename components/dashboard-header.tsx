@@ -42,15 +42,15 @@ export function DashboardHeader() {
     .slice(0, 2)
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="flex h-16 items-center justify-between px-6">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
         {/* Left side - Search */}
-        <div className="flex items-center space-x-4 flex-1 max-w-md">
+        <div className="hidden sm:flex items-center space-x-4 flex-1 max-w-md">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search events, clubs..."
-              className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+              className="pl-10 bg-background border-border focus:bg-card transition-colors"
             />
           </div>
         </div>
@@ -58,12 +58,12 @@ export function DashboardHeader() {
         {/* Right side - Actions */}
         <div className="flex items-center space-x-4">
           {/* Host Event Button */}
-          <Link href="/dashboard/organizer/host/verify" prefetch>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              <Plus className="h-4 w-4 mr-2" />
-              Host Event
-            </Button>
-          </Link>
+          <Button asChild className="font-semibold">
+            <Link href="/dashboard/organizer/host/verify" prefetch>
+              <Plus className="h-4 w-4 sm:mr-2" aria-hidden />
+              <span className="sr-only sm:not-sr-only">Host Event</span>
+            </Link>
+          </Button>
 
 
 
@@ -71,7 +71,7 @@ export function DashboardHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
                   {userInitials}
                 </div>
               </Button>
@@ -94,7 +94,7 @@ export function DashboardHeader() {
                 <Link href="/profile">Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/settings">Settings</Link>
+                <Link href="/profile/id-card">My ID card</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -102,7 +102,7 @@ export function DashboardHeader() {
                   e.preventDefault()
                   await signOut()
                 }} 
-                className="text-red-600 cursor-pointer"
+                className="text-destructive cursor-pointer"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 Log out

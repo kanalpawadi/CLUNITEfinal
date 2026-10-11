@@ -177,54 +177,54 @@ export default function CreateClubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FBF7F4] py-12 px-4">
+    <div className="min-h-screen bg-background py-12 px-4">
       <div className="container max-w-5xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mb-4 shadow-lg">
-            <Building2 className="h-10 w-10 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-3xl mb-4 shadow-soft-lg">
+            <Building2 className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-4xl font-bold text-foreground mb-3">
             Create Your Club
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Register your club and receive an 8-digit PIN via email to unlock organizer access
           </p>
         </div>
 
-        <Card className="border border-gray-200 shadow-sm">
+        <Card className="border border-border shadow-soft">
           <CardContent className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <Building2 className="h-5 w-5 text-white" />
+              <div className="flex items-center gap-3 pb-4 border-b border-border">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <Building2 className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Basic Information</h3>
+                <h3 className="text-xl font-bold text-foreground">Basic Information</h3>
               </div>
               
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-gray-700">Club Name *</Label>
+                  <Label htmlFor="name" className="text-sm font-semibold text-foreground">Club Name *</Label>
                   <Input
                     id="name"
                     placeholder="e.g., Tech Innovators Club"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                    className="h-12 border-2 focus:border-primary focus:ring-ring"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-sm font-semibold text-gray-700">Category *</Label>
+                  <Label htmlFor="category" className="text-sm font-semibold text-foreground">Category *</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                     required
                   >
-                    <SelectTrigger className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500">
+                    <SelectTrigger className="h-12 border-2 focus:border-primary focus:ring-ring">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -239,44 +239,44 @@ export default function CreateClubPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tagline" className="text-sm font-semibold text-gray-700">Tagline</Label>
+                <Label htmlFor="tagline" className="text-sm font-semibold text-foreground">Tagline</Label>
                 <Input
                   id="tagline"
                   placeholder="A short catchy phrase about your club"
                   value={formData.tagline}
                   onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                  className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                  className="h-12 border-2 focus:border-primary focus:ring-ring"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-sm font-semibold text-gray-700">Description</Label>
+                <Label htmlFor="description" className="text-sm font-semibold text-foreground">Description</Label>
                 <Textarea
                   id="description"
                   placeholder="Describe your club's mission and activities"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
-                  className="border-2 focus:border-orange-500 focus:ring-orange-500 resize-none"
+                  className="border-2 focus:border-primary focus:ring-ring resize-none"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="vision" className="text-sm font-semibold text-gray-700">Vision</Label>
+                <Label htmlFor="vision" className="text-sm font-semibold text-foreground">Vision</Label>
                 <Textarea
                   id="vision"
                   placeholder="Your club's long-term vision and goals"
                   value={formData.vision}
                   onChange={(e) => setFormData({ ...formData, vision: e.target.value })}
                   rows={3}
-                  className="border-2 focus:border-orange-500 focus:ring-orange-500 resize-none"
+                  className="border-2 focus:border-primary focus:ring-ring resize-none"
                 />
               </div>
 
               {/* Club Banner Upload */}
               <div className="space-y-3">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4 text-orange-600" />
+                <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4 text-primary" />
                   Club Banner (Optional)
                 </Label>
                 
@@ -285,7 +285,7 @@ export default function CreateClubPage() {
                     <img 
                       src={bannerUrl} 
                       alt="Club banner" 
-                      className="w-full h-48 object-cover rounded-xl border-2 border-orange-200"
+                      className="w-full h-48 object-cover rounded-xl border-2 border-primary/20"
                     />
                     <Button
                       type="button"
@@ -299,7 +299,7 @@ export default function CreateClubPage() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-orange-300 rounded-xl p-8 text-center hover:border-orange-500 transition-colors bg-orange-50/50">
+                  <div className="border-2 border-dashed border-primary/40 rounded-xl p-8 text-center hover:border-primary transition-colors bg-primary/50">
                     <input
                       type="file"
                       id="banner-upload"
@@ -312,14 +312,14 @@ export default function CreateClubPage() {
                       htmlFor="banner-upload" 
                       className="cursor-pointer flex flex-col items-center gap-3"
                     >
-                      <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
-                        <Upload className="h-8 w-8 text-white" />
+                      <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
+                        <Upload className="h-8 w-8 text-primary-foreground" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-700">
+                        <p className="text-sm font-semibold text-foreground">
                           {uploading ? 'Uploading...' : 'Click to upload club banner'}
                         </p>
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           PNG, JPG up to 5MB (Recommended: 1200x400px)
                         </p>
                       </div>
@@ -331,41 +331,41 @@ export default function CreateClubPage() {
 
             {/* College & Contact */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Mail className="h-5 w-5 text-white" />
+              <div className="flex items-center gap-3 pb-4 border-b border-border">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <Mail className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">College & Contact Information</h3>
+                <h3 className="text-xl font-bold text-foreground">College & Contact Information</h3>
               </div>
               
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="college" className="text-sm font-semibold text-gray-700">College/University *</Label>
+                  <Label htmlFor="college" className="text-sm font-semibold text-foreground">College/University *</Label>
                   <Input
                     id="college"
                     placeholder="e.g., MIT, Stanford"
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                     required
-                    className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                    className="h-12 border-2 focus:border-primary focus:ring-ring"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="founding_date" className="text-sm font-semibold text-gray-700">Founding Date</Label>
+                  <Label htmlFor="founding_date" className="text-sm font-semibold text-foreground">Founding Date</Label>
                   <Input
                     id="founding_date"
                     type="date"
                     value={formData.founding_date}
                     onChange={(e) => setFormData({ ...formData, founding_date: e.target.value })}
-                    className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                    className="h-12 border-2 focus:border-primary focus:ring-ring"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="official_email" className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                  <Mail className="h-4 w-4 text-orange-600" />
+                <Label htmlFor="official_email" className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Mail className="h-4 w-4 text-primary" />
                   Official Club Email * (PIN will be sent here)
                 </Label>
                 <Input
@@ -375,68 +375,68 @@ export default function CreateClubPage() {
                   value={formData.official_email}
                   onChange={(e) => setFormData({ ...formData, official_email: e.target.value })}
                   required
-                  className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                  className="h-12 border-2 focus:border-primary focus:ring-ring"
                 />
-                <p className="text-sm text-orange-600 font-medium">
+                <p className="text-sm text-primary font-medium">
                   This email will receive the 8-digit PIN for club verification
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="faculty_in_charge" className="text-sm font-semibold text-gray-700">Faculty In-Charge</Label>
+                <Label htmlFor="faculty_in_charge" className="text-sm font-semibold text-foreground">Faculty In-Charge</Label>
                 <Input
                   id="faculty_in_charge"
                   placeholder="Prof. John Doe"
                   value={formData.faculty_in_charge}
                   onChange={(e) => setFormData({ ...formData, faculty_in_charge: e.target.value })}
-                  className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                  className="h-12 border-2 focus:border-primary focus:ring-ring"
                 />
               </div>
             </div>
 
             {/* President Information */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <User className="h-5 w-5 text-white" />
+              <div className="flex items-center gap-3 pb-4 border-b border-border">
+                <div className="w-10 h-10 bg-success rounded-lg flex items-center justify-center">
+                  <User className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">President Information</h3>
+                <h3 className="text-xl font-bold text-foreground">President Information</h3>
               </div>
               
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="president_name" className="text-sm font-semibold text-gray-700">President Name</Label>
+                  <Label htmlFor="president_name" className="text-sm font-semibold text-foreground">President Name</Label>
                   <Input
                     id="president_name"
                     placeholder="Full name"
                     value={formData.president_name}
                     onChange={(e) => setFormData({ ...formData, president_name: e.target.value })}
-                    className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                    className="h-12 border-2 focus:border-primary focus:ring-ring"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="president_email" className="text-sm font-semibold text-gray-700">President Email</Label>
+                  <Label htmlFor="president_email" className="text-sm font-semibold text-foreground">President Email</Label>
                   <Input
                     id="president_email"
                     type="email"
                     placeholder="president@email.com"
                     value={formData.president_email}
                     onChange={(e) => setFormData({ ...formData, president_email: e.target.value })}
-                    className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                    className="h-12 border-2 focus:border-primary focus:ring-ring"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="president_phone" className="text-sm font-semibold text-gray-700">President Phone</Label>
+                <Label htmlFor="president_phone" className="text-sm font-semibold text-foreground">President Phone</Label>
                 <Input
                   id="president_phone"
                   type="tel"
                   placeholder="+1 234 567 8900"
                   value={formData.president_phone}
                   onChange={(e) => setFormData({ ...formData, president_phone: e.target.value })}
-                  className="h-12 border-2 focus:border-orange-500 focus:ring-orange-500"
+                  className="h-12 border-2 focus:border-primary focus:ring-ring"
                 />
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function CreateClubPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full h-14 bg-primary hover:bg-primary text-lg font-semibold shadow-soft-lg hover:shadow-soft-lg transition-all duration-300"
               >
                 {loading ? (
                   <>
@@ -471,8 +471,8 @@ export default function CreateClubPage() {
               </Button>
             </div>
 
-            <div className="mt-6 p-4 bg-orange-50 rounded-xl border-2 border-orange-200">
-              <p className="text-sm text-gray-700 text-center font-medium">
+            <div className="mt-6 p-4 bg-primary/5 rounded-xl border-2 border-primary/20">
+              <p className="text-sm text-foreground text-center font-medium">
                 After submission, you&apos;ll receive an <strong>8-digit PIN</strong> via email. Use this PIN to verify your club and gain organizer access.
               </p>
             </div>

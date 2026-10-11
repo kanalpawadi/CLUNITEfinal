@@ -72,11 +72,11 @@ async function getEventAnalytics(eventId: string) {
   const departmentCounts = new Map()
   const collegeStats = new Map()
   const departmentColors = {
-    "Computer Science": "#3b82f6",
-    "Engineering": "#10b981",
-    "Technology": "#f59e0b",
-    "Science": "#ef4444",
-    "Other": "#8b5cf6"
+    "Computer Science": "hsl(var(--chart-2))",
+    "Engineering": "hsl(var(--chart-3))",
+    "Technology": "hsl(var(--chart-1))",
+    "Science": "hsl(var(--destructive))",
+    "Other": "hsl(var(--chart-2))"
   }
   
   if (registrations && registrations.length > 0) {
@@ -131,7 +131,7 @@ async function getEventAnalytics(eventId: string) {
   const demographicData = Array.from(departmentCounts.entries()).map(([name, value]) => ({
     name,
     value,
-    color: departmentColors[name as keyof typeof departmentColors] || "#8b5cf6"
+    color: departmentColors[name as keyof typeof departmentColors] || "hsl(var(--chart-2))"
   }))
 
   return {
@@ -179,20 +179,20 @@ export default async function EventAnalyticsPage({ params }: { params: { id: str
   const pageViews = Math.max(event.views, totalRegistrations)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard/organizer/host/analytics">
-              <Button variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/organizer/host/analytics">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Analytics
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-              <p className="text-gray-600 mt-1">Event Analytics Dashboard</p>
+              <h1 className="text-3xl font-bold text-foreground">{event.title}</h1>
+              <p className="text-muted-foreground mt-1">Event Analytics Dashboard</p>
             </div>
           </div>
           <Badge variant={event.status === "published" ? "default" : "secondary"}>{event.status}</Badge>
@@ -206,30 +206,30 @@ export default async function EventAnalyticsPage({ params }: { params: { id: str
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-sm text-gray-600">Date</p>
+                  <p className="text-sm text-muted-foreground">Date</p>
                   <p className="font-semibold">{new Date(event.starts_at).toLocaleDateString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-green-600" />
+                <MapPin className="h-5 w-5 text-success" />
                 <div>
-                  <p className="text-sm text-gray-600">Location</p>
+                  <p className="text-sm text-muted-foreground">Location</p>
                   <p className="font-semibold">{event.venue || "TBD"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-purple-600" />
+                <Users className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-sm text-gray-600">Capacity</p>
+                  <p className="text-sm text-muted-foreground">Capacity</p>
                   <p className="font-semibold">{event.capacity || "Unlimited"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <DollarSign className="h-5 w-5 text-yellow-600" />
+                <DollarSign className="h-5 w-5 text-warning" />
                 <div>
-                  <p className="text-sm text-gray-600">Price</p>
+                  <p className="text-sm text-muted-foreground">Price</p>
                   <p className="font-semibold tabular-nums">{event.fee > 0 ? `₹${event.fee}` : "Free"}</p>
                 </div>
               </div>
@@ -241,96 +241,96 @@ export default async function EventAnalyticsPage({ params }: { params: { id: str
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Key Performance Metrics</h2>
-              <p className="text-gray-600">Real-time metrics for this event</p>
+              <h2 className="text-2xl font-bold text-foreground">Key Performance Metrics</h2>
+              <p className="text-muted-foreground">Real-time metrics for this event</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="border-0 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white">
+            <Card className="border-0 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-xl text-blue-600 bg-blue-50">
+                  <div className="p-3 rounded-xl text-primary bg-primary/5">
                     <UserCheck className="h-6 w-6" />
                   </div>
-                  <Badge className="bg-green-50 text-green-700 border-green-200 px-2 py-1 text-xs font-semibold">
+                  <Badge className="bg-success/5 text-success border-success/20 px-2 py-1 text-xs font-semibold">
                     +{Math.round(totalRegistrations * 0.1)}%
                   </Badge>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Registrations</p>
-                  <p className="text-3xl font-black text-gray-900">{totalRegistrations}</p>
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Registrations</p>
+                  <p className="text-3xl font-black text-foreground">{totalRegistrations}</p>
                   <div className="flex items-center text-sm">
-                    <TrendingUp className="h-4 w-4 mr-1 text-green-600" />
-                    <span className="text-green-600 font-medium">Trending upward</span>
+                    <TrendingUp className="h-4 w-4 mr-1 text-success" />
+                    <span className="text-success font-medium">Trending upward</span>
                   </div>
-                  <p className="text-xs text-gray-500 font-medium">Compared to similar events</p>
+                  <p className="text-xs text-muted-foreground font-medium">Compared to similar events</p>
                 </div>
               </CardContent>
             </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white">
+          <Card className="border-0 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl text-green-600 bg-green-50">
+                <div className="p-3 rounded-xl text-success bg-success/5">
                   <TrendingUp className="h-6 w-6" />
                 </div>
-                <Badge className="bg-green-50 text-green-700 border-green-200 px-2 py-1 text-xs font-semibold">
+                <Badge className="bg-success/5 text-success border-success/20 px-2 py-1 text-xs font-semibold">
                   +{Math.round(registrationRate * 0.05)}%
                 </Badge>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Registration Rate</p>
-                <p className="text-3xl font-black text-gray-900">{registrationRate.toFixed(1)}%</p>
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Registration Rate</p>
+                <p className="text-3xl font-black text-foreground">{registrationRate.toFixed(1)}%</p>
                 <div className="flex items-center text-sm">
-                  <TrendingUp className="h-4 w-4 mr-1 text-green-600" />
-                  <span className="text-green-600 font-medium">Above average</span>
+                  <TrendingUp className="h-4 w-4 mr-1 text-success" />
+                  <span className="text-success font-medium">Above average</span>
                 </div>
-                <p className="text-xs text-gray-500 font-medium">Of total page views</p>
+                <p className="text-xs text-muted-foreground font-medium">Of total page views</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white">
+          <Card className="border-0 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl text-purple-600 bg-purple-50">
+                <div className="p-3 rounded-xl text-primary bg-primary/5">
                   <DollarSign className="h-6 w-6" />
                 </div>
-                <Badge className="bg-green-50 text-green-700 border-green-200 px-2 py-1 text-xs font-semibold">
+                <Badge className="bg-success/5 text-success border-success/20 px-2 py-1 text-xs font-semibold">
                   +12%
                 </Badge>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Revenue</p>
-                <p className="text-3xl font-black text-gray-900">${revenue}</p>
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Revenue</p>
+                <p className="text-3xl font-black text-foreground">${revenue}</p>
                 <div className="flex items-center text-sm">
-                  <TrendingUp className="h-4 w-4 mr-1 text-green-600" />
-                  <span className="text-green-600 font-medium">Growing steadily</span>
+                  <TrendingUp className="h-4 w-4 mr-1 text-success" />
+                  <span className="text-success font-medium">Growing steadily</span>
                 </div>
-                <p className="text-xs text-gray-500 font-medium">From ticket sales</p>
+                <p className="text-xs text-muted-foreground font-medium">From ticket sales</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white">
+          <Card className="border-0 shadow-soft hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl text-orange-600 bg-orange-50">
+                <div className="p-3 rounded-xl text-primary bg-primary/5">
                   <Eye className="h-6 w-6" />
                 </div>
-                <Badge className="bg-green-50 text-green-700 border-green-200 px-2 py-1 text-xs font-semibold">
+                <Badge className="bg-success/5 text-success border-success/20 px-2 py-1 text-xs font-semibold">
                   +18%
                 </Badge>
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Page Views</p>
-                <p className="text-3xl font-black text-gray-900">{pageViews.toLocaleString()}</p>
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Page Views</p>
+                <p className="text-3xl font-black text-foreground">{pageViews.toLocaleString()}</p>
                 <div className="flex items-center text-sm">
-                  <TrendingUp className="h-4 w-4 mr-1 text-green-600" />
-                  <span className="text-green-600 font-medium">High visibility</span>
+                  <TrendingUp className="h-4 w-4 mr-1 text-success" />
+                  <span className="text-success font-medium">High visibility</span>
                 </div>
-                <p className="text-xs text-gray-500 font-medium">Last 30 days</p>
+                <p className="text-xs text-muted-foreground font-medium">Last 30 days</p>
               </div>
             </CardContent>
           </Card>
@@ -384,7 +384,7 @@ export default async function EventAnalyticsPage({ params }: { params: { id: str
                 </thead>
                 <tbody>
                   {registrations.slice(0, 10).map((registration, index) => (
-                    <tr key={registration.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                    <tr key={registration.id} className={index % 2 === 0 ? "bg-background" : "bg-card"}>
                       <td className="p-3">{registration.participant_name || "N/A"}</td>
                       <td className="p-3">{registration.participant_email || "N/A"}</td>
                       <td className="p-3">{new Date(registration.created_at).toLocaleDateString()}</td>

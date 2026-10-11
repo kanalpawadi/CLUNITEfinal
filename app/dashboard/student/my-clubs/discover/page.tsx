@@ -220,18 +220,18 @@ export default function DiscoverClubsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg p-8 shadow-sm">
+        <div className="bg-card rounded-lg p-8 shadow-soft">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Discover Your Fit</h1>
-              <p className="text-lg text-gray-600">Find clubs that align with your passions and talents</p>
+              <h1 className="text-4xl font-bold text-foreground mb-2">Discover Your Fit</h1>
+              <p className="text-lg text-muted-foreground">Find clubs that align with your passions and talents</p>
             </div>
             <Link
               href="/dashboard/student/my-clubs"
-              className="inline-flex items-center text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="inline-flex items-center text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to My Clubs
@@ -240,17 +240,17 @@ export default function DiscoverClubsPage() {
         </div>
 
         {!quizCompleted ? (
-          <Card className="bg-white rounded-lg shadow-sm p-6">
+          <Card className="bg-card rounded-lg shadow-soft p-6">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-900">Tell Us About Yourself</CardTitle>
-              <CardDescription className="text-gray-600">
+              <CardTitle className="text-2xl font-bold text-foreground">Tell Us About Yourself</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Select your interests and skills to get personalized club recommendations.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               {/* Interests */}
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Interests</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Your Interests</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {availableInterests.map((interest) => (
                     <div key={interest} className="flex items-center space-x-2">
@@ -259,7 +259,7 @@ export default function DiscoverClubsPage() {
                         checked={interests.includes(interest)}
                         onCheckedChange={(checked) => handleInterestChange(interest, checked as boolean)}
                       />
-                      <Label htmlFor={`interest-${interest}`} className="text-base font-medium text-gray-700">
+                      <Label htmlFor={`interest-${interest}`} className="text-base font-medium text-foreground">
                         {interest}
                       </Label>
                     </div>
@@ -269,7 +269,7 @@ export default function DiscoverClubsPage() {
 
               {/* Skills */}
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Skills</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Your Skills</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {availableSkills.map((skill) => (
                     <div key={skill} className="flex items-center space-x-2">
@@ -278,7 +278,7 @@ export default function DiscoverClubsPage() {
                         checked={skills.includes(skill)}
                         onCheckedChange={(checked) => handleSkillChange(skill, checked as boolean)}
                       />
-                      <Label htmlFor={`skill-${skill}`} className="text-base font-medium text-gray-700">
+                      <Label htmlFor={`skill-${skill}`} className="text-base font-medium text-foreground">
                         {skill}
                       </Label>
                     </div>
@@ -288,8 +288,8 @@ export default function DiscoverClubsPage() {
 
               {/* Club Scope Preference */}
               <div className="space-y-3 border-t pt-6">
-                <Label className="text-xl font-semibold text-gray-900">Club Scope Preference</Label>
-                <p className="text-sm text-gray-600">Choose whether to view clubs only from your campus or expand search to other colleges.</p>
+                <Label className="text-xl font-semibold text-foreground">Club Scope Preference</Label>
+                <p className="text-sm text-muted-foreground">Choose whether to view clubs only from your campus or expand search to other colleges.</p>
                 <div className="flex gap-6 mt-2">
                   <label className="flex items-center space-x-2 cursor-pointer">
                     <input
@@ -298,9 +298,9 @@ export default function DiscoverClubsPage() {
                       value="same"
                       checked={scopePreference === "same"}
                       onChange={() => setScopePreference("same")}
-                      className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
+                      className="h-4 w-4 text-primary border-border focus:ring-ring cursor-pointer"
                     />
-                    <span className="text-gray-700 font-semibold">My College Only ({userCollege || "DKTE"})</span>
+                    <span className="text-foreground font-semibold">My College Only ({userCollege || "DKTE"})</span>
                   </label>
                   <label className="flex items-center space-x-2 cursor-pointer">
                     <input
@@ -309,9 +309,9 @@ export default function DiscoverClubsPage() {
                       value="inter"
                       checked={scopePreference === "inter"}
                       onChange={() => setScopePreference("inter")}
-                      className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
+                      className="h-4 w-4 text-primary border-border focus:ring-ring cursor-pointer"
                     />
-                    <span className="text-gray-700 font-semibold">Intercollege (Other Colleges)</span>
+                    <span className="text-foreground font-semibold">Intercollege (Other Colleges)</span>
                   </label>
                 </div>
               </div>
@@ -319,7 +319,7 @@ export default function DiscoverClubsPage() {
               <Button
                 onClick={handleSubmitQuiz}
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium text-base flex justify-center items-center h-12"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium text-base flex justify-center items-center h-12"
               >
                 {loading ? (
                   <>
@@ -334,18 +334,18 @@ export default function DiscoverClubsPage() {
           </Card>
         ) : (
           <div className="space-y-8">
-            <Card className="bg-white rounded-lg shadow-sm p-6 text-center">
-              <Lightbulb className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Your Personalized Club Matches!</h2>
-              <p className="text-lg text-gray-600">Based on your interests and skills, here are some clubs you might love.</p>
+            <Card className="bg-card rounded-lg shadow-soft p-6 text-center">
+              <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h2 className="text-3xl font-bold text-foreground mb-2">Your Personalized Club Matches!</h2>
+              <p className="text-lg text-muted-foreground">Based on your interests and skills, here are some clubs you might love.</p>
             </Card>
 
             {!hasDirectMatches && (
-              <Card className="p-6 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
-                <h3 className="text-lg font-bold text-amber-800 flex items-center">
+              <Card className="p-6 bg-warning/5 border border-warning/20 rounded-xl space-y-2">
+                <h3 className="text-lg font-bold text-warning flex items-center">
                   ⚠️ No exact matches found for &quot;{scopePreference === 'same' ? 'My College Only' : 'Intercollege'}&quot;
                 </h3>
-                <p className="text-amber-700 text-sm">
+                <p className="text-warning text-sm">
                   We couldn&apos;t find any direct matches fitting your interest tags in this scope. However, check out these highly recommended clubs from either your college or other colleges:
                 </p>
               </Card>
@@ -355,7 +355,7 @@ export default function DiscoverClubsPage() {
               {(hasDirectMatches ? suggestedClubs : fallbackClubs).map((club) => (
                 <Card
                   key={club.id}
-                  className="border border-gray-200 hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                  className="border border-border hover:shadow-soft transition-shadow duration-200 cursor-pointer"
                 >
                   <Link href={`/dashboard/student/my-clubs`}>
                     <CardContent className="p-6">
@@ -363,48 +363,48 @@ export default function DiscoverClubsPage() {
                         {club.logo_url ? (
                           <img src={club.logo_url} alt={`${club.name} Logo`} className="w-16 h-16 rounded-full object-cover border" />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+                          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-2xl">
                             {club.name.charAt(0)}
                           </div>
                         )}
                         <div>
-                          <h3 className="text-xl font-bold text-gray-900">{club.name}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-1">{club.tagline || "No tagline"}</p>
+                          <h3 className="text-xl font-bold text-foreground">{club.name}</h3>
+                          <p className="text-sm text-muted-foreground line-clamp-1">{club.tagline || "No tagline"}</p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <Users className="h-4 w-4 mr-2" />
                           {club.members_count || 0} Members
                         </div>
-                        <Badge className="bg-green-100 text-green-700 font-semibold">
+                        <Badge className="bg-success/10 text-success font-semibold">
                           <Star className="h-3 w-3 mr-1" /> {club.matchScore}% Match
                         </Badge>
                       </div>
                       <div className="space-y-2 mb-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <TrendingUp className="h-4 w-4 mr-2 text-purple-500" />
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <TrendingUp className="h-4 w-4 mr-2 text-primary" />
                           Popularity: <span className="font-semibold ml-1">{club.popularity}</span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Building2 className="h-4 w-4 mr-2 text-blue-500" />
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Building2 className="h-4 w-4 mr-2 text-primary" />
                           College: <span className="font-semibold ml-1">{club.college}</span>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {club.matchedInterests.length > 0 ? (
                           club.matchedInterests.map((interest: string, idx: number) => (
-                            <Badge key={idx} variant="secondary" className="bg-blue-50 text-blue-700">
+                            <Badge key={idx} variant="secondary" className="bg-primary/5 text-primary">
                               {interest}
                             </Badge>
                           ))
                         ) : (
-                          <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground">
                             {club.category}
                           </Badge>
                         )}
                       </div>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">View Clubs List</Button>
+                      <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">View Clubs List</Button>
                     </CardContent>
                   </Link>
                 </Card>

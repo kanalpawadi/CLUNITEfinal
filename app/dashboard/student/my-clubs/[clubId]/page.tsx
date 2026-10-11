@@ -38,14 +38,14 @@ export default function ClubProfilePage() {
 
   const getEventTypeColor = (type: string) => {
     const colors = {
-      workshop: "bg-blue-100 text-blue-800 border-blue-200",
-      competition: "bg-red-100 text-red-800 border-red-200",
-      seminar: "bg-green-100 text-green-800 border-green-200",
-      cultural: "bg-purple-100 text-purple-800 border-purple-200",
-      sports: "bg-orange-100 text-orange-800 border-orange-200",
-      technical: "bg-indigo-100 text-indigo-800 border-indigo-200",
+      workshop: "bg-primary/10 text-primary border-primary/20",
+      competition: "bg-destructive/10 text-destructive border-destructive/20",
+      seminar: "bg-success/10 text-success border-success/20",
+      cultural: "bg-primary/10 text-primary border-primary/20",
+      sports: "bg-primary/10 text-primary border-primary/20",
+      technical: "bg-primary/10 text-primary border-primary/20",
     }
-    return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800 border-gray-200"
+    return colors[type as keyof typeof colors] || "bg-muted text-foreground border-border"
   }
 
   const getModeIcon = (mode: string) => {
@@ -89,8 +89,8 @@ export default function ClubProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="text-red-500 text-lg font-semibold mb-2">Error loading club</div>
-          <div className="text-gray-600 mb-4">{error || "Club not found"}</div>
+          <div className="text-destructive text-lg font-semibold mb-2">Error loading club</div>
+          <div className="text-muted-foreground mb-4">{error || "Club not found"}</div>
           <Button onClick={() => router.back()}>Go Back</Button>
         </div>
       </div>
@@ -101,14 +101,14 @@ export default function ClubProfilePage() {
     <div className="space-y-8">
       {/* Back Button */}
       <div className="flex items-center space-x-4">
-        <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-xl hover:bg-slate-50">
+        <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-xl hover:bg-accent">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div className="text-sm text-slate-600 font-medium">Back to My Clubs</div>
+        <div className="text-sm text-muted-foreground font-medium">Back to My Clubs</div>
       </div>
 
       {/* Club Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200">
+      <div className="relative overflow-hidden rounded-3xl border border-border">
         {/* Banner Background */}
         {club.banner_url ? (
           <>
@@ -119,24 +119,24 @@ export default function ClubProfilePage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
+            <div className="absolute inset-0 bg-foreground/60"></div>
           </>
         ) : (
           <>
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-background"></div>
+
           </>
         )}
         <div className="relative p-8 md:p-12">
           <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
             {/* Club Logo */}
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl shadow-2xl">
+              <div className="w-24 h-24 bg-primary rounded-3xl flex items-center justify-center text-primary-foreground font-black text-4xl shadow-soft-lg">
                 {club.name.charAt(0)}
               </div>
               {club.is_verified && (
                 <div className="absolute -top-2 -right-2">
-                  <Badge className="bg-green-500 text-white border-green-600 font-bold px-2 py-1">✓</Badge>
+                  <Badge className="bg-success text-primary-foreground border-success font-bold px-2 py-1">✓</Badge>
                 </div>
               )}
             </div>
@@ -145,16 +145,16 @@ export default function ClubProfilePage() {
             <div className="flex-1 space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
-                  <h1 className="text-4xl font-black text-white drop-shadow-lg">{club.name}</h1>
-                  <Badge variant="secondary" className="bg-white/90 text-slate-700 font-semibold">
+                  <h1 className="text-4xl font-black text-primary-foreground drop-shadow-lg">{club.name}</h1>
+                  <Badge variant="secondary" className="bg-card/90 text-foreground font-semibold">
                     {club.category}
                   </Badge>
                 </div>
-                <p className="text-lg text-white drop-shadow-md max-w-2xl leading-relaxed">{club.description}</p>
+                <p className="text-lg text-primary-foreground drop-shadow-md max-w-2xl leading-relaxed">{club.description}</p>
               </div>
 
               {/* Club Stats */}
-              <div className="flex flex-wrap items-center gap-6 text-white drop-shadow-md">
+              <div className="flex flex-wrap items-center gap-6 text-primary-foreground drop-shadow-md">
                 <div className="flex items-center space-x-2">
                   <Users className="h-5 w-5" />
                   <span className="font-semibold">{club.members_count} members</span>
@@ -164,7 +164,7 @@ export default function ClubProfilePage() {
                   <span className="font-semibold">{club.events_hosted_count} events hosted</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                  <Star className="h-5 w-5 text-warning fill-current" />
                   <span className="font-semibold">{club.credibility_score?.toFixed?.(1) ?? "0.0"} rating</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -177,7 +177,7 @@ export default function ClubProfilePage() {
             {/* Action Buttons */}
             <div className="flex flex-col space-y-3">
               <Button
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8"
                 disabled={joining}
                 onClick={async () => {
                   try {
@@ -210,7 +210,7 @@ export default function ClubProfilePage() {
               >
                 {leaving ? "Removing..." : "Remove"}
               </Button>
-              <Button variant="outline" className="bg-white/90 hover:bg-white">
+              <Button variant="outline" className="bg-card/90 hover:bg-accent">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
@@ -221,32 +221,32 @@ export default function ClubProfilePage() {
 
       {/* Quick Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-background border-primary/20">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-black text-blue-600 mb-1">{upcomingEvents.length}</div>
-            <div className="text-sm font-semibold text-blue-700">Upcoming Events</div>
+            <div className="text-2xl font-black text-primary mb-1">{upcomingEvents.length}</div>
+            <div className="text-sm font-semibold text-primary">Upcoming Events</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-background border-success/20">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-black text-green-600 mb-1">{pastEvents.length}</div>
-            <div className="text-sm font-semibold text-green-700">Past Events</div>
+            <div className="text-2xl font-black text-success mb-1">{pastEvents.length}</div>
+            <div className="text-sm font-semibold text-success">Past Events</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-background border-primary/20">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-black text-purple-600 mb-1">
+            <div className="text-2xl font-black text-primary mb-1">
               {events.filter((e) => e.prize_pool && e.prize_pool > 0).length}
             </div>
-            <div className="text-sm font-semibold text-purple-700">Prize Events</div>
+            <div className="text-sm font-semibold text-primary">Prize Events</div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-background border-primary/20">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl font-black text-orange-600 mb-1">
+            <div className="text-2xl font-black text-primary mb-1">
               ₹{events.reduce((sum, e) => sum + (e.prize_pool || 0), 0).toLocaleString()}
             </div>
-            <div className="text-sm font-semibold text-orange-700">Total Prizes</div>
+            <div className="text-sm font-semibold text-primary">Total Prizes</div>
           </CardContent>
         </Card>
       </div>
@@ -270,27 +270,27 @@ export default function ClubProfilePage() {
             {/* About Section */}
             <Card>
               <CardHeader>
-                <h3 className="text-xl font-bold text-slate-900">About {club.name}</h3>
+                <h3 className="text-xl font-bold text-foreground">About {club.name}</h3>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-slate-600 leading-relaxed">{club.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{club.description}</p>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Founded</span>
+                    <span className="text-muted-foreground">Founded</span>
                     <span className="font-semibold">{formatDate(club.created_at)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Category</span>
+                    <span className="text-muted-foreground">Category</span>
                     <Badge variant="secondary">{club.category}</Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">College</span>
+                    <span className="text-muted-foreground">College</span>
                     <span className="font-semibold">{club.college}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Status</span>
+                    <span className="text-muted-foreground">Status</span>
                     <Badge
-                      className={club.is_verified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
+                      className={club.is_verified ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}
                     >
                       {club.is_verified ? "Verified" : "Pending"}
                     </Badge>
@@ -302,22 +302,22 @@ export default function ClubProfilePage() {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <h3 className="text-xl font-bold text-slate-900">Recent Events</h3>
+                <h3 className="text-xl font-bold text-foreground">Recent Events</h3>
               </CardHeader>
               <CardContent>
                 {events.slice(0, 3).length === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-2">📅</div>
-                    <p className="text-slate-600">No events yet</p>
+                    <p className="text-muted-foreground">No events yet</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {events.slice(0, 3).map((event) => (
                       <div
                         key={event.id}
-                        className="flex items-center space-x-4 p-3 rounded-xl hover:bg-slate-50 transition-colors"
+                        className="flex items-center space-x-4 p-3 rounded-xl hover:bg-accent transition-colors"
                       >
-                        <div className="w-12 h-12 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-background rounded-xl flex items-center justify-center">
                           <span className="text-lg">
                             {event.type === "competition"
                               ? "🏆"
@@ -333,8 +333,8 @@ export default function ClubProfilePage() {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-slate-900 truncate">{event.title}</div>
-                          <div className="text-sm text-slate-600">
+                          <div className="font-semibold text-foreground truncate">{event.title}</div>
+                          <div className="text-sm text-muted-foreground">
                             {formatDate(event.starts_at)} • {event.current_participants} registered
                           </div>
                         </div>
@@ -352,18 +352,18 @@ export default function ClubProfilePage() {
           {upcomingEvents.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📅</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">No upcoming events</h3>
-              <p className="text-slate-600">Check back later for new events from this club.</p>
+              <h3 className="text-2xl font-bold text-foreground mb-2">No upcoming events</h3>
+              <p className="text-muted-foreground">Check back later for new events from this club.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingEvents.map((event) => (
                 <Card
                   key={event.id}
-                  className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-slate-200 hover:border-indigo-200 hover:-translate-y-1"
+                  className="group overflow-hidden hover:shadow-soft-lg transition-all duration-300 border-border hover:border-primary/20 hover:-translate-y-1"
                 >
                   <CardHeader className="p-0 relative overflow-hidden">
-                    <div className="h-40 bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50 flex items-center justify-center relative overflow-hidden">
+                    <div className="h-40 bg-background flex items-center justify-center relative overflow-hidden">
                       {event.image_url && (
                         <img src={event.image_url} alt={event.title} className="absolute inset-0 w-full h-full object-cover opacity-80" />
                       )}
@@ -386,13 +386,13 @@ export default function ClubProfilePage() {
                         </Badge>
                       </div>
                       <div className="absolute top-3 right-3">
-                        <Badge variant="secondary" className="bg-white/90 text-slate-700">
+                        <Badge variant="secondary" className="bg-card/90 text-foreground">
                           {getModeIcon(event.mode)} {event.mode}
                         </Badge>
                       </div>
                       {event.prize_pool && (
                         <div className="absolute bottom-3 left-3">
-                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 font-bold">
+                          <Badge className="bg-warning/10 text-warning border-warning/20 font-bold">
                             <Trophy className="h-3 w-3 mr-1" />₹{event.prize_pool.toLocaleString()}
                           </Badge>
                         </div>
@@ -402,13 +402,13 @@ export default function ClubProfilePage() {
 
                   <CardContent className="p-6 space-y-4">
                     <div className="space-y-2">
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                         {event.title}
                       </h3>
-                      <p className="text-sm text-slate-600 line-clamp-2">{event.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
                     </div>
 
-                    <div className="space-y-2 text-sm text-slate-600">
+                    <div className="space-y-2 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
                         <span>
@@ -434,19 +434,19 @@ export default function ClubProfilePage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <div className="text-lg font-bold text-slate-900">
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div className="text-lg font-bold text-foreground">
                         {event.fee > 0 ? `₹${event.fee}` : "Free"}
                       </div>
-                      <Link href={`/dashboard/student/events/${event.id}`}>
-                        <Button
+                      <Button asChild
                           size="sm"
-                          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold group"
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold group"
                         >
+                        <Link href={`/dashboard/student/events/${event.id}`}>
                           View Details
                           <ExternalLink className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -459,16 +459,16 @@ export default function ClubProfilePage() {
           {pastEvents.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📚</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">No past events</h3>
-              <p className="text-slate-600">This club hasn&apos;t hosted any events yet.</p>
+              <h3 className="text-2xl font-bold text-foreground mb-2">No past events</h3>
+              <p className="text-muted-foreground">This club hasn&apos;t hosted any events yet.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {pastEvents.map((event) => (
-                <Card key={event.id} className="hover:shadow-md transition-all duration-300">
+                <Card key={event.id} className="hover:shadow-soft transition-all duration-300">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center">
+                      <div className="w-16 h-16 bg-background rounded-2xl flex items-center justify-center">
                         <span className="text-2xl opacity-60">
                           {event.type === "competition"
                             ? "🏆"
@@ -486,14 +486,14 @@ export default function ClubProfilePage() {
 
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center space-x-3">
-                          <h3 className="text-lg font-bold text-slate-900">{event.title}</h3>
+                          <h3 className="text-lg font-bold text-foreground">{event.title}</h3>
                           <Badge className={getEventTypeColor(event.type ?? 'event')}>{event.type ?? 'event'}</Badge>
-                          <Badge variant="outline" className="text-slate-600">
+                          <Badge variant="outline" className="text-muted-foreground">
                             Completed
                           </Badge>
                         </div>
-                        <p className="text-slate-600 line-clamp-1">{event.description}</p>
-                        <div className="flex items-center space-x-6 text-sm text-slate-500">
+                        <p className="text-muted-foreground line-clamp-1">{event.description}</p>
+                        <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-4 w-4" />
                             <span>{formatDate(event.starts_at)}</span>
@@ -511,12 +511,12 @@ export default function ClubProfilePage() {
                         </div>
                       </div>
 
-                      <Link href={`/dashboard/student/events/${event.id}`}>
-                        <Button variant="outline" size="sm">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/dashboard/student/events/${event.id}`}>
                           View Details
                           <ExternalLink className="ml-2 h-3 w-3" />
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

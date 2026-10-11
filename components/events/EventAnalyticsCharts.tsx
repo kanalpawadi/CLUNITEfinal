@@ -22,26 +22,26 @@ export function DailyRegistrationsChart({ data }: { data: { date: string; regist
       <AreaChart data={dailyRegistrations}>
         <defs>
           <linearGradient id="colorRegistrations" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1} />
+            <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
         <XAxis 
           dataKey="date" 
-          stroke="#64748b" 
+          stroke="hsl(var(--muted-foreground))" 
           tickFormatter={(date) => {
             const d = new Date(date);
             return `${d.getDate()}/${d.getMonth() + 1}`;
           }}
         />
-        <YAxis stroke="#64748b" />
+        <YAxis stroke="hsl(var(--muted-foreground))" />
         <Tooltip
           contentStyle={{
-            backgroundColor: "white",
+            backgroundColor: "hsl(var(--card))",
             border: "none",
             borderRadius: "8px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            boxShadow: "var(--shadow-soft-lg)",
           }}
           labelFormatter={(date) => {
             return new Date(date).toLocaleDateString();
@@ -50,7 +50,7 @@ export function DailyRegistrationsChart({ data }: { data: { date: string; regist
         <Area
           type="monotone"
           dataKey="registrations"
-          stroke="#6366f1"
+          stroke="hsl(var(--chart-2))"
           fillOpacity={1}
           fill="url(#colorRegistrations)"
           name="Registrations"
@@ -81,10 +81,10 @@ export function DemographicsPieChart({ data }: { data: { name: string; value: nu
         <Tooltip 
           formatter={(value) => [`${value} participants`]}
           contentStyle={{
-            backgroundColor: "white",
+            backgroundColor: "hsl(var(--card))",
             border: "none",
             borderRadius: "8px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+            boxShadow: "var(--shadow-soft-lg)"
           }}
         />
         <Legend 

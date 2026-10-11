@@ -75,15 +75,15 @@ export default function EventParticipantsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "registered":
-        return "bg-green-100 text-green-700 border-green-200"
+        return "bg-success/10 text-success border-success/20"
       case "waitlisted":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200"
+        return "bg-warning/10 text-warning border-warning/20"
       case "cancelled":
-        return "bg-red-100 text-red-700 border-red-200"
+        return "bg-destructive/10 text-destructive border-destructive/20"
       case "attended":
-        return "bg-blue-100 text-blue-700 border-blue-200"
+        return "bg-primary/10 text-primary border-primary/20"
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-muted text-foreground border-border"
     }
   }
 
@@ -229,8 +229,8 @@ export default function EventParticipantsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading participants...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading participants...</p>
         </div>
       </div>
     )
@@ -240,7 +240,7 @@ export default function EventParticipantsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error loading participants: {error}</p>
+          <p className="text-destructive mb-4">Error loading participants: {error}</p>
           <Button onClick={() => window.location.reload()}>Try Again</Button>
         </div>
       </div>
@@ -251,20 +251,20 @@ export default function EventParticipantsPage() {
     <div className="space-y-6">
       {/* Back Button - Top Left */}
       <div>
-        <Link href="/dashboard/organizer/host">
-          <Button variant="outline" className="bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-600 hover:to-rose-600 border-0 shadow-md">
+        <Button asChild variant="outline" className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-soft">
+          <Link href="/dashboard/organizer/host">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Event Management Hub
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Header Card */}
-      <Card className="border-2 border-indigo-100 shadow-lg">
+      <Card className="border-2 border-primary/20 shadow-soft-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-3xl font-bold text-gray-900">Event Participants Dashboard</CardTitle>
+              <CardTitle className="text-3xl font-bold text-foreground">Event Participants Dashboard</CardTitle>
               <CardDescription className="text-lg mt-2">View and manage participants for all events</CardDescription>
             </div>
             <div className="flex space-x-2">
@@ -287,10 +287,10 @@ export default function EventParticipantsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold text-foreground">{stats.total}</p>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
+              <Users className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -299,10 +299,10 @@ export default function EventParticipantsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Registered</p>
-                <p className="text-2xl font-bold text-green-600">{stats.registered}</p>
+                <p className="text-sm font-medium text-muted-foreground">Registered</p>
+                <p className="text-2xl font-bold text-success">{stats.registered}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </CardContent>
         </Card>
@@ -311,10 +311,10 @@ export default function EventParticipantsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Waitlisted</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.waitlisted}</p>
+                <p className="text-sm font-medium text-muted-foreground">Waitlisted</p>
+                <p className="text-2xl font-bold text-warning">{stats.waitlisted}</p>
               </div>
-              <Clock className="h-8 w-8 text-yellow-600" />
+              <Clock className="h-8 w-8 text-warning" />
             </div>
           </CardContent>
         </Card>
@@ -323,10 +323,10 @@ export default function EventParticipantsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Attended</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.attended}</p>
+                <p className="text-sm font-medium text-muted-foreground">Attended</p>
+                <p className="text-2xl font-bold text-primary">{stats.attended}</p>
               </div>
-              <UserCheck className="h-8 w-8 text-blue-600" />
+              <UserCheck className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -335,10 +335,10 @@ export default function EventParticipantsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                <p className="text-2xl font-bold text-red-600">{stats.cancelled}</p>
+                <p className="text-sm font-medium text-muted-foreground">Cancelled</p>
+                <p className="text-2xl font-bold text-destructive">{stats.cancelled}</p>
               </div>
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-8 w-8 text-destructive" />
             </div>
           </CardContent>
         </Card>
@@ -354,7 +354,7 @@ export default function EventParticipantsPage() {
             </div>
             <div className="flex space-x-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input 
                   placeholder="Search participants..." 
                   className="pl-10 w-64"
@@ -387,11 +387,11 @@ export default function EventParticipantsPage() {
             <TabsContent value="list" className="space-y-4">
               {(isTeamEvent ? Object.keys(filteredGroupedParticipants).length === 0 : filteredParticipants.length === 0) ? (
                 <div className="text-center py-12">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {participants.length === 0 ? "No Participants Yet" : "No Participants Found"}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-muted-foreground">
                     {participants.length === 0 
                       ? "No one has registered for this event yet. Share your event to get participants!"
                       : "No participants match your current search and filter criteria."
@@ -417,19 +417,19 @@ export default function EventParticipantsPage() {
                     <div key={teamName} className="border rounded-lg overflow-hidden">
                       {/* Team Header */}
                       <div 
-                        className="bg-gray-50 p-4 cursor-pointer hover:bg-gray-100 transition-colors"
+                        className="bg-background p-4 cursor-pointer hover:bg-accent transition-colors"
                         onClick={() => toggleTeamExpansion(teamName)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             {expandedTeams.has(teamName) ? (
-                              <ChevronDown className="h-5 w-5 text-gray-500" />
+                              <ChevronDown className="h-5 w-5 text-muted-foreground" />
                             ) : (
-                              <ChevronRight className="h-5 w-5 text-gray-500" />
+                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
                             )}
                             <div className="flex items-center space-x-2">
-                              <Users className="h-5 w-5 text-blue-600" />
-                              <h3 className="font-semibold text-gray-900 text-lg">{teamName}</h3>
+                              <Users className="h-5 w-5 text-primary" />
+                              <h3 className="font-semibold text-foreground text-lg">{teamName}</h3>
                             </div>
                             <Badge variant="secondary">
                               {teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}
@@ -447,9 +447,9 @@ export default function EventParticipantsPage() {
 
                       {/* Team Members - Expandable */}
                       {expandedTeams.has(teamName) && (
-                        <div className="border-t bg-white">
+                        <div className="border-t bg-card">
                           {teamMembers.map((participant, index) => (
-                            <div key={participant.id} className={`p-4 ${index < teamMembers.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                            <div key={participant.id} className={`p-4 ${index < teamMembers.length - 1 ? 'border-b border-border' : ''}`}>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-start space-x-4 flex-1">
                                   <Avatar>
@@ -460,7 +460,7 @@ export default function EventParticipantsPage() {
                                   </Avatar>
                                   <div className="flex-1">
                                     <div className="flex items-center space-x-3 mb-2">
-                                      <h4 className="font-semibold text-gray-900">{participant.user?.full_name}</h4>
+                                      <h4 className="font-semibold text-foreground">{participant.user?.full_name}</h4>
                                       <Badge className={getStatusColor(participant.status)}>
                                         <div className="flex items-center space-x-1">
                                           {getStatusIcon(participant.status)}
@@ -470,7 +470,7 @@ export default function EventParticipantsPage() {
                                     </div>
                                     
                                     {/* Basic Info */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground mb-3">
                                       <span className="flex items-center">
                                         <Mail className="h-3 w-3 mr-1" />
                                         {participant.user?.email}
@@ -483,9 +483,9 @@ export default function EventParticipantsPage() {
                                     </div>
 
                                     {/* Additional Registration Info - Only show relevant details */}
-                                    <div className="bg-gray-50 rounded-lg p-3 mt-2">
-                                      <h5 className="text-sm font-medium text-gray-700 mb-2">Additional Information:</h5>
-                                      <div className="space-y-1 text-xs text-gray-600">
+                                    <div className="bg-background rounded-lg p-3 mt-2">
+                                      <h5 className="text-sm font-medium text-foreground mb-2">Additional Information:</h5>
+                                      <div className="space-y-1 text-xs text-muted-foreground">
                                         {(participant.registration_data?.participant_details?.branch || participant.registration_data?.additional_info?.branch) && (
                                           <div>
                                             <span className="font-medium">Branch:</span>
@@ -553,7 +553,7 @@ export default function EventParticipantsPage() {
                 // Individual Event View - Show all participant details directly
                 <div className="space-y-2">
                   {filteredParticipants.map((participant) => (
-                    <div key={participant.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div key={participant.id} className="border rounded-lg p-4 hover:shadow-soft transition-shadow">
                       <div className="flex items-center justify-between">
                         <div className="flex items-start space-x-4 flex-1">
                           <Avatar>
@@ -564,7 +564,7 @@ export default function EventParticipantsPage() {
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="font-semibold text-gray-900">{participant.user?.full_name}</h3>
+                              <h3 className="font-semibold text-foreground">{participant.user?.full_name}</h3>
                               <Badge className={getStatusColor(participant.status)}>
                                 <div className="flex items-center space-x-1">
                                   {getStatusIcon(participant.status)}
@@ -574,7 +574,7 @@ export default function EventParticipantsPage() {
                             </div>
                             
                             {/* Basic Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground mb-3">
                               <span className="flex items-center">
                                 <Mail className="h-3 w-3 mr-1" />
                                 {participant.user?.email}
@@ -587,9 +587,9 @@ export default function EventParticipantsPage() {
                             </div>
 
                             {/* Additional Registration Info - Only show relevant details */}
-                            <div className="bg-gray-50 rounded-lg p-3 mt-2">
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">Additional Information:</h4>
-                              <div className="space-y-1 text-xs text-gray-600">
+                            <div className="bg-background rounded-lg p-3 mt-2">
+                              <h4 className="text-sm font-medium text-foreground mb-2">Additional Information:</h4>
+                              <div className="space-y-1 text-xs text-muted-foreground">
                                 {(participant.registration_data?.participant_details?.branch || participant.registration_data?.additional_info?.branch) && (
                                   <div>
                                     <span className="font-medium">Branch:</span>
@@ -667,11 +667,11 @@ export default function EventParticipantsPage() {
             <TabsContent value="grid" className="space-y-4">
               {filteredParticipants.length === 0 ? (
                 <div className="text-center py-12">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {participants.length === 0 ? "No Participants Yet" : "No Participants Found"}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-muted-foreground">
                     {participants.length === 0 
                       ? "No one has registered for this event yet. Share your event to get participants!"
                       : "No participants match your current search and filter criteria."
@@ -693,7 +693,7 @@ export default function EventParticipantsPage() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredParticipants.map((participant) => (
-                    <Card key={participant.id} className="hover:shadow-md transition-shadow">
+                    <Card key={participant.id} className="hover:shadow-soft transition-shadow">
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3 mb-3">
                           <Avatar>
@@ -703,8 +703,8 @@ export default function EventParticipantsPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 text-sm">{participant.user?.full_name}</h3>
-                            <p className="text-xs text-gray-600">{participant.user?.college}</p>
+                            <h3 className="font-semibold text-foreground text-sm">{participant.user?.full_name}</h3>
+                            <p className="text-xs text-muted-foreground">{participant.user?.college}</p>
                           </div>
                         </div>
                         <div className="space-y-2">
@@ -714,18 +714,18 @@ export default function EventParticipantsPage() {
                               <span>{participant.status.charAt(0).toUpperCase() + participant.status.slice(1)}</span>
                             </div>
                           </Badge>
-                          <p className="text-xs text-gray-600">{participant.user?.email}</p>
+                          <p className="text-xs text-muted-foreground">{participant.user?.email}</p>
                           {participant.team_name && (
-                            <p className="text-xs text-gray-600">Team: {participant.team_name}</p>
+                            <p className="text-xs text-muted-foreground">Team: {participant.team_name}</p>
                           )}
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             Registered: {new Date(participant.registered_at).toLocaleDateString()}
                           </p>
                           
                           {/* Additional Info for Grid View */}
-                          <div className="bg-gray-50 rounded p-2 mt-2">
-                            <h5 className="text-xs font-medium text-gray-700 mb-1">Additional Info:</h5>
-                            <div className="space-y-1 text-xs text-gray-600 max-h-32 overflow-y-auto">
+                          <div className="bg-background rounded p-2 mt-2">
+                            <h5 className="text-xs font-medium text-foreground mb-1">Additional Info:</h5>
+                            <div className="space-y-1 text-xs text-muted-foreground max-h-32 overflow-y-auto">
                               {(participant.registration_data?.participant_details?.branch || participant.registration_data?.additional_info?.branch) && (
                                 <div>
                                   <span className="font-medium">Branch:</span>

@@ -13,7 +13,7 @@ export function EventImage({
   src, 
   alt, 
   className = "w-full h-full object-cover",
-  fallbackClassName = "w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900",
+  fallbackClassName = "w-full h-full flex items-center justify-center bg-background",
   showPlaceholder = true
 }: EventImageProps) {
   const [imageError, setImageError] = React.useState(false)
@@ -43,8 +43,8 @@ export function EventImage({
     return (
       <div className={fallbackClassName}>
         <div className="text-center">
-          <ImageIcon className="h-12 w-12 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+          <ImageIcon className="h-12 w-12 text-muted-foreground dark:text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground font-medium">
             {imageError ? 'Failed to load image' : 'No image available'}
           </p>
         </div>
@@ -58,7 +58,7 @@ export function EventImage({
         <div className={fallbackClassName}>
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Loading...</p>
+            <p className="text-sm text-muted-foreground dark:text-muted-foreground">Loading...</p>
           </div>
         </div>
       )}

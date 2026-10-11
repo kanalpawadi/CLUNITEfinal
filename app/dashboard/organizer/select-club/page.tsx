@@ -74,35 +74,35 @@ export default function SelectClubPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-white flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
   if (clubs.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-white flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-yellow-200 bg-yellow-50">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="max-w-md w-full border-2 border-warning/20 bg-warning/5">
           <CardContent className="p-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto">
-              <Building2 className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 bg-warning rounded-full flex items-center justify-center mx-auto">
+              <Building2 className="h-8 w-8 text-primary-foreground" />
             </div>
-            <h2 className="text-2xl font-bold text-yellow-900">No Clubs Found</h2>
-            <p className="text-yellow-800">
+            <h2 className="text-2xl font-bold text-warning">No Clubs Found</h2>
+            <p className="text-warning">
               You are not an admin of any clubs yet. Create a club or verify with a PIN to get started.
             </p>
             <div className="flex flex-col gap-3 pt-4">
-              <Link href="/dashboard/organizer/create-club">
-                <Button className="w-full bg-yellow-600 hover:bg-yellow-700">
+              <Button asChild className="w-full bg-warning hover:bg-warning/90">
+                <Link href="/dashboard/organizer/create-club">
                   Create Your First Club
-                </Button>
-              </Link>
-              <Link href="/dashboard/organizer/verify-club">
-                <Button variant="outline" className="w-full">
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/dashboard/organizer/verify-club">
                   Verify with PIN
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -111,14 +111,14 @@ export default function SelectClubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-white p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-primary">
             Select Your Club
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-muted-foreground text-lg">
             Choose which club you want to manage
           </p>
         </div>
@@ -128,7 +128,7 @@ export default function SelectClubPage() {
           {clubs.map((club) => (
             <Card
               key={club.id}
-              className="group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border-2 hover:border-indigo-300"
+              className="group hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer border-2 hover:border-primary/40"
               onClick={() => selectClub(club.id, club.name)}
             >
               <CardHeader className="space-y-4">
@@ -141,11 +141,11 @@ export default function SelectClubPage() {
                         alt={club.name}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-foreground/40" />
                     </>
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                      <div className="text-6xl font-bold text-white">
+                    <div className="w-full h-full bg-primary flex items-center justify-center">
+                      <div className="text-6xl font-bold text-primary-foreground">
                         {club.name.charAt(0)}
                       </div>
                     </div>
@@ -154,7 +154,7 @@ export default function SelectClubPage() {
                   {/* Owner Badge */}
                   {club.is_owner && (
                     <div className="absolute top-3 right-3">
-                      <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                      <Badge className="bg-warning text-primary-foreground border-0">
                         <Crown className="h-3 w-3 mr-1" />
                         Owner
                       </Badge>
@@ -164,7 +164,7 @@ export default function SelectClubPage() {
 
                 {/* Club Info */}
                 <div>
-                  <CardTitle className="text-xl group-hover:text-indigo-600 transition-colors">
+                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
                     {club.name}
                   </CardTitle>
                   <CardDescription className="mt-2 line-clamp-2">
@@ -175,7 +175,7 @@ export default function SelectClubPage() {
 
               <CardContent className="space-y-4">
                 {/* Stats */}
-                <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>{club.members_count || 0} members</span>
@@ -193,7 +193,7 @@ export default function SelectClubPage() {
 
                 {/* Select Button */}
                 <Button 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 group-hover:shadow-lg transition-all"
+                  className="w-full bg-primary hover:bg-primary/90 group-hover:shadow-soft-lg transition-all"
                   onClick={() => selectClub(club.id, club.name)}
                 >
                   Manage This Club
@@ -205,15 +205,15 @@ export default function SelectClubPage() {
         </div>
 
         {/* Info Card */}
-        <Card className="border-2 border-indigo-100 bg-indigo-50/50">
+        <Card className="border-2 border-primary/20 bg-primary/50">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Shield className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="h-5 w-5 text-primary-foreground" />
               </div>
               <div className="space-y-2">
-                <h3 className="font-semibold text-indigo-900">Club-Specific Management</h3>
-                <p className="text-sm text-indigo-700">
+                <h3 className="font-semibold text-primary">Club-Specific Management</h3>
+                <p className="text-sm text-primary">
                   Each club has its own Event Management Hub with separate events, participants, and analytics. 
                   Select a club to manage its events and view its data.
                 </p>

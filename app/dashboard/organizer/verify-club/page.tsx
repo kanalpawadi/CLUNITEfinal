@@ -214,24 +214,24 @@ export default function VerifyClubPage() {
 
   if (verified) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-green-200 shadow-2xl">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="max-w-md w-full border-2 border-success/20 shadow-soft-lg">
           <CardContent className="p-8">
             <div className="text-center space-y-6">
-              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
-                <CheckCircle2 className="h-10 w-10 text-white" />
+              <div className="mx-auto w-20 h-20 bg-success rounded-full flex items-center justify-center shadow-soft-lg">
+                <CheckCircle2 className="h-10 w-10 text-primary-foreground" />
               </div>
               <div className="space-y-3">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <h2 className="text-3xl font-bold text-primary">
                   Club Verified!
                 </h2>
-                <p className="text-base text-slate-600 leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Your club has been successfully verified. You now have full
                   organizer access.
                 </p>
               </div>
-              <div className="p-4 bg-green-50 rounded-xl border-2 border-green-200">
-                <p className="text-sm font-semibold text-green-800">
+              <div className="p-4 bg-success/5 rounded-xl border-2 border-success/20">
+                <p className="text-sm font-semibold text-success">
                   Redirecting to Event Management Hub...
                 </p>
               </div>
@@ -243,15 +243,15 @@ export default function VerifyClubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-lg">
-        <Card className="border-2 border-indigo-100 shadow-2xl">
+        <Card className="border-2 border-primary/20 shadow-soft-lg">
           <CardHeader className="text-center space-y-4 pb-6">
-            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Shield className="h-10 w-10 text-white" />
+            <div className="mx-auto w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-soft-lg">
+              <Shield className="h-10 w-10 text-primary-foreground" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold text-primary">
                 Verify Your Club
               </CardTitle>
               <CardDescription className="text-base mt-2">
@@ -261,14 +261,14 @@ export default function VerifyClubPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {pendingClubData && pendingClubData.club_data && (
-              <div className="p-5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 shadow-sm">
-                <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-1">
+              <div className="p-5 bg-background rounded-xl border-2 border-primary/20 shadow-soft">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                   Club Name
                 </p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <p className="text-2xl font-bold text-primary">
                   {pendingClubData.club_data.name}
                 </p>
-                <p className="text-sm text-slate-500 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   {pendingClubData.official_email}
                 </p>
               </div>
@@ -281,7 +281,7 @@ export default function VerifyClubPage() {
                   htmlFor="clubName"
                   className="flex items-center gap-2 text-base font-semibold"
                 >
-                  <Shield className="h-5 w-5 text-indigo-600" />
+                  <Shield className="h-5 w-5 text-primary" />
                   Club Name (Verification)
                 </Label>
                 <Input
@@ -295,7 +295,7 @@ export default function VerifyClubPage() {
                   required
                   className="text-base font-semibold"
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {clubName.toLowerCase() ===
                   pendingClubData?.club_data?.name?.toLowerCase()
                     ? '✓ Club name matches'
@@ -308,7 +308,7 @@ export default function VerifyClubPage() {
                   htmlFor="pin"
                   className="flex items-center gap-2 text-base font-semibold"
                 >
-                  <Mail className="h-5 w-5 text-indigo-600" />
+                  <Mail className="h-5 w-5 text-primary" />
                   8-Digit PIN
                 </Label>
                 <Input
@@ -337,7 +337,7 @@ export default function VerifyClubPage() {
                   clubName.toLowerCase() !==
                     pendingClubData?.club_data?.name?.toLowerCase()
                 }
-                className="w-full h-14 text-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
+                className="w-full h-14 text-lg bg-primary hover:bg-primary/90 shadow-soft-lg hover:shadow-soft-lg transition-all"
               >
                 {loading ? (
                   <>
@@ -359,7 +359,7 @@ export default function VerifyClubPage() {
                 <Button
                   type="button"
                   variant="link"
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-primary hover:text-primary"
                   onClick={() =>
                     router.push('/dashboard/organizer/create-club')
                   }

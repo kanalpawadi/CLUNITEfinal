@@ -163,7 +163,7 @@ export function LoginForm() {
                 setError(null)
               }}
               className={`rounded-md px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                method === m ? "bg-card font-medium text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                method === m ? "bg-card font-medium text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {m === "password" ? "Password" : "Email link"}

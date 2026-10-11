@@ -296,31 +296,31 @@ export default function CreateEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-white p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header with Back Button */}
-        <div className="bg-gradient-to-br from-violet-500 via-indigo-500 to-blue-500 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 backdrop-blur-xl"></div>
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-r from-blue-400 to-violet-400 opacity-20 rounded-full translate-y-20 -translate-x-20 blur-2xl"></div>
+        <div className="bg-primary rounded-3xl p-8 text-primary-foreground relative overflow-hidden shadow-soft-lg">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-card/10 rounded-full -translate-y-16 translate-x-16 backdrop-blur-xl"></div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/80 opacity-20 rounded-full translate-y-20 -translate-x-20 blur-2xl"></div>
           <div className="relative">
             <div className="flex items-center justify-between">
               <div>
                 <Link
                   href="/dashboard/organizer/host"
-                  className="inline-flex items-center text-blue-100 hover:text-white mb-4 transition-colors backdrop-blur-sm bg-white/10 px-4 py-2 rounded-lg"
+                  className="inline-flex items-center text-primary-foreground hover:text-primary-foreground mb-4 transition-colors backdrop-blur-sm bg-card/10 px-4 py-2 rounded-lg"
                 >
                   <ArrowLeft className="h-5 w-5 mr-2" />
                   Back to Event Hub
                 </Link>
                 <div className="flex items-center mb-4">
-                  <h1 className="text-4xl font-black font-heading bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">Create New Event</h1>
-                  <Sparkles className="h-10 w-10 ml-4 text-indigo-200" />
+                  <h1 className="text-4xl font-black font-heading text-primary">Create New Event</h1>
+                  <Sparkles className="h-10 w-10 ml-4 text-primary-foreground" />
                 </div>
-                <p className="text-blue-50 text-xl leading-relaxed backdrop-blur-sm">
+                <p className="text-primary-foreground text-xl leading-relaxed backdrop-blur-sm">
                   Create an engaging event for your campus community
                 </p>
               </div>
-              <Badge className="bg-gradient-to-r from-violet-400/20 to-blue-400/20 text-white border-white/20 px-6 py-3 text-base font-semibold backdrop-blur-md shadow-lg">
+              <Badge className="bg-primary/20 text-primary-foreground border-border/20 px-6 py-3 text-base font-semibold backdrop-blur-md shadow-soft-lg">
                 {submitStatus === "success" ? "Published" : "Draft"}
               </Badge>
             </div>
@@ -329,28 +329,28 @@ export default function CreateEventPage() {
 
         {/* Status Messages */}
         {submitStatus === "success" && (
-          <Alert className="border-green-200 bg-green-50">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
+          <Alert className="border-success/20 bg-success/5">
+            <CheckCircle className="h-4 w-4 text-success" />
+            <AlertDescription className="text-success">
               Event created successfully! Redirecting to your events...
             </AlertDescription>
           </Alert>
         )}
 
         {submitStatus === "error" && (
-          <Alert className="border-red-200 bg-red-50">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">{errorMessage}</AlertDescription>
+          <Alert className="border-destructive/20 bg-destructive/5">
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <AlertDescription className="text-destructive">{errorMessage}</AlertDescription>
           </Alert>
         )}
 
         <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-8">
           {/* Basic Information */}
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-0 shadow-soft-lg bg-card">
             <CardHeader className="pb-6">
               <CardTitle className="flex items-center text-xl font-heading">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3">
-                  <Calendar className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3">
+                  <Calendar className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Basic Information
               </CardTitle>
@@ -361,7 +361,7 @@ export default function CreateEventPage() {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <Label className="text-sm font-semibold text-foreground">Event Banner</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-indigo-400 transition-colors">
+                <div className="border-2 border-dashed border-border rounded-lg p-6 hover:border-primary/40 transition-colors">
                   {bannerPreview ? (
                     <div className="relative">
                       <img
@@ -381,10 +381,10 @@ export default function CreateEventPage() {
                     </div>
                   ) : (
                     <div className="text-center">
-                      <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-gray-900">Upload event banner</p>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB. Recommended: 800x400px</p>
+                        <p className="text-sm font-medium text-foreground">Upload event banner</p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 5MB. Recommended: 800x400px</p>
                       </div>
                       <Button
                         type="button"
@@ -418,7 +418,7 @@ export default function CreateEventPage() {
                     placeholder="e.g., AI Workshop 2024"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                     required
                   />
                 </div>
@@ -426,8 +426,8 @@ export default function CreateEventPage() {
                   <Label className="text-sm font-semibold text-foreground">
                     Club/Organization
                   </Label>
-                  <div className="flex items-center h-10 px-3 py-2 border-2 border-indigo-200 bg-indigo-50 rounded-lg">
-                    <Badge className="bg-indigo-600 text-white">
+                  <div className="flex items-center h-10 px-3 py-2 border-2 border-primary/20 bg-primary/5 rounded-lg">
+                    <Badge className="bg-primary text-primary-foreground">
                       {selectedClubName || 'Loading...'}
                     </Badge>
                   </div>
@@ -443,7 +443,7 @@ export default function CreateEventPage() {
                   placeholder="Describe your event in detail..."
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg min-h-[120px]"
+                  className="border-border focus:border-primary focus:ring-ring rounded-lg min-h-[120px]"
                   required
                 />
               </div>
@@ -454,7 +454,7 @@ export default function CreateEventPage() {
                     Category *
                   </Label>
                   <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-                    <SelectTrigger className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg">
+                    <SelectTrigger className="border-border focus:border-primary focus:ring-ring rounded-lg">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -474,7 +474,7 @@ export default function CreateEventPage() {
                     Event Type *
                   </Label>
                   <Select value={formData.type} onValueChange={(value) => handleInputChange("type", value)}>
-                    <SelectTrigger className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg">
+                    <SelectTrigger className="border-border focus:border-primary focus:ring-ring rounded-lg">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -493,7 +493,7 @@ export default function CreateEventPage() {
                     Difficulty Level
                   </Label>
                   <Select value={formData.level} onValueChange={(value) => handleInputChange("level", value)}>
-                    <SelectTrigger className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg">
+                    <SelectTrigger className="border-border focus:border-primary focus:ring-ring rounded-lg">
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                     <SelectContent>
@@ -508,11 +508,11 @@ export default function CreateEventPage() {
           </Card>
 
           {/* Event Details & Logistics */}
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-0 shadow-soft-lg bg-card">
             <CardHeader className="pb-6">
               <CardTitle className="flex items-center text-xl font-heading">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-3">
-                  <MapPin className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-success rounded-xl flex items-center justify-center mr-3">
+                  <MapPin className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Event Details & Logistics
               </CardTitle>
@@ -527,7 +527,7 @@ export default function CreateEventPage() {
                     Event Mode *
                   </Label>
                   <Select value={formData.mode} onValueChange={(value) => handleInputChange("mode", value)}>
-                    <SelectTrigger className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg">
+                    <SelectTrigger className="border-border focus:border-primary focus:ring-ring rounded-lg">
                       <SelectValue placeholder="Select mode" />
                     </SelectTrigger>
                     <SelectContent>
@@ -550,7 +550,7 @@ export default function CreateEventPage() {
                     }
                     value={formData.venue}
                     onChange={(e) => handleInputChange("venue", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                     required={formData.mode !== "online"}
                   />
                 </div>
@@ -569,7 +569,7 @@ export default function CreateEventPage() {
                         type="date"
                         value={formData.startDate}
                         onChange={(e) => handleInputChange("startDate", e.target.value)}
-                        className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                        className="border-border focus:border-primary focus:ring-ring rounded-lg"
                         required
                       />
                     </div>
@@ -582,7 +582,7 @@ export default function CreateEventPage() {
                         type="time"
                         value={formData.startTime}
                         onChange={(e) => handleInputChange("startTime", e.target.value)}
-                        className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                        className="border-border focus:border-primary focus:ring-ring rounded-lg"
                         required
                       />
                     </div>
@@ -600,7 +600,7 @@ export default function CreateEventPage() {
                         type="date"
                         value={formData.endDate}
                         onChange={(e) => handleInputChange("endDate", e.target.value)}
-                        className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                        className="border-border focus:border-primary focus:ring-ring rounded-lg"
                       />
                     </div>
                     <div className="space-y-2">
@@ -612,7 +612,7 @@ export default function CreateEventPage() {
                         type="time"
                         value={formData.endTime}
                         onChange={(e) => handleInputChange("endTime", e.target.value)}
-                        className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                        className="border-border focus:border-primary focus:ring-ring rounded-lg"
                       />
                     </div>
                   </div>
@@ -628,7 +628,7 @@ export default function CreateEventPage() {
                   type="date"
                   value={formData.registrationDeadline}
                   onChange={(e) => handleInputChange("registrationDeadline", e.target.value)}
-                  className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg max-w-xs"
+                  className="border-border focus:border-primary focus:ring-ring rounded-lg max-w-xs"
                   required
                 />
               </div>
@@ -636,11 +636,11 @@ export default function CreateEventPage() {
           </Card>
 
           {/* Participation & Pricing */}
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-0 shadow-soft-lg bg-card">
             <CardHeader className="pb-6">
               <CardTitle className="flex items-center text-xl font-heading">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                  <Users className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3">
+                  <Users className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Participation & Pricing
               </CardTitle>
@@ -660,7 +660,7 @@ export default function CreateEventPage() {
                     placeholder="e.g., 100"
                     value={formData.maxParticipants}
                     onChange={(e) => handleInputChange("maxParticipants", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                     min="1"
                   />
                 </div>
@@ -669,7 +669,7 @@ export default function CreateEventPage() {
                     Team Size
                   </Label>
                   <Select value={formData.teamSize} onValueChange={(value) => handleInputChange("teamSize", value)}>
-                    <SelectTrigger className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg">
+                    <SelectTrigger className="border-border focus:border-primary focus:ring-ring rounded-lg">
                       <SelectValue placeholder="Select team size" />
                     </SelectTrigger>
                     <SelectContent>
@@ -689,7 +689,7 @@ export default function CreateEventPage() {
                     placeholder="0 for free"
                     value={formData.entryFee}
                     onChange={(e) => handleInputChange("entryFee", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                     min="0"
                     step="0.01"
                   />
@@ -706,7 +706,7 @@ export default function CreateEventPage() {
                   placeholder="e.g., 10000"
                   value={formData.prizePool}
                   onChange={(e) => handleInputChange("prizePool", e.target.value)}
-                  className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg max-w-xs"
+                  className="border-border focus:border-primary focus:ring-ring rounded-lg max-w-xs"
                   min="0"
                   step="0.01"
                 />
@@ -715,11 +715,11 @@ export default function CreateEventPage() {
           </Card>
 
           {/* Additional Information */}
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-0 shadow-soft-lg bg-card">
             <CardHeader className="pb-6">
               <CardTitle className="flex items-center text-xl font-heading">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mr-3">
-                  <Tag className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3">
+                  <Tag className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Additional Information
               </CardTitle>
@@ -737,7 +737,7 @@ export default function CreateEventPage() {
                   placeholder="e.g., AI, Machine Learning, Workshop, Beginner"
                   value={formData.tags}
                   onChange={(e) => handleInputChange("tags", e.target.value)}
-                  className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                  className="border-border focus:border-primary focus:ring-ring rounded-lg"
                 />
               </div>
 
@@ -750,18 +750,18 @@ export default function CreateEventPage() {
                   placeholder="e.g.,&#10;Basic programming knowledge&#10;Laptop with Python installed&#10;Enthusiasm to learn"
                   value={formData.requirements}
                   onChange={(e) => handleInputChange("requirements", e.target.value)}
-                  className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg min-h-[100px]"
+                  className="border-border focus:border-primary focus:ring-ring rounded-lg min-h-[100px]"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Contact Information & Settings */}
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-0 shadow-soft-lg bg-card">
             <CardHeader className="pb-6">
               <CardTitle className="flex items-center text-xl font-heading">
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center mr-3">
-                  <Settings className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-success rounded-xl flex items-center justify-center mr-3">
+                  <Settings className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Contact Information & Settings
               </CardTitle>
@@ -781,7 +781,7 @@ export default function CreateEventPage() {
                     placeholder="organizer@example.com"
                     value={formData.contactEmail}
                     onChange={(e) => handleInputChange("contactEmail", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                   />
                 </div>
                 <div className="space-y-2">
@@ -794,7 +794,7 @@ export default function CreateEventPage() {
                     placeholder="+91 9876543210"
                     value={formData.contactPhone}
                     onChange={(e) => handleInputChange("contactPhone", e.target.value)}
-                    className="border-border focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className="border-border focus:border-primary focus:ring-ring rounded-lg"
                   />
                 </div>
               </div>
@@ -844,7 +844,7 @@ export default function CreateEventPage() {
             </Button>
             <Button
               type="submit"
-              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg shadow-soft-lg hover:shadow-soft-lg transition-all duration-300"
               disabled={isSubmitting}
             >
               <Save className="h-5 w-5 mr-2" />

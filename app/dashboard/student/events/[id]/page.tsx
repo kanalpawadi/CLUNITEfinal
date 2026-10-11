@@ -509,30 +509,30 @@ export default function EventDetailsPage({
     if (diffDays <= 0)
       return {
         level: 'expired',
-        color: 'text-red-600',
+        color: 'text-destructive',
         text: 'Registration Closed',
       };
     if (diffDays <= 1)
       return {
         level: 'critical',
-        color: 'text-red-600',
+        color: 'text-destructive',
         text: 'Closes Today!',
       };
     if (diffDays <= 3)
       return {
         level: 'high',
-        color: 'text-orange-600',
+        color: 'text-primary',
         text: `${diffDays} days left`,
       };
     if (diffDays <= 7)
       return {
         level: 'medium',
-        color: 'text-yellow-600',
+        color: 'text-warning',
         text: `${diffDays} days left`,
       };
     return {
       level: 'low',
-      color: 'text-green-600',
+      color: 'text-success',
       text: `${diffDays} days left`,
     };
   };
@@ -566,36 +566,36 @@ export default function EventDetailsPage({
   const getLevelColor = (level: string) => {
     switch (level) {
       case 'beginner':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-success/10 text-success border-success/20';
       case 'intermediate':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-warning/10 text-warning border-warning/20';
       case 'advanced':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-destructive/10 text-destructive border-destructive/20';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 animate-pulse">
-        <div className="bg-white border-b">
+      <div className="min-h-screen bg-background animate-pulse">
+        <div className="bg-card border-b">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="h-6 bg-gray-200 rounded w-32"></div>
+            <div className="h-6 bg-muted rounded w-32"></div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto p-6">
           <div className="grid lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3 space-y-8">
-              <div className="bg-white rounded-2xl p-8">
-                <div className="h-8 bg-gray-200 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="bg-card rounded-2xl p-8">
+                <div className="h-8 bg-muted rounded mb-4"></div>
+                <div className="h-4 bg-muted rounded mb-2"></div>
+                <div className="h-4 bg-muted rounded w-3/4"></div>
               </div>
             </div>
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl p-6">
-                <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="bg-card rounded-2xl p-6">
+                <div className="h-32 bg-muted rounded"></div>
               </div>
             </div>
           </div>
@@ -606,18 +606,18 @@ export default function EventDetailsPage({
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             Event Not Found
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             The event you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
-          <Link href="/dashboard/student/browse">
-            <Button>Back to Browse Events</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/dashboard/student/browse">Back to Browse Events</Link>
+          </Button>
         </div>
       </div>
     );
@@ -629,13 +629,13 @@ export default function EventDetailsPage({
   const isRegistrationOpen = urgency.level !== 'expired';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <Link
             href="/dashboard/student/browse"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground font-medium transition-colors"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Browse Events
@@ -648,8 +648,8 @@ export default function EventDetailsPage({
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
             {/* Hero Section */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-              <div className="relative h-64 bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50">
+            <div className="bg-card rounded-2xl overflow-hidden shadow-soft-lg border border-border">
+              <div className="relative h-64 bg-background">
                 <img
                   src={
                     event.image_url ||
@@ -658,13 +658,13 @@ export default function EventDetailsPage({
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-foreground/50"></div>
                 <div className="absolute bottom-6 left-6 right-6">
                   <div className="flex items-center space-x-3 mb-4">
-                    <Badge className="bg-white/90 text-gray-800 font-semibold">
+                    <Badge className="bg-card/90 text-foreground font-semibold">
                       {eventType.charAt(0).toUpperCase() + eventType.slice(1)}
                     </Badge>
-                    <Badge className="bg-white/90 text-gray-800 font-semibold">
+                    <Badge className="bg-card/90 text-foreground font-semibold">
                       {getModeIcon(event.mode)}
                       <span className="ml-1">
                         {event.mode.charAt(0).toUpperCase() +
@@ -672,18 +672,18 @@ export default function EventDetailsPage({
                       </span>
                     </Badge>
                     {event.prize_pool && (
-                      <Badge className="bg-yellow-500 text-white font-bold">
+                      <Badge className="bg-warning text-primary-foreground font-bold">
                         <Trophy className="h-3 w-3 mr-1" />₹
                         {event.prize_pool.toLocaleString()}
                       </Badge>
                     )}
                   </div>
-                  <h1 className="text-3xl font-bold text-white mb-2">
+                  <h1 className="text-3xl font-bold text-primary-foreground mb-2">
                     {event.title}
                   </h1>
                   {event.club && (
-                    <div className="flex items-center text-white/90">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                    <div className="flex items-center text-primary-foreground/90">
+                      <div className="w-8 h-8 bg-card/20 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-sm font-bold">
                           {event.club.name.charAt(0)}
                         </span>
@@ -691,7 +691,7 @@ export default function EventDetailsPage({
                       <div>
                         <div className="font-semibold">{event.club.name}</div>
                         <div className="flex items-center text-sm">
-                          <Star className="h-3 w-3 mr-1 text-yellow-400 fill-current" />
+                          <Star className="h-3 w-3 mr-1 text-warning fill-current" />
                           <span>
                             {event.club.credibility_score?.toFixed(1) || '4.0'}
                           </span>
@@ -706,9 +706,9 @@ export default function EventDetailsPage({
             {/* Event Details Tabs */}
             <Tabs
               defaultValue="overview"
-              className="bg-white rounded-2xl shadow-lg border border-gray-100"
+              className="bg-card rounded-2xl shadow-soft-lg border border-border"
             >
-              <TabsList className="w-full justify-start border-b border-gray-200 bg-transparent rounded-none p-0">
+              <TabsList className="w-full justify-start border-b border-border bg-transparent rounded-none p-0">
                 <TabsTrigger
                   value="overview"
                   className="px-6 py-4 font-semibold"
@@ -737,71 +737,71 @@ export default function EventDetailsPage({
 
               <TabsContent value="overview" className="p-8 space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  <h2 className="text-2xl font-bold text-foreground mb-4">
                     About This Event
                   </h2>
-                  <p className="text-gray-700 leading-relaxed text-lg">
+                  <p className="text-foreground leading-relaxed text-lg">
                     {event.description}
                   </p>
                 </div>
 
                 {/* Key Information */}
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="border border-gray-200">
+                  <Card className="border border-border">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center text-lg">
-                        <Calendar className="h-5 w-5 mr-2 text-indigo-600" />
+                        <Calendar className="h-5 w-5 mr-2 text-primary" />
                         Event Schedule
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           Start Date & Time
                         </div>
-                        <div className="text-gray-600">
+                        <div className="text-muted-foreground">
                           {formatDate(event.starts_at)} at{' '}
                           {formatTime(event.starts_at)}
                         </div>
                       </div>
                       {event.ends_at && (
                         <div>
-                          <div className="font-semibold text-gray-900">
+                          <div className="font-semibold text-foreground">
                             End Date & Time
                           </div>
-                          <div className="text-gray-600">
+                          <div className="text-muted-foreground">
                             {formatDate(event.ends_at)} at{' '}
                             {formatTime(event.ends_at)}
                           </div>
                         </div>
                       )}
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           Duration
                         </div>
-                        <div className="text-gray-600">{event.duration}</div>
+                        <div className="text-muted-foreground">{event.duration}</div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="border border-gray-200">
+                  <Card className="border border-border">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center text-lg">
-                        <Users className="h-5 w-5 mr-2 text-green-600" />
+                        <Users className="h-5 w-5 mr-2 text-success" />
                         Participation
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           Team Size
                         </div>
-                        <div className="text-gray-600">
+                        <div className="text-muted-foreground">
                           {getTeamSizeDisplay(event.team_size || 'solo')}
                         </div>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           Difficulty Level
                         </div>
                         <Badge
@@ -812,10 +812,10 @@ export default function EventDetailsPage({
                         </Badge>
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-foreground">
                           Registered Participants
                         </div>
-                        <div className="text-gray-600">
+                        <div className="text-muted-foreground">
                           {event.current_participants}
                           {event.capacity &&
                             ` / ${event.capacity}`}{' '}
@@ -829,7 +829,7 @@ export default function EventDetailsPage({
                 {/* Tags */}
                 {event.tags && event.tags.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg font-semibold text-foreground mb-3">
                       Tags
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -852,48 +852,48 @@ export default function EventDetailsPage({
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                        <MapPin className="h-5 w-5 mr-2 text-red-500" />
+                      <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center">
+                        <MapPin className="h-5 w-5 mr-2 text-destructive" />
                         Location & Venue
                       </h3>
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <div className="font-medium text-gray-900">
+                      <div className="bg-background rounded-lg p-4">
+                        <div className="font-medium text-foreground">
                           {event.mode.charAt(0).toUpperCase() +
                             event.mode.slice(1)}{' '}
                           Event
                         </div>
                         {event.venue && (
-                          <div className="text-gray-600 mt-1">
+                          <div className="text-muted-foreground mt-1">
                             {event.venue}
                           </div>
                         )}
-                        <div className="text-gray-600 mt-1">
+                        <div className="text-muted-foreground mt-1">
                           {event.college}
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                        <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
+                      <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center">
+                        <Trophy className="h-5 w-5 mr-2 text-warning" />
                         Rewards & Recognition
                       </h3>
-                      <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="bg-background rounded-lg p-4">
                         {event.prize_pool ? (
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-foreground">
                               Prize Pool: ₹{event.prize_pool.toLocaleString()}
                             </div>
-                            <div className="text-gray-600 mt-1">
+                            <div className="text-muted-foreground mt-1">
                               Exciting prizes for winners!
                             </div>
                           </div>
                         ) : (
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-foreground">
                               Certificates & Recognition
                             </div>
-                            <div className="text-gray-600 mt-1">
+                            <div className="text-muted-foreground mt-1">
                               All participants will receive certificates
                             </div>
                           </div>
@@ -904,26 +904,26 @@ export default function EventDetailsPage({
 
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                        <Clock className="h-5 w-5 mr-2 text-blue-500" />
+                      <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center">
+                        <Clock className="h-5 w-5 mr-2 text-primary" />
                         Important Dates
                       </h3>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                      <div className="bg-background rounded-lg p-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">
+                          <span className="text-muted-foreground">
                             Registration Deadline
                           </span>
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-foreground">
                             {formatDate(event.registration_deadline ?? event.starts_at)}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Event Date</span>
-                          <span className="font-medium text-gray-900">
+                          <span className="text-muted-foreground">Event Date</span>
+                          <span className="font-medium text-foreground">
                             {formatDate(event.starts_at)}
                           </span>
                         </div>
-                        <div className="pt-2 border-t border-gray-200">
+                        <div className="pt-2 border-t border-border">
                           <div className={`font-semibold ${urgency.color}`}>
                             {urgency.text}
                           </div>
@@ -932,17 +932,17 @@ export default function EventDetailsPage({
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                        <Target className="h-5 w-5 mr-2 text-purple-500" />
+                      <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center">
+                        <Target className="h-5 w-5 mr-2 text-primary" />
                         Category & Type
                       </h3>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                      <div className="bg-background rounded-lg p-4 space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Category</span>
+                          <span className="text-muted-foreground">Category</span>
                           <Badge variant="outline">{event.category}</Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Event Type</span>
+                          <span className="text-muted-foreground">Event Type</span>
                           <Badge variant="outline">
                             {eventType.charAt(0).toUpperCase() +
                               eventType.slice(1)}
@@ -957,34 +957,34 @@ export default function EventDetailsPage({
               <TabsContent value="requirements" className="p-8">
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                      <BookOpen className="h-6 w-6 mr-2 text-indigo-600" />
+                    <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+                      <BookOpen className="h-6 w-6 mr-2 text-primary" />
                       Requirements & Prerequisites
                     </h2>
                   </div>
 
                   {event.requirements && event.requirements.length > 0 ? (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                      <h3 className="font-semibold text-blue-900 mb-4 flex items-center">
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
+                      <h3 className="font-semibold text-primary mb-4 flex items-center">
                         <CheckCircle className="h-5 w-5 mr-2" />
                         What You Need
                       </h3>
                       <ul className="space-y-3">
                         {event.requirements.map((requirement, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                            <span className="text-blue-800">{requirement}</span>
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                            <span className="text-primary">{requirement}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   ) : (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                      <Zap className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                      <h3 className="font-semibold text-green-900 mb-2">
+                    <div className="bg-success/5 border border-success/20 rounded-lg p-6 text-center">
+                      <Zap className="h-12 w-12 text-success mx-auto mb-4" />
+                      <h3 className="font-semibold text-success mb-2">
                         No Special Requirements
                       </h3>
-                      <p className="text-green-700">
+                      <p className="text-success">
                         This event is open to everyone! Just bring your
                         enthusiasm and willingness to learn.
                       </p>
@@ -992,10 +992,10 @@ export default function EventDetailsPage({
                   )}
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="border border-gray-200">
+                    <Card className="border border-border">
                       <CardHeader>
                         <CardTitle className="flex items-center text-lg">
-                          <Award className="h-5 w-5 mr-2 text-orange-500" />
+                          <Award className="h-5 w-5 mr-2 text-primary" />
                           Skill Level
                         </CardTitle>
                       </CardHeader>
@@ -1007,7 +1007,7 @@ export default function EventDetailsPage({
                             (event.level || 'beginner').slice(1)}{' '}
                           Level
                         </Badge>
-                        <p className="text-gray-600 mt-2">
+                        <p className="text-muted-foreground mt-2">
                           {event.level === 'beginner' &&
                             'Perfect for newcomers and those just starting out.'}
                           {event.level === 'intermediate' &&
@@ -1018,18 +1018,18 @@ export default function EventDetailsPage({
                       </CardContent>
                     </Card>
 
-                    <Card className="border border-gray-200">
+                    <Card className="border border-border">
                       <CardHeader>
                         <CardTitle className="flex items-center text-lg">
-                          <Users className="h-5 w-5 mr-2 text-green-500" />
+                          <Users className="h-5 w-5 mr-2 text-success" />
                           Team Formation
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="font-medium text-gray-900 mb-2">
+                        <div className="font-medium text-foreground mb-2">
                           {getTeamSizeDisplay(event.team_size || 'solo')}
                         </div>
-                        <p className="text-gray-600">
+                        <p className="text-muted-foreground">
                           {event.team_size === 'solo' &&
                             'Individual participation - showcase your personal skills!'}
                           {event.team_size === '2_people' &&
@@ -1046,34 +1046,34 @@ export default function EventDetailsPage({
               <TabsContent value="organizer" className="p-8">
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    <h2 className="text-2xl font-bold text-foreground mb-6">
                       Event Organizer
                     </h2>
                   </div>
 
                   {event.club ? (
-                    <Card className="border border-gray-200">
+                    <Card className="border border-border">
                       <CardContent className="p-6">
                         <div className="flex items-start space-x-4">
-                          <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl">
+                          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground font-bold text-xl">
                             {event.club.name.charAt(0)}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-xl font-bold text-gray-900">
+                              <h3 className="text-xl font-bold text-foreground">
                                 {event.club.name}
                               </h3>
                               {event.club.is_verified && (
-                                <Badge className="bg-blue-100 text-blue-800">
+                                <Badge className="bg-primary/10 text-primary">
                                   <CheckCircle className="h-3 w-3 mr-1" />
                                   Verified
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-gray-600 mb-3">
+                            <p className="text-muted-foreground mb-3">
                               {event.club.description}
                             </p>
-                            <div className="flex items-center space-x-6 text-sm text-gray-600">
+                            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                               <div className="flex items-center">
                                 <Users className="h-4 w-4 mr-1" />
                                 <span>{event.club.members_count} members</span>
@@ -1085,7 +1085,7 @@ export default function EventDetailsPage({
                                 </span>
                               </div>
                               <div className="flex items-center">
-                                <Star className="h-4 w-4 mr-1 text-yellow-500" />
+                                <Star className="h-4 w-4 mr-1 text-warning" />
                                 <span>
                                   {event.club.credibility_score?.toFixed(1)}{' '}
                                   rating
@@ -1097,16 +1097,16 @@ export default function EventDetailsPage({
                       </CardContent>
                     </Card>
                   ) : (
-                    <Card className="border border-gray-200">
+                    <Card className="border border-border">
                       <CardContent className="p-6">
                         <div className="text-center">
-                          <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <Users className="h-8 w-8 text-gray-400" />
+                          <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <Users className="h-8 w-8 text-muted-foreground" />
                           </div>
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          <h3 className="text-xl font-bold text-foreground mb-2">
                             Independent Event
                           </h3>
-                          <p className="text-gray-600">
+                          <p className="text-muted-foreground">
                             This event is organized independently.
                           </p>
                         </div>
@@ -1116,7 +1116,7 @@ export default function EventDetailsPage({
 
                   {/* Contact Information */}
                   {(contactInfo.email || contactInfo.phone) && (
-                    <Card className="border border-gray-200">
+                    <Card className="border border-border">
                       <CardHeader>
                         <CardTitle className="text-lg">
                           Contact Information
@@ -1125,10 +1125,10 @@ export default function EventDetailsPage({
                       <CardContent className="space-y-3">
                         {contactInfo.email && (
                           <div className="flex items-center">
-                            <Mail className="h-5 w-5 mr-3 text-gray-400" />
+                            <Mail className="h-5 w-5 mr-3 text-muted-foreground" />
                             <a
                               href={`mailto:${contactInfo.email}`}
-                              className="text-indigo-600 hover:text-indigo-800"
+                              className="text-primary hover:text-primary"
                             >
                               {contactInfo.email}
                             </a>
@@ -1136,10 +1136,10 @@ export default function EventDetailsPage({
                         )}
                         {contactInfo.phone && (
                           <div className="flex items-center">
-                            <Phone className="h-5 w-5 mr-3 text-gray-400" />
+                            <Phone className="h-5 w-5 mr-3 text-muted-foreground" />
                             <a
                               href={`tel:${contactInfo.phone}`}
-                              className="text-indigo-600 hover:text-indigo-800"
+                              className="text-primary hover:text-primary"
                             >
                               {contactInfo.phone}
                             </a>
@@ -1157,32 +1157,32 @@ export default function EventDetailsPage({
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
               {/* Registration Card */}
-              <Card className="border border-gray-200 shadow-lg">
+              <Card className="border border-border shadow-soft-lg">
                 <CardContent className="p-6">
                   {/* Price */}
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-3xl font-bold text-gray-900">
+                    <div className="text-3xl font-bold text-foreground">
                       {event.fee > 0 ? `₹${event.fee}` : 'Free'}
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-gray-400 hover:text-red-500"
+                        className="text-muted-foreground hover:text-destructive"
                       >
                         <Heart className="h-5 w-5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-gray-400 hover:text-blue-500"
+                        className="text-muted-foreground hover:text-primary"
                       >
                         <Calendar className="h-5 w-5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-muted-foreground hover:text-muted-foreground"
                       >
                         <Share2 className="h-5 w-5" />
                       </Button>
@@ -1205,9 +1205,9 @@ export default function EventDetailsPage({
 
                   {/* Registration Status Messages */}
                   {registrationStatus === 'success' && (
-                    <Alert className="mb-4 border-green-200 bg-green-50">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <AlertDescription className="text-green-800">
+                    <Alert className="mb-4 border-success/20 bg-success/5">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <AlertDescription className="text-success">
                         {successMessage ||
                           "Registration successful! You're all set for the event."}
                       </AlertDescription>
@@ -1215,9 +1215,9 @@ export default function EventDetailsPage({
                   )}
 
                   {registrationStatus === 'error' && (
-                    <Alert className="mb-4 border-red-200 bg-red-50">
-                      <AlertTriangle className="h-4 w-4 text-red-600" />
-                      <AlertDescription className="text-red-800">
+                    <Alert className="mb-4 border-destructive/20 bg-destructive/5">
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                      <AlertDescription className="text-destructive">
                         {errorMessage}
                       </AlertDescription>
                     </Alert>
@@ -1229,9 +1229,9 @@ export default function EventDetailsPage({
                       disabled={registering || isRegistered}
                       className={`w-full py-3 rounded-lg font-semibold text-base mb-4 ${
                         isRegistered
-                          ? 'bg-green-600 hover:bg-green-700'
-                          : 'bg-indigo-600 hover:bg-indigo-700'
-                      } text-white`}
+                          ? 'bg-success hover:bg-success/90'
+                          : 'bg-primary hover:bg-primary/90'
+                      } text-primary-foreground`}
                     >
                       {isRegistered ? (
                         <>
@@ -1247,29 +1247,29 @@ export default function EventDetailsPage({
                   ) : (
                     <Button
                       disabled
-                      className="w-full py-3 rounded-lg font-semibold text-base mb-4 bg-gray-300 text-gray-500"
+                      className="w-full py-3 rounded-lg font-semibold text-base mb-4 bg-muted text-muted-foreground"
                     >
                       Registration Closed
                     </Button>
                   )}
 
                   {/* Event Stats */}
-                  <div className="space-y-3 text-sm border-t border-gray-100 pt-4">
+                  <div className="space-y-3 text-sm border-t border-border pt-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Participants</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-muted-foreground">Participants</span>
+                      <span className="font-semibold text-foreground">
                         {event.current_participants}
                         {event.capacity &&
                           ` / ${event.capacity}`}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Event Views</span>
-                      <span className="font-semibold text-gray-900">2,450</span>
+                      <span className="text-muted-foreground">Event Views</span>
+                      <span className="font-semibold text-foreground">2,450</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Team Size</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-muted-foreground">Team Size</span>
+                      <span className="font-semibold text-foreground">
                         {getTeamSizeDisplay(event.team_size || 'solo')}
                       </span>
                     </div>
@@ -1278,25 +1278,25 @@ export default function EventDetailsPage({
               </Card>
 
               {/* Event Features */}
-              <Card className="border border-gray-200">
+              <Card className="border border-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Event Features</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {contactInfo.certificates_enabled && (
                     <div className="flex items-center text-sm">
-                      <Award className="h-4 w-4 mr-2 text-green-500" />
+                      <Award className="h-4 w-4 mr-2 text-success" />
                       <span>Digital Certificates</span>
                     </div>
                   )}
                   {contactInfo.qr_enabled && (
                     <div className="flex items-center text-sm">
-                      <CheckCircle className="h-4 w-4 mr-2 text-blue-500" />
+                      <CheckCircle className="h-4 w-4 mr-2 text-primary" />
                       <span>QR Code Attendance</span>
                     </div>
                   )}
                   <div className="flex items-center text-sm">
-                    <Eye className="h-4 w-4 mr-2 text-purple-500" />
+                    <Eye className="h-4 w-4 mr-2 text-primary" />
                     <span>Live Event Updates</span>
                   </div>
                 </CardContent>
@@ -1313,7 +1313,7 @@ export default function EventDetailsPage({
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center text-2xl">
-              <User className="h-6 w-6 mr-2 text-indigo-600" />
+              <User className="h-6 w-6 mr-2 text-primary" />
               {event?.team_size === 'solo'
                 ? 'Register for Event'
                 : 'Team Registration'}
@@ -1328,9 +1328,9 @@ export default function EventDetailsPage({
           <div className="space-y-6">
             {/* Status Messages */}
             {registrationStatus === 'error' && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800">
+              <Alert className="border-destructive/20 bg-destructive/5">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+                <AlertDescription className="text-destructive">
                   {errorMessage}
                 </AlertDescription>
               </Alert>
@@ -1339,7 +1339,7 @@ export default function EventDetailsPage({
             {event?.team_size === 'solo' ? (
               // Solo Registration Form
               <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 mb-4 text-lg">
+                <h3 className="font-semibold text-foreground mb-4 text-lg">
                   Personal Information
                 </h3>
                 <div className="grid md:grid-cols-2 gap-4">
@@ -1465,16 +1465,16 @@ export default function EventDetailsPage({
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900 text-lg">
+                    <h3 className="font-semibold text-foreground text-lg">
                       Team Members
                     </h3>
                   </div>
 
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {registrationData.teamMembers.map((member, index) => (
-                      <Card key={index} className="border border-gray-200 p-4">
+                      <Card key={index} className="border border-border p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-foreground">
                             {index === 0 ? 'Team Leader' : `Member ${index}`}
                           </h4>
                         </div>
@@ -1593,7 +1593,7 @@ export default function EventDetailsPage({
               </div>
             )}
 
-            <div className="flex space-x-3 pt-4 border-t border-gray-200">
+            <div className="flex space-x-3 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
@@ -1605,7 +1605,7 @@ export default function EventDetailsPage({
               <Button
                 onClick={submitRegistration}
                 disabled={registering}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                className="flex-1 bg-primary hover:bg-primary/90"
               >
                 {registering ? 'Registering...' : 'Complete Registration'}
               </Button>

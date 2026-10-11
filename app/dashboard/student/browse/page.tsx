@@ -30,9 +30,9 @@ interface EventWithClub extends Event {
 /* ---------------- HELPERS ---------------- */
 
 const statusStyle: Record<string, string> = {
-  published: 'bg-emerald-50 text-emerald-700',
-  completed: 'bg-blue-50 text-blue-700',
-  cancelled: 'bg-red-50 text-red-700',
+  published: 'bg-success/5 text-success',
+  completed: 'bg-primary/5 text-primary',
+  cancelled: 'bg-destructive/5 text-destructive',
 };
 
 const getModeIcon = (mode: string) => {
@@ -93,11 +93,11 @@ export default function BrowseEventsPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#f6f7fb]" />;
+    return <div className="min-h-screen bg-background" />;
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb] px-6 py-8">
+    <div className="min-h-screen bg-background px-6 py-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* ================= HEADER CARD ================= */}
         <div
@@ -105,8 +105,8 @@ export default function BrowseEventsPage() {
             relative
             overflow-hidden
             rounded-2xl
-            bg-white
-            border border-black/5
+            bg-card
+            border border-border/5
             p-6
             flex items-center justify-between
             animate-in fade-in slide-in-from-bottom-2
@@ -114,7 +114,7 @@ export default function BrowseEventsPage() {
           "
         >
           {/* decorative gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-200/70 via-purple-100/40 to-transparent" />
+          <div className="absolute inset-0 bg-background/40" />
 
           <div className="relative">
             <h1 className="text-3xl font-semibold tracking-tight">
@@ -126,17 +126,17 @@ export default function BrowseEventsPage() {
           </div>
 
           <div className="relative">
-            <div className="rounded-full bg-indigo-100 text-indigo-700 px-4 py-1.5 text-sm font-medium">
+            <div className="rounded-full bg-primary/10 text-primary px-4 py-1.5 text-sm font-medium">
               {filtered.length} events
             </div>
           </div>
         </div>
 
         {/* ================= FILTER BAR ================= */}
-        <Card className="border border-black/5 shadow-sm rounded-2xl">
+        <Card className="border border-border/5 shadow-soft rounded-2xl">
           <CardContent className="p-5 flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-[240px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 className="pl-10 h-9"
                 placeholder="Search events or clubs"
@@ -190,10 +190,10 @@ export default function BrowseEventsPage() {
                 className="
                   group
                   rounded-2xl
-                  border border-black/5
-                  bg-white
+                  border border-border/5
+                  bg-card
                   transition-all
-                  hover:shadow-lg
+                  hover:shadow-soft-lg
                   hover:-translate-y-1
                 "
               >
@@ -210,7 +210,7 @@ export default function BrowseEventsPage() {
 
                   <div className="absolute top-3 right-3">
                     <Badge
-                      className={statusStyle[event.status] || 'bg-gray-100'}
+                      className={statusStyle[event.status] || 'bg-muted'}
                     >
                       {event.status}
                     </Badge>
@@ -224,16 +224,16 @@ export default function BrowseEventsPage() {
                       {event.title}
                     </h3>
                     {event.club && (
-                      <p className="text-sm text-indigo-600 font-medium">
+                      <p className="text-sm text-primary font-medium">
                         {event.club.name}
                       </p>
                     )}
                   </div>
 
                   {/* Meta block */}
-                  <div className="rounded-lg bg-gray-50 p-3 space-y-2 text-sm text-gray-600">
+                  <div className="rounded-lg bg-background p-3 space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-indigo-500" />
+                      <Calendar className="h-4 w-4 text-primary" />
                       {formatDate(event.starts_at)}
                     </div>
 
@@ -244,19 +244,19 @@ export default function BrowseEventsPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-indigo-500" />
+                      <Users className="h-4 w-4 text-primary" />
                       {event.current_participants} participants
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
                     <span className="font-medium">
                       {event.fee > 0 ? `₹${event.fee}` : 'Free'}
                     </span>
 
                     {event.prize_pool && (
-                      <span className="text-emerald-600 font-medium text-sm">
+                      <span className="text-success font-medium text-sm">
                         <Trophy className="h-4 w-4 inline mr-1" />₹
                         {event.prize_pool.toLocaleString()}
                       </span>

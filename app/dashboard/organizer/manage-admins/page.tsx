@@ -209,25 +209,25 @@ export default function ManageAdminsPage() {
 
   if (loading && !currentClub) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
   if (!currentClub && !loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-2xl mx-auto">
-          <Card className="border-2 border-yellow-200 bg-yellow-50">
+          <Card className="border-2 border-warning/20 bg-warning/5">
             <CardContent className="p-6 text-center">
-              <p className="text-yellow-900 font-medium mb-2">No club selected</p>
-              <p className="text-yellow-700 text-sm mb-4">Please create a club or select one from the event management hub</p>
-              <Link href="/dashboard/organizer/create-club">
-                <Button className="bg-yellow-600 hover:bg-yellow-700">
+              <p className="text-warning font-medium mb-2">No club selected</p>
+              <p className="text-warning text-sm mb-4">Please create a club or select one from the event management hub</p>
+              <Button asChild className="bg-warning hover:bg-warning/90">
+                <Link href="/dashboard/organizer/create-club">
                   Create Your First Club
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -236,52 +236,52 @@ export default function ManageAdminsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 backdrop-blur-xl"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12 backdrop-blur-xl"></div>
+        <div className="bg-success rounded-3xl p-8 text-primary-foreground relative overflow-hidden shadow-soft-lg">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-card/10 rounded-full -translate-y-16 translate-x-16 backdrop-blur-xl"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-card/5 rounded-full translate-y-12 -translate-x-12 backdrop-blur-xl"></div>
           <div className="relative">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
-                    <Users className="h-7 w-7 text-white" />
+                  <div className="w-14 h-14 bg-card/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                    <Users className="h-7 w-7 text-primary-foreground" />
                   </div>
                   <h1 className="text-4xl font-black">Manage Admins</h1>
                 </div>
-                <p className="text-emerald-50 text-lg">Add or remove club administrators for {currentClub?.name}</p>
+                <p className="text-success-foreground text-lg">Add or remove club administrators for {currentClub?.name}</p>
               </div>
-              <Link href="/dashboard/organizer/host">
-                <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 font-semibold px-6 py-3 rounded-xl backdrop-blur-sm hover:scale-105 transition-all duration-300">
+              <Button asChild className="bg-card/20 hover:bg-accent/30 text-primary-foreground border border-border/30 font-semibold px-6 py-3 rounded-xl backdrop-blur-sm hover:scale-105 transition-all duration-300">
+                <Link href="/dashboard/organizer/host">
                   Back to Hub
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Current Club Info */}
-        <Card className="border-0 shadow-xl bg-white">
-          <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b">
-            <CardTitle className="flex items-center gap-2 text-emerald-900">
+        <Card className="border-0 shadow-soft-lg bg-card">
+          <CardHeader className="bg-background border-b">
+            <CardTitle className="flex items-center gap-2 text-success">
               <Shield className="h-5 w-5" />
               Managing Club
             </CardTitle>
             <CardDescription>You are managing administrators for this club</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-200">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <Users className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-4 p-4 bg-background rounded-xl border-2 border-success/20">
+              <div className="w-12 h-12 bg-success rounded-xl flex items-center justify-center">
+                <Users className="h-6 w-6 text-primary-foreground" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900">{currentClub?.name}</h3>
-                <p className="text-sm text-gray-600">{currentClub?.category} • {currentClub?.college}</p>
+                <h3 className="text-lg font-bold text-foreground">{currentClub?.name}</h3>
+                <p className="text-sm text-muted-foreground">{currentClub?.category} • {currentClub?.college}</p>
               </div>
               {isOwner && (
-                <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500">
+                <Badge className="bg-warning">
                   <Crown className="h-3 w-3 mr-1" />
                   Owner
                 </Badge>
@@ -292,9 +292,9 @@ export default function ManageAdminsPage() {
 
         {/* Owner Status */}
         {!isOwner && (
-          <Alert className="border-2 border-amber-200 bg-amber-50">
-            <AlertCircle className="h-5 w-5 text-amber-600" />
-            <AlertDescription className="text-amber-900 font-medium">
+          <Alert className="border-2 border-warning/20 bg-warning/5">
+            <AlertCircle className="h-5 w-5 text-warning" />
+            <AlertDescription className="text-warning font-medium">
               You are an admin but not the owner. Only the owner can add/remove admins.
             </AlertDescription>
           </Alert>
@@ -302,9 +302,9 @@ export default function ManageAdminsPage() {
 
         {/* Add Admin (Owner Only) */}
         {isOwner && admins.length < 5 && (
-          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-emerald-50/30">
-            <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-teal-50">
-              <CardTitle className="flex items-center gap-2 text-emerald-900">
+          <Card className="border-0 shadow-soft-lg bg-background">
+            <CardHeader className="border-b bg-background">
+              <CardTitle className="flex items-center gap-2 text-success">
                 <UserPlus className="h-5 w-5" />
                 Add New Admin
               </CardTitle>
@@ -343,7 +343,7 @@ export default function ManageAdminsPage() {
                   )}
                 </Button>
               </div>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 User must have an account on Clunite first
               </p>
             </CardContent>
@@ -364,10 +364,10 @@ export default function ManageAdminsPage() {
           <CardContent>
             {loading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : admins.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No admins found</p>
+              <p className="text-center text-muted-foreground py-8">No admins found</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -387,13 +387,13 @@ export default function ManageAdminsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-gray-400" />
+                          <Mail className="h-4 w-4 text-muted-foreground" />
                           {admin.user?.email}
                         </div>
                       </TableCell>
                       <TableCell>
                         {admin.is_owner ? (
-                          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500">
+                          <Badge className="bg-warning">
                             <Crown className="h-3 w-3 mr-1" />
                             Owner
                           </Badge>
@@ -404,7 +404,7 @@ export default function ManageAdminsPage() {
                           </Badge>
                         )}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-600">
+                      <TableCell className="text-sm text-muted-foreground">
                         {admin.verified_via_pin ? 'Via PIN' : 'Invited'}
                       </TableCell>
                       {isOwner && (
@@ -414,7 +414,7 @@ export default function ManageAdminsPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleRemoveAdmin(admin.user_id, admin.user?.full_name ?? admin.user?.email ?? "this admin")}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/5"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -430,13 +430,13 @@ export default function ManageAdminsPage() {
         </Card>
 
         {/* Info Card */}
-        <Card className="border-indigo-200 bg-indigo-50">
+        <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-4">
             <div className="flex gap-3">
-              <AlertCircle className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-indigo-900">
+              <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-primary">
                 <p className="font-medium mb-1">Admin Permissions:</p>
-                <ul className="list-disc list-inside space-y-1 text-indigo-800">
+                <ul className="list-disc list-inside space-y-1 text-primary">
                   <li>Create and manage events for the club</li>
                   <li>View participant data and statistics</li>
                   <li>Access organizer dashboard</li>

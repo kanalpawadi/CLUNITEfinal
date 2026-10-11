@@ -29,10 +29,10 @@ export default function DashboardLayout({
   // Show loading while checking auth
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
-          <p className="text-slate-600">Loading...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     )
@@ -41,10 +41,10 @@ export default function DashboardLayout({
   // If no user after loading, show loading while redirecting
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
-          <p className="text-slate-600">Redirecting to login...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
       </div>
     )
@@ -52,11 +52,11 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-slate-50">
+      <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <DashboardHeader />
-          <main className="flex-1 p-6 bg-slate-50">{children}</main>
+          <main className="flex-1 p-6 bg-background">{children}</main>
         </div>
       </div>
     </SidebarProvider>

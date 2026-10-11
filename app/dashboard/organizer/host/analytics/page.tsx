@@ -232,43 +232,43 @@ export default function ModernAnalyticsPage() {
   const getInsightColor = (type: string) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200 text-green-800';
+        return 'bg-success/5 border-success/20 text-success';
       case 'warning':
-        return 'bg-orange-50 border-orange-200 text-orange-800';
+        return 'bg-primary/5 border-primary/20 text-primary';
       case 'info':
-        return 'bg-blue-50 border-blue-200 text-blue-800';
+        return 'bg-primary/5 border-primary/20 text-primary';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return 'bg-background border-border text-foreground';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FBF7F4] p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading analytics data...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground font-medium">Loading analytics data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FBF7F4] p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard/organizer/host">
-              <Button variant="outline" size="icon" className="rounded-full">
+            <Button asChild variant="outline" size="icon" className="rounded-full">
+              <Link href="/dashboard/organizer/host">
                 <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">
+              <h1 className="text-4xl font-bold text-foreground">
                 Analytics Dashboard
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 Real-time insights into your event performance
               </p>
             </div>
@@ -276,7 +276,7 @@ export default function ModernAnalyticsPage() {
           <div className="flex items-center gap-3">
             <Dialog open={expenseOpen} onOpenChange={setExpenseOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Add Transaction
                 </Button>
               </DialogTrigger>
@@ -286,7 +286,7 @@ export default function ModernAnalyticsPage() {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       Event
                     </label>
                     <Select
@@ -308,7 +308,7 @@ export default function ModernAnalyticsPage() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       Type *
                     </label>
                     <Select
@@ -328,7 +328,7 @@ export default function ModernAnalyticsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Category
                       </label>
                       <Input
@@ -344,7 +344,7 @@ export default function ModernAnalyticsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Amount (₹)
                       </label>
                       <Input
@@ -363,7 +363,7 @@ export default function ModernAnalyticsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Vendor
                       </label>
                       <Input
@@ -378,7 +378,7 @@ export default function ModernAnalyticsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Payment Method
                       </label>
                       <Input
@@ -395,7 +395,7 @@ export default function ModernAnalyticsPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       Incurred At
                     </label>
                     <Input
@@ -411,7 +411,7 @@ export default function ModernAnalyticsPage() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       Notes
                     </label>
                     <Input
@@ -504,16 +504,16 @@ export default function ModernAnalyticsPage() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Total Events */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <Card className="border-none shadow-soft bg-primary text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Total Events
               </CardTitle>
-              <Calendar className="h-5 w-5 text-white" />
+              <Calendar className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">{stats.totalEvents}</div>
-              <div className="flex items-center gap-1 text-sm text-white/90">
+              <div className="flex items-center gap-1 text-sm text-primary-foreground/90">
                 <TrendingUp className="h-3.5 w-3.5" />
                 <span>+{stats.growthRate}% from last month</span>
               </div>
@@ -521,18 +521,18 @@ export default function ModernAnalyticsPage() {
           </Card>
 
           {/* Total Participants */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <Card className="border-none shadow-soft bg-primary text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Total Participants
               </CardTitle>
-              <Users className="h-5 w-5 text-white" />
+              <Users className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">
                 {stats.totalParticipants.toLocaleString()}
               </div>
-              <div className="flex items-center gap-1 text-sm text-white/90">
+              <div className="flex items-center gap-1 text-sm text-primary-foreground/90">
                 <TrendingUp className="h-3.5 w-3.5" />
                 <span>Across all events</span>
               </div>
@@ -540,66 +540,66 @@ export default function ModernAnalyticsPage() {
           </Card>
 
           {/* Average Satisfaction */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="border-none shadow-soft bg-primary text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Avg Satisfaction
               </CardTitle>
-              <Award className="h-5 w-5 text-white" />
+              <Award className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">
                 {stats.avgSatisfaction}/5.0
               </div>
-              <p className="text-sm text-white/90">Excellent rating</p>
+              <p className="text-sm text-primary-foreground/90">Excellent rating</p>
             </CardContent>
           </Card>
 
           {/* Total Revenue */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <Card className="border-none shadow-soft bg-success text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Total Revenue
               </CardTitle>
-              <DollarSign className="h-5 w-5 text-white" />
+              <DollarSign className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">
                 ₹{stats.totalRevenue.toLocaleString()}
               </div>
-              <p className="text-sm text-white/90">+18.2% growth</p>
+              <p className="text-sm text-primary-foreground/90">+18.2% growth</p>
             </CardContent>
           </Card>
 
           {/* Engagement Rate */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-pink-500 to-pink-600 text-white">
+          <Card className="border-none shadow-soft bg-primary text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Engagement Rate
               </CardTitle>
-              <Zap className="h-5 w-5 text-white" />
+              <Zap className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">
                 {stats.engagementRate}%
               </div>
-              <p className="text-sm text-white/90">Above average</p>
+              <p className="text-sm text-primary-foreground/90">Above average</p>
             </CardContent>
           </Card>
 
           {/* Growth Rate */}
-          <Card className="border-none shadow-md bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+          <Card className="border-none shadow-soft bg-success text-primary-foreground">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white">
+              <CardTitle className="text-sm font-medium text-primary-foreground">
                 Growth Rate
               </CardTitle>
-              <TrendingUp className="h-5 w-5 text-white" />
+              <TrendingUp className="h-5 w-5 text-primary-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold mb-1">
                 +{stats.growthRate}%
               </div>
-              <p className="text-sm text-white/90">Month over month</p>
+              <p className="text-sm text-primary-foreground/90">Month over month</p>
             </CardContent>
           </Card>
         </div>
@@ -623,22 +623,22 @@ export default function ModernAnalyticsPage() {
                 {insights.map((insight, index) => {
                   const IconComponent = getInsightIcon(insight.icon);
                   const gradients = [
-                    'bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200',
-                    'bg-gradient-to-br from-red-50 to-rose-100 border-red-200',
-                    'bg-gradient-to-br from-blue-50 to-cyan-100 border-blue-200',
-                    'bg-gradient-to-br from-green-50 to-emerald-100 border-green-200',
+                    'bg-background border-warning/20',
+                    'bg-background border-destructive/20',
+                    'bg-background border-primary/20',
+                    'bg-background border-success/20',
                   ];
                   return (
                     <div
                       key={index}
                       className={`flex gap-3 rounded-lg border p-4 ${gradients[index % gradients.length]}`}
                     >
-                      <IconComponent className="h-5 w-5 text-gray-700 mt-0.5" />
+                      <IconComponent className="h-5 w-5 text-foreground mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-semibold text-sm mb-1 text-gray-900">
+                        <p className="font-semibold text-sm mb-1 text-foreground">
                           {insight.title}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {insight.message}
                         </p>
                       </div>
@@ -754,23 +754,23 @@ export default function ModernAnalyticsPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                        <tr className="border-b border-border">
+                          <th className="text-left py-3 px-4 font-semibold text-foreground">
                             Event
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                          <th className="text-left py-3 px-4 font-semibold text-foreground">
                             Type
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-700">
+                          <th className="text-right py-3 px-4 font-semibold text-foreground">
                             Registrations
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-700">
+                          <th className="text-right py-3 px-4 font-semibold text-foreground">
                             Attendance
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-700">
+                          <th className="text-right py-3 px-4 font-semibold text-foreground">
                             Revenue
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-gray-700">
+                          <th className="text-right py-3 px-4 font-semibold text-foreground">
                             Rate
                           </th>
                         </tr>
@@ -779,9 +779,9 @@ export default function ModernAnalyticsPage() {
                         {eventComparison.slice(0, 10).map((event, index) => (
                           <tr
                             key={index}
-                            className="border-b border-gray-100 hover:bg-gray-50"
+                            className="border-b border-border hover:bg-accent"
                           >
-                            <td className="py-3 px-4 font-medium text-gray-900">
+                            <td className="py-3 px-4 font-medium text-foreground">
                               {event.title}
                             </td>
                             <td className="py-3 px-4">
@@ -803,8 +803,8 @@ export default function ModernAnalyticsPage() {
                                 className={`font-bold ${
                                   event.registrations > 0 &&
                                   event.attendance / event.registrations > 0.8
-                                    ? 'text-green-600'
-                                    : 'text-orange-600'
+                                    ? 'text-success'
+                                    : 'text-primary'
                                 }`}
                               >
                                 {event.registrations > 0
@@ -868,42 +868,42 @@ export default function ModernAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-3">
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200">
-                    <div className="flex items-center gap-2 text-sm text-green-700 mb-2">
+                  <div className="p-4 rounded-lg bg-background border border-success/20">
+                    <div className="flex items-center gap-2 text-sm text-success mb-2">
                       <TrendingUp className="h-4 w-4" />
                       <span className="font-medium">Total Income</span>
                     </div>
-                    <p className="text-3xl font-bold text-green-900">
+                    <p className="text-3xl font-bold text-success">
                       ₹{financial.totalIncome.toLocaleString()}
                     </p>
-                    <p className="text-xs text-green-600 mt-1">
+                    <p className="text-xs text-success mt-1">
                       From all events
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-red-50 to-rose-100 border border-red-200">
-                    <div className="flex items-center gap-2 text-sm text-red-700 mb-2">
+                  <div className="p-4 rounded-lg bg-background border border-destructive/20">
+                    <div className="flex items-center gap-2 text-sm text-destructive mb-2">
                       <TrendingDown className="h-4 w-4" />
                       <span className="font-medium">Total Expenses</span>
                     </div>
-                    <p className="text-3xl font-bold text-red-900">
+                    <p className="text-3xl font-bold text-destructive">
                       ₹{financial.totalExpenses.toLocaleString()}
                     </p>
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="text-xs text-destructive mt-1">
                       Operational costs
                     </p>
                   </div>
                   <div
                     className={`p-4 rounded-lg border ${
                       financial.netProfit >= 0
-                        ? 'bg-gradient-to-br from-blue-50 to-cyan-100 border-blue-200'
-                        : 'bg-gradient-to-br from-orange-50 to-amber-100 border-orange-200'
+                        ? 'bg-background border-primary/20'
+                        : 'bg-background border-primary/20'
                     }`}
                   >
                     <div
                       className={`flex items-center gap-2 text-sm mb-2 ${
                         financial.netProfit >= 0
-                          ? 'text-blue-700'
-                          : 'text-orange-700'
+                          ? 'text-primary'
+                          : 'text-primary'
                       }`}
                     >
                       {financial.netProfit >= 0 ? (
@@ -916,8 +916,8 @@ export default function ModernAnalyticsPage() {
                     <p
                       className={`text-3xl font-bold ${
                         financial.netProfit >= 0
-                          ? 'text-blue-900'
-                          : 'text-orange-900'
+                          ? 'text-primary'
+                          : 'text-primary'
                       }`}
                     >
                       ₹{financial.netProfit.toLocaleString()}
@@ -925,8 +925,8 @@ export default function ModernAnalyticsPage() {
                     <p
                       className={`text-xs mt-1 ${
                         financial.netProfit >= 0
-                          ? 'text-blue-600'
-                          : 'text-orange-600'
+                          ? 'text-primary'
+                          : 'text-primary'
                       }`}
                     >
                       {financial.netProfit >= 0

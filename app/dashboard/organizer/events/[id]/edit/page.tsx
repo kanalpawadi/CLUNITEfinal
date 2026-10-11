@@ -20,19 +20,19 @@ export default async function EditEventPage({ params }: { params: { id: string }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/organizer/host/analytics">
-            <Button variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/organizer/host/analytics">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Analytics
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Edit Event</h1>
-            <p className="text-gray-600 mt-1">Update your event details</p>
+            <h1 className="text-3xl font-bold text-foreground">Edit Event</h1>
+            <p className="text-muted-foreground mt-1">Update your event details</p>
           </div>
         </div>
 
