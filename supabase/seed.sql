@@ -104,6 +104,16 @@ begin
            (v_past, 2, 'Final pitch', 'Shortlisted teams upload their pitch deck.', now() + interval '4 days', now() + interval '9 days', 'file', 100);
   end if;
 
+  -- A team event (teams of 4-8) for trying invite codes and the team board
+  select id into v_club from public.clubs where slug = 'demo-ai-data';
+  if v_club is not null and not exists (select 1 from public.events where club_id = v_club and title = 'Demo AI Build Jam') then
+    insert into public.events (club_id, title, description, venue, starts_at, ends_at, capacity, fee, status, category, type, mode,
+                               registration_deadline, team_size, level, prize_pool, created_by)
+    values (v_club, 'Demo AI Build Jam', '[DEMO] Build an AI app in teams of 4-8. Invite teammates with your team code.',
+            'AI Lab', now() + interval '6 days', now() + interval '7 days', 120, 0, 'published', 'Technical',
+            'hackathon', 'offline', now() + interval '5 days', 'group_4+', 'intermediate', 15000, v_owner);
+  end if;
+
   -- One attended past event -> one real certificate for the owner
   if v_first_past is not null then
     insert into public.event_registrations (event_id, user_id, status, registration_data, participant_count)

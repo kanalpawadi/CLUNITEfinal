@@ -10,6 +10,7 @@ import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { RegisterForm } from "@/components/events/RegisterForm"
 import { EventPaymentPanel } from "@/components/payments/EventPaymentPanel"
 import { CompetitionPanel } from "@/components/competitions/CompetitionPanel"
+import { TeamPanel } from "@/components/teams/TeamPanel"
 
 export const metadata: Metadata = { title: "Register · Clunite" }
 
@@ -18,17 +19,20 @@ export default async function RegisterPage({ params }: { params: { id: string } 
   const user = await requireAuthUser(`/events/${params.id}/register`)
   const supabase = createClient()
 
-  const [{ data: event }, { data: registration }, profile] = await Promise.all([
+  const REG_FIELDS = "id, status, payment_status, created_at, participant_count, team_name, invite_code, event_id"
+  const [{ data: event }, { data: ownRegistration }, { data: teamRows }, profile] = await Promise.all([
     supabase.from("events").select("*, club:clubs(name)").eq("id", params.id).maybeSingle(),
-    supabase
-      .from("event_registrations")
-      .select("id, status, payment_status, created_at, participant_count")
-      .eq("event_id", params.id)
-      .eq("user_id", user.id)
-      .maybeSingle(),
+    supabase.from("event_registrations").select(REG_FIELDS).eq("event_id", params.id).eq("user_id", user.id).maybeSingle(),
+    // Team membership via an invite (RLS: members can see their team's registration)
+    supabase.from("team_members").select(`registration:event_registrations(${REG_FIELDS})`).eq("user_id", user.id),
     getProfile(),
   ])
   if (!event) notFound()
+
+  const teamRegistration = (teamRows ?? []).map((t) => t.registration).find((r) => r?.event_id === params.id && r.status !== "cancelled")
+  const registration = ownRegistration && ownRegistration.status !== "cancelled" ? ownRegistration : (teamRegistration ?? ownRegistration)
+  const isLead = !!registration && registration.id === ownRegistration?.id
+  const capacity = teamRange(event.team_size).max
 
   const active = registration && registration.status !== "cancelled"
   const availability = registrationAvailability(event)
@@ -36,6 +40,8 @@ export default async function RegisterPage({ params }: { params: { id: string } 
 
   // Competition rounds (RLS: rounds of published events; own team's submissions only)
   const { data: rounds } = await supabase.from("event_rounds").select("*").eq("event_id", event.id).order("round_no")
+  const { data: roster } =
+    active && capacity > 1 ? await supabase.rpc("get_team_roster", { p_registration_id: registration.id }) : { data: null }
   const { data: mySubmissions } =
     active && rounds && rounds.length > 0
       ? await supabase.from("round_submissions").select("*").eq("registration_id", registration.id)
@@ -66,7 +72,12 @@ export default async function RegisterPage({ params }: { params: { id: string } 
                 {registration.participant_count > 1 && ` · team of ${registration.participant_count}`}.
                 {registration.status === "waitlisted" && " You're on the waitlist."}
               </p>
-              {event.fee > 0 && (
+              {event.fee > 0 && !isLead && !paid && (
+                <p className="rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
+                  Your team lead pays the registration fee. Submissions unlock once it&apos;s paid.
+                </p>
+              )}
+              {event.fee > 0 && isLead && (
                 <EventPaymentPanel
                   eventId={event.id}
                   amount={event.fee}
@@ -102,6 +113,20 @@ export default async function RegisterPage({ params }: { params: { id: string } 
             <p className="text-sm text-muted-foreground">{availability.message}</p>
           )}
         </div>
+
+        {active && capacity > 1 && (
+          <div className="mt-8">
+            <TeamPanel
+              eventId={event.id}
+              registrationId={registration.id}
+              teamName={registration.team_name}
+              inviteCode={isLead ? registration.invite_code : null}
+              isLead={isLead}
+              roster={roster ?? []}
+              capacity={capacity}
+            />
+          </div>
+        )}
 
         {active && rounds && rounds.length > 0 && (
           <div className="mt-8">

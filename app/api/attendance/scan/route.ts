@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { verifyScannedToken } from "@/lib/qr/credentials"
 import { scanRequestSchema, type ScanAttendee, type ScanOutcome, type ScanResponse } from "@/lib/qr/scan-types"
 import { effectiveStatus } from "@/lib/membership"
+import { findMyRegistration } from "@/lib/competitions.server"
 
 const MESSAGES: Record<ScanOutcome, string> = {
   checked_in: "Checked in. Welcome!",
@@ -58,7 +59,7 @@ export const POST = handler(async (request) => {
       .eq("club_id", event.club_id)
       .eq("user_id", uid)
       .maybeSingle(),
-    admin.from("event_registrations").select("status, payment_status").eq("event_id", eventId).eq("user_id", uid).maybeSingle(),
+    findMyRegistration(admin, eventId, uid).then((data) => ({ data })),
   ])
 
   // Minimal identity for the door: name, photo, member code, plan.

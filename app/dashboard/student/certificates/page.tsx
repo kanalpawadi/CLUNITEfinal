@@ -24,9 +24,12 @@ export default async function CertificatesPage() {
     .eq("user_id", user.id)
     .order("checked_in_at", { ascending: false })
 
-  // Achievements: published results for registrations the user leads
-  const { data: myRegs } = await supabase.from("event_registrations").select("id").eq("user_id", user.id)
-  const regIds = (myRegs ?? []).map((r) => r.id)
+  // Achievements: published results for registrations the user leads or is a team member of
+  const [{ data: myRegs }, { data: myTeams }] = await Promise.all([
+    supabase.from("event_registrations").select("id").eq("user_id", user.id),
+    supabase.from("team_members").select("registration_id").eq("user_id", user.id),
+  ])
+  const regIds = [...(myRegs ?? []).map((r) => r.id), ...(myTeams ?? []).map((t) => t.registration_id)]
   const { data: wins } = regIds.length
     ? await supabase
         .from("event_results")

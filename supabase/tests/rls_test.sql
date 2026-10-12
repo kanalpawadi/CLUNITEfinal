@@ -305,6 +305,75 @@ do $$ begin
   if exists (select 1 from public.event_bookmarks) then raise exception 'FAIL can read others bookmarks'; end if;
 end $$;
 
+-- Teams --------------------------------------------------------------------------------
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+insert into public.events (id, club_id, title, starts_at, fee, status, team_size)
+values ('00000000-0000-0000-0000-0000000000e4', (select id from public.clubs where slug = 'rls-test-club'), 'Duo challenge', now() + interval '2 days', 0, 'published', '2_people');
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+declare r public.event_registrations;
+begin
+  r := public.register_for_event('00000000-0000-0000-0000-0000000000e4', 'Max Team', null, 1);
+  if r.invite_code is null or r.invite_code !~ '^T-[A-Z2-9]{8}$' then raise exception 'FAIL no invite code: %', r.invite_code; end if;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+reset role;
+create temp table _code as select id, invite_code from public.event_registrations where event_id = '00000000-0000-0000-0000-0000000000e4' and user_id = '00000000-0000-0000-0000-00000000000b';
+grant select on _code to authenticated;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$
+declare v_code text := (select invite_code from _code); p record; v_reg uuid;
+begin
+  select * into p from public.preview_team_invite(lower(v_code));
+  if p.team_name <> 'Max Team' or p.members <> 1 or p.capacity <> 2 then raise exception 'FAIL preview wrong: %', row_to_json(p); end if;
+  v_reg := public.join_team(v_code);
+  if public.join_team(v_code) <> v_reg then raise exception 'FAIL join not idempotent'; end if;
+  if not exists (select 1 from public.event_registrations where id = v_reg) then raise exception 'FAIL member cannot see team registration'; end if;
+  if (select count(*) from public.team_members where registration_id = v_reg) <> 1 then raise exception 'FAIL member cannot see team'; end if;
+  if (select count(*) from public.get_team_roster(v_reg)) <> 2 then raise exception 'FAIL roster wrong'; end if;
+  begin
+    perform public.register_for_event('00000000-0000-0000-0000-0000000000e4');
+    raise exception 'FAIL team member registered solo too';
+  exception when raise_exception then
+    if sqlerrm like 'FAIL%' then raise; end if;
+  end;
+  begin
+    perform public.rotate_invite_code(v_reg);
+    raise exception 'FAIL member rotated invite code';
+  exception when insufficient_privilege then null; end;
+  insert into public.team_finder_posts (event_id, user_id, kind, skills, message) values ('00000000-0000-0000-0000-0000000000e4', auth.uid(), 'need_members', array['React'], 'Looking for a designer to join us');
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+do $$
+declare v_code text := (select invite_code from _code); p record;
+begin
+  begin
+    perform public.join_team(v_code);
+    raise exception 'FAIL joined a full team';
+  exception when raise_exception then
+    if sqlerrm like 'FAIL%' then raise; end if;
+  end;
+  if exists (select 1 from public.team_members) then raise exception 'FAIL outsider sees team members'; end if;
+  if exists (select 1 from public.get_team_roster((select id from _code))) then raise exception 'FAIL outsider sees roster'; end if;
+  select * into p from public.get_team_finder_posts('00000000-0000-0000-0000-0000000000e4');
+  if p.author <> 'Oscar O.' or p.contact_email is not null or p.is_mine then raise exception 'FAIL finder post leaks data: %', row_to_json(p); end if;
+  begin
+    insert into public.team_finder_posts (event_id, user_id, kind, message) values ('00000000-0000-0000-0000-0000000000e4', '00000000-0000-0000-0000-00000000000c', 'need_team', 'Posting as someone else');
+    raise exception 'FAIL posted as another user';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$
+begin
+  delete from public.team_members where user_id = auth.uid();
+  if exists (select 1 from public.team_members where user_id = auth.uid()) then raise exception 'FAIL member could not leave'; end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';
@@ -336,7 +405,8 @@ reset role;
 set local role anon;
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
 do $$ begin
-  if (select count(*) from public.events e join public.clubs c on c.id = e.club_id where c.slug = 'rls-test-club') <> 2 then raise exception 'FAIL anon should see published events only'; end if;
+  -- 3 published (free talk, paid workshop, duo challenge); the draft stays hidden
+  if (select count(*) from public.events e join public.clubs c on c.id = e.club_id where c.slug = 'rls-test-club') <> 3 then raise exception 'FAIL anon should see published events only'; end if;
   begin
     perform 1 from public.users;
     raise exception 'FAIL anon can query users';
@@ -348,6 +418,10 @@ do $$ begin
   begin
     perform public.get_student_leaderboard();
     raise exception 'FAIL anon can read the student leaderboard';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.get_team_finder_posts('00000000-0000-0000-0000-0000000000e4');
+    raise exception 'FAIL anon can read team finder posts';
   exception when insufficient_privilege then null; end;
   perform public.get_club_leaderboard();
   if (select count(*) from public.event_results) <> 1 then raise exception 'FAIL anon cannot see published results'; end if;

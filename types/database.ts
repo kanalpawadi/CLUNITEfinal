@@ -273,6 +273,7 @@ export type Database = {
           created_at: string
           event_id: string
           id: string
+          invite_code: string | null
           participant_count: number
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           registration_data: Json | null
@@ -285,6 +286,7 @@ export type Database = {
           created_at?: string
           event_id: string
           id?: string
+          invite_code?: string | null
           participant_count?: number
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           registration_data?: Json | null
@@ -297,6 +299,7 @@ export type Database = {
           created_at?: string
           event_id?: string
           id?: string
+          invite_code?: string | null
           participant_count?: number
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           registration_data?: Json | null
@@ -825,6 +828,63 @@ export type Database = {
           { foreignKeyName: "event_bookmarks_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
         ]
       }
+      team_members: {
+        Row: {
+          joined_at: string
+          registration_id: string
+          user_id: string
+        }
+        Insert: {
+          joined_at?: string
+          registration_id: string
+          user_id: string
+        }
+        Update: {
+          joined_at?: string
+          registration_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          { foreignKeyName: "team_members_registration_id_fkey"; columns: ["registration_id"]; isOneToOne: false; referencedRelation: "event_registrations"; referencedColumns: ["id"] },
+          { foreignKeyName: "team_members_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      team_finder_posts: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          kind: "need_team" | "need_members"
+          message: string
+          show_contact: boolean
+          skills: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          kind: "need_team" | "need_members"
+          message: string
+          show_contact?: boolean
+          skills?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          kind?: "need_team" | "need_members"
+          message?: string
+          show_contact?: boolean
+          skills?: string[]
+          user_id?: string
+        }
+        Relationships: [
+          { foreignKeyName: "team_finder_posts_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+          { foreignKeyName: "team_finder_posts_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: {
       pending_clubs_public: {
@@ -894,6 +954,21 @@ export type Database = {
         Returns: { rank: number; name: string; total_score: number; rounds_cleared: number; result_title: string | null; is_mine: boolean }[]
       }
       is_registration_member: { Args: { reg: string }; Returns: boolean }
+      get_team_roster: {
+        Args: { p_registration_id: string }
+        Returns: { name: string; is_lead: boolean; is_me: boolean; joined_at: string }[]
+      }
+      join_team: { Args: { p_code: string }; Returns: string }
+      rotate_invite_code: { Args: { p_registration_id: string }; Returns: string }
+      team_capacity: { Args: { p_team_size: string }; Returns: number }
+      preview_team_invite: {
+        Args: { p_code: string }
+        Returns: { event_id: string; event_title: string; team_name: string | null; lead_first_name: string; members: number; capacity: number }[]
+      }
+      get_team_finder_posts: {
+        Args: { p_event_id: string }
+        Returns: { id: string; kind: "need_team" | "need_members"; skills: string[]; message: string; created_at: string; author: string; avatar_url: string | null; college: string | null; contact_email: string | null; is_mine: boolean }[]
+      }
       increment_event_views: { Args: { p_event_id: string }; Returns: undefined }
       is_club_role: {
         Args: { club: string; roles: Database["public"]["Enums"]["club_role"][] }

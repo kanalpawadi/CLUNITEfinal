@@ -12,6 +12,8 @@ const PROTECTED_PATTERNS: RegExp[] = [
   /^\/admin(\/|$)/,
   /^\/clubs\/[^/]+(\/|$)/, // /clubs (listing) stays public; club pages need an account
   /^\/events\/[^/]+\/register(\/|$)/,
+  /^\/events\/[^/]+\/teams(\/|$)/, // team finder shows students' names: members only
+  /^\/teams(\/|$)/,
   /^\/payments(\/|$)/,
   /^\/update-password(\/|$)/,
 ]

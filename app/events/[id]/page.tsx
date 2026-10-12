@@ -193,6 +193,16 @@ export default async function EventDetailPage({ params }: Props) {
               {!user && availability.open && (
                 <p className="mt-2 text-xs text-muted-foreground">You&apos;ll be asked to sign in or create an account.</p>
               )}
+              {team.isTeam && availability.open && !isRegistered && (
+                <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
+                  <Link href={`/events/${event.id}/teams`} className="block text-primary underline-offset-4 hover:underline">
+                    Find teammates →
+                  </Link>
+                  <Link href="/teams/join" className="block text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                    Have an invite code? Join a team
+                  </Link>
+                </div>
+              )}
             </div>
           </aside>
         </div>
