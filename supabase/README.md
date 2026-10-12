@@ -37,6 +37,31 @@ npx supabase db push
 For later schema changes, edit `schema.sql` (the source of truth) and push a new copy the same way.
 Because it is idempotent, re-applying the whole file is safe.
 
+## Upgrading an existing project
+
+If your database was created from an older `schema.sql`, either re-run the current `schema.sql`, or paste
+`supabase/patches/ALL_upgrade.sql` into the SQL Editor (one file, safe to re-run). Individual patches in
+`supabase/patches/` add one feature each:
+
+| Patch | Adds |
+|---|---|
+| `2026-10-12_interests_leaderboard.sql` | Student interests, leaderboard opt-out, student/club leaderboards |
+| `2026-10-13_competitions.sql` | Rounds, submissions, judging, results, per-event leaderboard, `submissions` bucket |
+| `2026-10-13_discovery.sql` | Event bookmarks |
+| `2026-10-13_teams.sql` | Team invite codes, team members, team finder |
+| `2026-10-13_forms_notifications.sql` | Custom registration questions, announcements, in-app notifications |
+| `2026-10-13_opportunities.sql` | Internships & jobs, applications, private `resumes` bucket |
+| `2026-10-13_portfolio.sql` | Public student portfolio profiles |
+
+Then optionally re-run `seed.sql` to add the newer demo data (hackathon, team event, job postings).
+
+## Cron jobs (optional)
+
+Call these with `Authorization: Bearer $CRON_SECRET` (e.g. Vercel Cron):
+
+- `GET /api/cron/expire-memberships`: daily
+- `GET /api/cron/event-reminders`: hourly (emails registrants ~24h before an event)
+
 ## Auth settings
 
 Dashboard → **Authentication**:

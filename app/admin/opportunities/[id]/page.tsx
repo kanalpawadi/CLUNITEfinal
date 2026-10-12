@@ -19,7 +19,7 @@ export default async function OpportunityAdminPage({ params }: { params: { id: s
 
   const { data: apps } = await supabase
     .from("opportunity_applications")
-    .select("id, status, created_at, cover_note, phone, portfolio_url, resume_path, user:users!opportunity_applications_user_id_fkey(full_name, email, college)")
+    .select("id, status, created_at, cover_note, phone, portfolio_url, resume_path, user:users!opportunity_applications_user_id_fkey(full_name, email, college, username, profile_public, headline, skills, github_url, linkedin_url)")
     .eq("opportunity_id", o.id)
     .order("created_at")
   const rows: ApplicantRow[] = apps ?? []

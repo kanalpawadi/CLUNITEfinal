@@ -484,6 +484,38 @@ do $$ begin
   if not exists (select 1 from public.notifications where title like 'Shortlisted: Frontend intern%') then raise exception 'FAIL applicant not notified'; end if;
 end $$;
 
+-- Portfolio profiles ---------------------------------------------------------------------
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+declare p jsonb;
+begin
+  update public.users set username = 'maxm', headline = 'Frontend dev', skills = array['React'] where id = auth.uid();
+  p := public.get_public_profile('maxm');
+  if p is null or not (p->>'is_me')::boolean then raise exception 'FAIL owner cannot preview private profile'; end if;
+  if jsonb_array_length(p->'achievements') < 1 then raise exception 'FAIL achievements missing: %', p; end if;
+  if p ? 'email' or p ? 'phone' then raise exception 'FAIL profile leaks contact details'; end if;
+  begin
+    update public.users set username = 'Bad Name!' where id = auth.uid();
+    raise exception 'FAIL invalid username accepted';
+  exception when check_violation then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+do $$ begin
+  if public.get_public_profile('maxm') is not null then raise exception 'FAIL private profile visible to others'; end if;
+  begin
+    update public.users set username = 'maxm' where id = auth.uid();
+    raise exception 'FAIL duplicate username accepted';
+  exception when unique_violation then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+update public.users set profile_public = true where id = auth.uid();
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+do $$ begin
+  if public.get_public_profile('MAXM') is null then raise exception 'FAIL public profile not visible'; end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';
@@ -534,6 +566,7 @@ do $$ begin
     raise exception 'FAIL anon can read team finder posts';
   exception when insufficient_privilege then null; end;
   perform public.get_club_leaderboard();
+  if public.get_public_profile('maxm') is null then raise exception 'FAIL anon cannot see public profile'; end if;
   if (select count(*) from public.event_results) <> 1 then raise exception 'FAIL anon cannot see published results'; end if;
   begin
     perform 1 from public.round_submissions;

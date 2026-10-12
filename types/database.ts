@@ -634,6 +634,15 @@ export type Database = {
       }
       users: {
         Row: {
+          degree: string | null
+          github_url: string | null
+          graduation_year: number | null
+          headline: string | null
+          linkedin_url: string | null
+          portfolio_url: string | null
+          profile_public: boolean
+          skills: string[]
+          username: string | null
           avatar_url: string | null
           bio: string | null
           branch: string | null
@@ -650,6 +659,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          degree?: string | null
+          github_url?: string | null
+          graduation_year?: number | null
+          headline?: string | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          profile_public?: boolean
+          skills?: string[]
+          username?: string | null
           avatar_url?: string | null
           bio?: string | null
           branch?: string | null
@@ -666,6 +684,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          degree?: string | null
+          github_url?: string | null
+          graduation_year?: number | null
+          headline?: string | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          profile_public?: boolean
+          skills?: string[]
+          username?: string | null
           avatar_url?: string | null
           bio?: string | null
           branch?: string | null
@@ -1107,6 +1134,7 @@ export type Database = {
           points: number
         }[]
       }
+      get_public_profile: { Args: { p_username: string }; Returns: Json }
       get_student_leaderboard: {
         Args: { p_days?: number; p_limit?: number }
         Returns: {

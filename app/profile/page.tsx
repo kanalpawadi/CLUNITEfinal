@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/events"
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { ProfileForm } from "@/components/profile/ProfileForm"
 import { LeaderboardToggle } from "@/components/profile/LeaderboardToggle"
+import { PortfolioForm } from "@/components/profile/PortfolioForm"
 import { InterestPicker } from "@/components/interests/InterestPicker"
 import { Button } from "@/components/ui/button"
 
@@ -44,6 +45,18 @@ export default async function ProfilePage() {
             </p>
           )}
         </section>
+
+        {profile && (
+          <section aria-labelledby="portfolio" className="mt-10 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-6">
+            <h2 id="portfolio" className="text-lg font-semibold text-foreground">
+              Portfolio
+            </h2>
+            <p className="mb-4 mt-1 text-sm text-muted-foreground">
+              Your public profile for recruiters and organizers, with achievements filled in automatically.
+            </p>
+            <PortfolioForm profile={profile} />
+          </section>
+        )}
 
         {profile && (
           <section aria-labelledby="interests" className="mt-10 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-6">

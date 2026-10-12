@@ -168,7 +168,17 @@ export function OpportunityForm({ clubId, opportunity, onDone }: { clubId: strin
 }
 
 export type ApplicantRow = Pick<Application, "id" | "status" | "created_at" | "cover_note" | "phone" | "portfolio_url" | "resume_path"> & {
-  user: { full_name: string | null; email: string; college: string | null } | null
+  user: {
+    full_name: string | null
+    email: string
+    college: string | null
+    username: string | null
+    profile_public: boolean
+    headline: string | null
+    skills: string[]
+    github_url: string | null
+    linkedin_url: string | null
+  } | null
 }
 
 export function ApplicantsTable({ rows }: { rows: ApplicantRow[] }) {
@@ -211,11 +221,34 @@ export function ApplicantsTable({ rows }: { rows: ApplicantRow[] }) {
               </select>
             </div>
           </div>
+          {a.user?.headline && <p className="mt-2 text-sm text-foreground">{a.user.headline}</p>}
+          {a.user && a.user.skills.length > 0 && (
+            <ul aria-label="Skills" className="mt-2 flex flex-wrap gap-1.5">
+              {a.user.skills.slice(0, 10).map((s) => (
+                <li key={s} className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">{s}</li>
+              ))}
+            </ul>
+          )}
           {a.cover_note && <p className="mt-3 whitespace-pre-line text-sm text-foreground">{a.cover_note}</p>}
           <div className="mt-3 flex flex-wrap gap-4 text-sm">
             {a.resume_path && (
               <a href={`/api/opportunities/resume?application=${a.id}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
                 <FileDown className="h-4 w-4" aria-hidden /> Résumé
+              </a>
+            )}
+            {a.user?.username && a.user.profile_public && (
+              <a href={`/u/${a.user.username}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
+                <ExternalLink className="h-4 w-4" aria-hidden /> Clunite portfolio
+              </a>
+            )}
+            {a.user?.github_url && (
+              <a href={a.user.github_url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
+                <ExternalLink className="h-4 w-4" aria-hidden /> GitHub
+              </a>
+            )}
+            {a.user?.linkedin_url && (
+              <a href={a.user.linkedin_url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
+                <ExternalLink className="h-4 w-4" aria-hidden /> LinkedIn
               </a>
             )}
             {a.portfolio_url && (
