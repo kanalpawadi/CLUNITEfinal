@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { getAuthUser } from "@/lib/auth/server"
 import { Button } from "@/components/ui/button"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 
 const nav = [
   { href: "/events", label: "Events" },
@@ -36,9 +37,12 @@ export async function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {user ? (
-            <Button asChild size="sm">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <>
+              <NotificationBell />
+              <Button asChild size="sm">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            </>
           ) : (
             <>
               <Button asChild size="sm" variant="ghost">

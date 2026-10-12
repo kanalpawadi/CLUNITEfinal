@@ -3,6 +3,8 @@ import { z } from "zod"
 import { ApiError, enforceRateLimit, handler, requireUser } from "@/lib/api"
 import { createAdminClient } from "@/lib/supabase/admin"
 
+export const dynamic = "force-dynamic"
+
 /** Redirects to a 60-second signed URL for a submission file (the team itself or the club's organizers). */
 export const GET = handler(async (request) => {
   const { supabase, user } = await requireUser()

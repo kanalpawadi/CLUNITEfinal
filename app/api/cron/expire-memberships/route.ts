@@ -4,6 +4,8 @@ import { requireServerEnv } from "@/lib/env.server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { safeEqual } from "@/lib/payments/server"
 
+export const dynamic = "force-dynamic"
+
 /** Marks lapsed memberships as expired. Call with `Authorization: Bearer $CRON_SECRET` (e.g. Vercel Cron). */
 export const GET = handler(async (request) => {
   const secret = requireServerEnv("CRON_SECRET")

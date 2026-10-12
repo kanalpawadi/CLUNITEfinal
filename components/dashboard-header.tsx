@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 
 export function DashboardHeader() {
   const { user: authUser, signOut } = useAuth()
@@ -66,6 +67,8 @@ export function DashboardHeader() {
           </Button>
 
 
+
+          <NotificationBell />
 
           {/* User Menu */}
           <DropdownMenu>

@@ -271,6 +271,8 @@ export type Database = {
       event_registrations: {
         Row: {
           created_at: string
+          confirmation_sent_at: string | null
+          reminder_sent_at: string | null
           event_id: string
           id: string
           invite_code: string | null
@@ -284,6 +286,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          confirmation_sent_at?: string | null
+          reminder_sent_at?: string | null
           event_id: string
           id?: string
           invite_code?: string | null
@@ -297,6 +301,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          confirmation_sent_at?: string | null
+          reminder_sent_at?: string | null
           event_id?: string
           id?: string
           invite_code?: string | null
@@ -334,6 +340,7 @@ export type Database = {
           mode: string
           prize_pool: number | null
           registration_deadline: string | null
+          registration_questions: Json
           requirements: string[] | null
           starts_at: string
           status: string
@@ -365,6 +372,7 @@ export type Database = {
           mode?: string
           prize_pool?: number | null
           registration_deadline?: string | null
+          registration_questions?: Json
           requirements?: string[] | null
           starts_at: string
           status?: string
@@ -396,6 +404,7 @@ export type Database = {
           mode?: string
           prize_pool?: number | null
           registration_deadline?: string | null
+          registration_questions?: Json
           requirements?: string[] | null
           starts_at?: string
           status?: string
@@ -883,6 +892,71 @@ export type Database = {
         Relationships: [
           { foreignKeyName: "team_finder_posts_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
           { foreignKeyName: "team_finder_posts_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      event_announcements: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          emailed_count: number
+          event_id: string
+          id: string
+          title: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          emailed_count?: number
+          event_id: string
+          id?: string
+          title: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          emailed_count?: number
+          event_id?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          { foreignKeyName: "event_announcements_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+          { foreignKeyName: "event_announcements_author_id_fkey"; columns: ["author_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          { foreignKeyName: "notifications_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
         ]
       }
     }

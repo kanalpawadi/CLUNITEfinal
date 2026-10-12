@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { supabase } from "@/lib/supabase"
 import { participantDetailsSchema, type RegistrationData } from "@/lib/registration-data"
+import { validateAnswers, type Answers, type Question } from "@/lib/questions"
+import { Textarea } from "@/components/ui/textarea"
 import type { TeamRange } from "@/lib/events"
 import { getErrorMessage } from "@/lib/utils"
 
@@ -24,10 +26,12 @@ export function RegisterForm({
   eventId,
   team,
   defaults,
+  questions = [],
 }: {
   eventId: string
   team: TeamRange
   defaults: { name: string; email: string; phone: string; college: string; branch: string }
+  questions?: Question[]
 }) {
   const router = useRouter()
   const [teamName, setTeamName] = useState("")
@@ -36,6 +40,7 @@ export function RegisterForm({
     return [first, ...Array.from({ length: team.min - 1 }, blank)]
   })
   const [notes, setNotes] = useState("")
+  const [answers, setAnswers] = useState<Answers>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -55,6 +60,7 @@ export function RegisterForm({
     emails.forEach((e, i) => {
       if (e && emails.indexOf(e) !== i) next[`${i}.email`] = "Each member needs a different email"
     })
+    for (const [id, msg] of Object.entries(validateAnswers(questions, answers))) next[`q.${id}`] = msg
     setErrors(next)
     if (Object.keys(next).length > 0 || parsed.some((p) => p === null)) return null
     const valid = parsed.filter((p): p is z.infer<typeof memberSchema> => p !== null)
@@ -62,6 +68,12 @@ export function RegisterForm({
       registration_type: team.isTeam ? "team" : "solo",
       participant_details: team.isTeam ? null : valid[0],
       team_members: team.isTeam ? valid : null,
+      answers: Object.fromEntries(
+        questions.flatMap((q) => {
+          const v = answers[q.id]
+          return v === undefined || v === "" ? [] : [[q.id, typeof v === "string" ? v.trim() : v]]
+        }),
+      ),
       additional_info: { dietaryRestrictions: notes.trim() || null },
     }
   }
@@ -83,6 +95,12 @@ export function RegisterForm({
         p_participant_count: members.length,
       })
       if (error) throw error
+      // Confirmation email is best-effort; registration already succeeded
+      void fetch("/api/notifications/registration-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId }),
+      }).catch(() => undefined)
       toast.success("You're registered!")
       router.refresh()
     } catch (err) {
@@ -166,6 +184,63 @@ export function RegisterForm({
         <Button type="button" variant="outline" onClick={() => setMembers((l) => [...l, blank()])}>
           <Plus className="mr-1 h-4 w-4" aria-hidden /> Add member
         </Button>
+      )}
+
+      {questions.length > 0 && (
+        <fieldset className="space-y-4 rounded-xl border border-border p-4">
+          <legend className="px-1 text-sm font-medium text-foreground">Questions from the organizers</legend>
+          {questions.map((q) => {
+            const id = `q-${q.id}`
+            const err = errors[`q.${q.id}`]
+            const describe = err ? `${id}-error` : undefined
+            const value = answers[q.id]
+            return (
+              <div key={q.id} className="space-y-1.5">
+                {q.type === "checkbox" ? (
+                  <label className="flex items-start gap-2 text-sm text-foreground">
+                    <input
+                      id={id}
+                      type="checkbox"
+                      checked={value === true}
+                      onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.checked }))}
+                      aria-invalid={!!err}
+                      aria-describedby={describe}
+                      className="mt-1 h-4 w-4 accent-primary"
+                    />
+                    <span>
+                      {q.label}
+                      {q.required && <span className="text-destructive"> *</span>}
+                    </span>
+                  </label>
+                ) : (
+                  <>
+                    <Label htmlFor={id}>
+                      {q.label}
+                      {q.required ? <span className="text-destructive"> *</span> : <span className="text-muted-foreground"> (optional)</span>}
+                    </Label>
+                    {q.type === "textarea" ? (
+                      <Textarea id={id} rows={3} maxLength={2000} value={typeof value === "string" ? value : ""} onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))} aria-invalid={!!err} aria-describedby={describe} />
+                    ) : q.type === "select" ? (
+                      <select id={id} value={typeof value === "string" ? value : ""} onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))} aria-invalid={!!err} aria-describedby={describe} className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm">
+                        <option value="">Select…</option>
+                        {(q.options ?? []).map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Input id={id} type={q.type === "url" ? "url" : "text"} inputMode={q.type === "url" ? "url" : undefined} maxLength={2000} value={typeof value === "string" ? value : ""} onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))} aria-invalid={!!err} aria-describedby={describe} />
+                    )}
+                  </>
+                )}
+                {err && (
+                  <p id={`${id}-error`} className="text-sm text-destructive">
+                    {err}
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </fieldset>
       )}
 
       <div className="space-y-1.5">

@@ -66,6 +66,8 @@ export function handler<C>(fn: (request: NextRequest, context: C) => Promise<Res
     try {
       return await fn(request, context)
     } catch (err) {
+      // Next.js control flow (dynamic-usage bailout, redirect, notFound) must propagate untouched
+      if (typeof err === "object" && err !== null && "digest" in err && typeof err.digest === "string") throw err
       if (err instanceof ApiError) return jsonError(err.status, err.message, err.code)
       if (err instanceof ConfigError) {
         console.error(`[config] ${err.message}`)

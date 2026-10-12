@@ -374,6 +374,56 @@ begin
   if exists (select 1 from public.team_members where user_id = auth.uid()) then raise exception 'FAIL member could not leave'; end if;
 end $$;
 
+-- Registration questions, announcements, notifications -----------------------------------
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+insert into public.events (id, club_id, title, starts_at, fee, status, registration_questions)
+values ('00000000-0000-0000-0000-0000000000e5', (select id from public.clubs where slug = 'rls-test-club'), 'Form event', now() + interval '3 days', 0, 'published',
+        '[{"id":"gh","label":"GitHub profile","type":"url","required":true},{"id":"tshirt","label":"T-shirt size","type":"select","required":false,"options":["S","M"]}]');
+insert into public.event_announcements (event_id, author_id, title, body) values ('00000000-0000-0000-0000-0000000000e2', auth.uid(), 'Venue changed', 'We moved to Hall B.');
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$
+begin
+  begin
+    perform public.register_for_event('00000000-0000-0000-0000-0000000000e5', null, '{"answers":{"tshirt":"M"}}'::jsonb);
+    raise exception 'FAIL registered without a required answer';
+  exception when invalid_parameter_value then null; end;
+  perform public.register_for_event('00000000-0000-0000-0000-0000000000e5', null, '{"answers":{"gh":"https://github.com/oscar"}}'::jsonb);
+  if not exists (select 1 from public.notifications where title like 'Registered: Form event') then
+    raise exception 'FAIL no registration notification';
+  end if;
+  if exists (select 1 from public.event_announcements) then raise exception 'FAIL non-registrant sees announcements'; end if;
+  update public.notifications set read_at = now() where user_id = auth.uid();
+  begin
+    update public.notifications set title = 'hacked' where user_id = auth.uid();
+    raise exception 'FAIL user edited notification text';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into public.notifications (user_id, title) values (auth.uid(), 'fake');
+    raise exception 'FAIL user created a notification';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.notify_users(array[auth.uid()], 'x', 'y', '/');
+    raise exception 'FAIL user called notify_users';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+begin
+  if not exists (select 1 from public.event_announcements where title = 'Venue changed') then raise exception 'FAIL registrant cannot see announcement'; end if;
+  if not exists (select 1 from public.notifications where title = 'Venue changed') then raise exception 'FAIL registrant not notified of announcement'; end if;
+  begin
+    insert into public.event_announcements (event_id, author_id, title, body) values ('00000000-0000-0000-0000-0000000000e2', auth.uid(), 'Spam', 'Hello everyone');
+    raise exception 'FAIL participant posted an announcement';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+do $$ begin
+  if exists (select 1 from public.notifications where user_id <> auth.uid()) then raise exception 'FAIL can read others notifications'; end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';
@@ -405,8 +455,8 @@ reset role;
 set local role anon;
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
 do $$ begin
-  -- 3 published (free talk, paid workshop, duo challenge); the draft stays hidden
-  if (select count(*) from public.events e join public.clubs c on c.id = e.club_id where c.slug = 'rls-test-club') <> 3 then raise exception 'FAIL anon should see published events only'; end if;
+  -- 4 published (free talk, paid workshop, duo challenge, form event); the draft stays hidden
+  if (select count(*) from public.events e join public.clubs c on c.id = e.club_id where c.slug = 'rls-test-club') <> 4 then raise exception 'FAIL anon should see published events only'; end if;
   begin
     perform 1 from public.users;
     raise exception 'FAIL anon can query users';

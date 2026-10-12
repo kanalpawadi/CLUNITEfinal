@@ -19,6 +19,7 @@ export const registrationDataSchema = z.object({
   registration_type: z.string().max(40).optional().nullable(),
   participant_details: participantDetailsSchema.optional().nullable(),
   team_members: z.array(participantDetailsSchema).max(50).optional().nullable(),
+  answers: z.record(z.string().max(40), z.union([z.string().max(2000), z.boolean()])).optional().nullable(),
   additional_info: z
     .object({
       dietaryRestrictions: optionalText,
