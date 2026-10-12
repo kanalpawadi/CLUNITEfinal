@@ -155,6 +155,9 @@
 }
 
 @media print {
+  @page {
+    margin: 10mm;
+  }
   body {
     background: white;
   }
@@ -165,6 +168,17 @@
   body:has(.id-card-print) .id-card-print,
   body:has(.id-card-print) .id-card-print * {
     visibility: visible;
+  }
+  body:has(.certificate-print) * {
+    visibility: hidden;
+  }
+  body:has(.certificate-print) .certificate-print,
+  body:has(.certificate-print) .certificate-print * {
+    visibility: visible;
+  }
+  body:has(.certificate-print) .certificate-print {
+    position: absolute;
+    inset: 0 0 auto 0;
   }
   body:has(.id-card-print) .id-card-print {
     position: absolute;

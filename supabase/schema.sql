@@ -82,7 +82,8 @@ create table if not exists public.clubs (
   college             text,
   founding_date       date,
   contact_email       text,
-  faculty_in_charge   text,
+  faculty_in_charge   text, -- faculty coordinator (printed on certificates)
+  hod_name            text, -- head of department (printed on certificates)
   banner_url          text,
   social_links        jsonb,
   is_verified         boolean not null default false,
@@ -92,6 +93,8 @@ create table if not exists public.clubs (
   credibility_score   numeric(4,2) not null default 0,
   updated_at          timestamptz not null default now()
 );
+-- columns added after the first release (safe on projects created from an older schema.sql)
+alter table public.clubs add column if not exists hod_name text;
 create index if not exists idx_clubs_active on public.clubs (is_active);
 create index if not exists idx_clubs_category on public.clubs (category);
 
@@ -826,7 +829,7 @@ begin
   end if;
 
   insert into public.clubs (name, tagline, description, vision, category, college, founding_date,
-                            contact_email, official_email, faculty_in_charge, banner_url, is_verified, created_by)
+                            contact_email, official_email, faculty_in_charge, hod_name, banner_url, is_verified, created_by)
   values (
     v_pending.club_data->>'name',
     v_pending.club_data->>'tagline',
@@ -838,6 +841,7 @@ begin
     coalesce(v_pending.club_data->>'contact_email', v_pending.official_email),
     v_pending.official_email,
     v_pending.club_data->>'faculty_in_charge',
+    v_pending.club_data->>'hod_name',
     p_banner_url,
     true,
     v_uid
@@ -997,7 +1001,7 @@ grant update (full_name, phone, gender, avatar_url, college, branch, bio) on pub
 -- clubs: created only via verify_and_create_club; staff may edit presentation fields
 revoke insert, update, delete on public.clubs from authenticated;
 grant update (name, description, logo_url, banner_url, tagline, vision, category, college, founding_date,
-              contact_email, faculty_in_charge, social_links, requires_approval, is_active)
+              contact_email, faculty_in_charge, hod_name, social_links, requires_approval, is_active)
   on public.clubs to authenticated;
 
 -- pending clubs: server only, except reading your own (PIN column never readable)

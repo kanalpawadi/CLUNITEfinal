@@ -396,9 +396,11 @@ export default function StudentDashboard() {
             </CardHeader>
 
             <CardContent className="space-y-3 mt-2">
-              <Button className="w-full justify-start rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
-                <QrCode className="h-4 w-4 mr-2" />
-                Scan event QR
+              <Button asChild className="w-full justify-start rounded-lg">
+                <Link href="/dashboard/student/qr">
+                  <QrCode className="h-4 w-4 mr-2" />
+                  Show my check-in QR
+                </Link>
               </Button>
 
               <Button asChild

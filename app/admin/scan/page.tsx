@@ -29,7 +29,7 @@ export default async function ScanPage({ searchParams }: { searchParams: { event
     .in("club_id", clubIds)
     .in("status", ["published", "completed"])
     .gte("starts_at", new Date(now - 24 * 3600_000).toISOString())
-    .lte("starts_at", new Date(now + 2 * 24 * 3600_000).toISOString())
+    .lte("starts_at", new Date(now + 30 * 24 * 3600_000).toISOString())
     .order("starts_at")
 
   const events: ScannableEvent[] = (rows ?? []).map((e) => ({

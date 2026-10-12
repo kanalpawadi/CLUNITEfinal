@@ -146,6 +146,7 @@ export type Database = {
           events_hosted_count: number
           faculty_in_charge: string | null
           founding_date: string | null
+          hod_name: string | null
           id: string
           is_active: boolean
           is_verified: boolean
@@ -172,6 +173,7 @@ export type Database = {
           events_hosted_count?: number
           faculty_in_charge?: string | null
           founding_date?: string | null
+          hod_name?: string | null
           id?: string
           is_active?: boolean
           is_verified?: boolean
@@ -198,6 +200,7 @@ export type Database = {
           events_hosted_count?: number
           faculty_in_charge?: string | null
           founding_date?: string | null
+          hod_name?: string | null
           id?: string
           is_active?: boolean
           is_verified?: boolean

@@ -67,3 +67,54 @@ export const formatDate = (iso: string) => dateOnly.format(new Date(iso))
 export function seatsLeft(event: Pick<Event, "capacity" | "current_participants">): number | null {
   return event.capacity === null ? null : Math.max(0, event.capacity - event.current_participants)
 }
+
+/**
+ * Returns a high-resolution, theme-harmonised image for events.
+ * Falls back to tailored visuals based on the event's category and title.
+ */
+export function getEventImageUrl(
+  imageUrl: string | null | undefined,
+  category: string | null | undefined,
+  title?: string,
+): string {
+  if (imageUrl && imageUrl.trim().length > 0 && !imageUrl.includes("placeholder.svg")) {
+    return imageUrl
+  }
+
+  const cat = (category || "").toLowerCase()
+  const t = (title || "").toLowerCase()
+
+  // Coding, hackathons, open source, tech workshops
+  if (cat.includes("tech") || cat.includes("code") || t.includes("hack") || t.includes("git") || t.includes("web") || t.includes("dev")) {
+    return "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Robotics, AI, hardware, engineering
+  if (cat.includes("robot") || t.includes("robot") || t.includes("ai") || t.includes("machine") || cat.includes("engine")) {
+    return "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Design, UX/UI, arts, creative
+  if (cat.includes("design") || cat.includes("art") || t.includes("ui") || t.includes("creative") || t.includes("figma")) {
+    return "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Cultural, music, drama, dance, fest
+  if (cat.includes("cultur") || cat.includes("music") || t.includes("fest") || t.includes("dance") || t.includes("stage")) {
+    return "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Sports, games, athletic meets
+  if (cat.includes("sport") || t.includes("cricket") || t.includes("badminton") || t.includes("tourn") || t.includes("esport")) {
+    return "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Business, entrepreneurship, summit, conference
+  if (cat.includes("business") || cat.includes("manage") || t.includes("summit") || t.includes("talk") || t.includes("meetup")) {
+    return "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80"
+  }
+
+  // Default campus innovation & student collaboration
+  return "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80"
+}
+

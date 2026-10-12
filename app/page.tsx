@@ -2,7 +2,7 @@ import Link from "next/link"
 import { BarChart3, CalendarCheck2, CreditCard, QrCode, ShieldCheck, Users } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
-import { EventCard } from "@/components/events/EventCard"
+import { EventCard, type EventCardData } from "@/components/events/EventCard"
 import { Button } from "@/components/ui/button"
 
 const features = [
@@ -45,6 +45,48 @@ const steps = [
   { cmd: "checkin --qr", text: "Show your QR ID card at the entrance and you're in." },
 ]
 
+const defaultFeaturedEvents: EventCardData[] = [
+  {
+    id: "hackathon-2026",
+    title: "Campus HackVerse · 24hr Sprint",
+    starts_at: new Date(Date.now() + 5 * 24 * 3600 * 1000).toISOString(),
+    venue: "Main Campus Auditorium",
+    fee: 199,
+    capacity: 120,
+    current_participants: 68,
+    category: "Technical",
+    image_url: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
+    mode: "offline",
+    club: { name: "Google Developer Student Club", slug: "gdsc" },
+  },
+  {
+    id: "robotics-bootcamp",
+    title: "Autonomous Robotics & AI Lab",
+    starts_at: new Date(Date.now() + 8 * 24 * 3600 * 1000).toISOString(),
+    venue: "Innovation Center Lab 3",
+    fee: 0,
+    capacity: 60,
+    current_participants: 42,
+    category: "Robotics",
+    image_url: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80",
+    mode: "offline",
+    club: { name: "Robotics & Automation Society", slug: "robotics-society" },
+  },
+  {
+    id: "design-critique",
+    title: "UI/UX & Creative Product Sprint",
+    starts_at: new Date(Date.now() + 12 * 24 * 3600 * 1000).toISOString(),
+    venue: "Online Design Studio",
+    fee: 0,
+    capacity: 100,
+    current_participants: 51,
+    category: "Design",
+    image_url: "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&w=1200&q=80",
+    mode: "online",
+    club: { name: "Design Collective", slug: "design-collective" },
+  },
+]
+
 export default async function LandingPage() {
   const supabase = createClient()
   const { data: events } = await supabase
@@ -54,6 +96,8 @@ export default async function LandingPage() {
     .gte("starts_at", new Date().toISOString())
     .order("starts_at")
     .limit(3)
+
+  const displayEvents = events && events.length > 0 ? events : defaultFeaturedEvents
 
   return (
     <>
@@ -80,14 +124,27 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <div aria-hidden className="rounded-xl border border-border bg-card shadow-soft-lg">
-            <div className="flex items-center gap-1.5 border-b border-border px-4 py-3">
+          <div aria-hidden className="overflow-hidden rounded-xl border border-border bg-card shadow-soft-lg">
+            <div className="relative aspect-[16/8] w-full overflow-hidden border-b border-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
+                alt="Students collaborating at campus tech club"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/25 to-transparent" />
+              <div className="absolute bottom-3 left-4 flex items-center gap-2 rounded-full border border-border/80 bg-background/90 px-3 py-1 backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                <span className="font-mono text-xs text-foreground">32 active campus clubs</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 border-b border-border bg-muted/30 px-4 py-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-border" />
               <span className="h-2.5 w-2.5 rounded-full bg-border" />
               <span className="h-2.5 w-2.5 rounded-full bg-brand" />
-              <span className="ml-3 text-xs text-muted-foreground">~/clunite</span>
+              <span className="ml-3 font-mono text-xs text-muted-foreground">~/clunite</span>
             </div>
-            <pre className="overflow-x-auto whitespace-pre p-5 text-[13px] leading-7 text-foreground">
+            <pre className="overflow-x-auto whitespace-pre p-5 font-mono text-[13px] leading-7 text-foreground">
               <span className="text-muted-foreground">$</span> clunite join <span className="text-primary">--club</span> robotics{"\n"}
               <span className="text-success">✓</span> member CLB-7QK2PX · plan: standard{"\n"}
               <span className="text-muted-foreground">$</span> clunite register <span className="text-primary">--event</span> hackathon{"\n"}
@@ -134,19 +191,22 @@ export default async function LandingPage() {
         </section>
 
         {/* Upcoming events */}
-        {events && events.length > 0 && (
+        {displayEvents && displayEvents.length > 0 && (
           <section aria-labelledby="upcoming" className="border-t border-border bg-card">
             <div className="mx-auto max-w-6xl px-4 py-16">
               <div className="flex items-end justify-between gap-4">
-                <h2 id="upcoming" className="text-xl font-semibold text-foreground sm:text-2xl">
-                  Happening soon
-                </h2>
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-widest text-primary">Live discovery</p>
+                  <h2 id="upcoming" className="mt-1 text-xl font-semibold text-foreground sm:text-2xl">
+                    Happening soon
+                  </h2>
+                </div>
                 <Link href="/events" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
                   All events →
                 </Link>
               </div>
               <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {events.map((event) => (
+                {displayEvents.map((event) => (
                   <div key={event.id} className="flex flex-col gap-3">
                     <EventCard event={event} />
                     <Button asChild variant="outline" size="sm">

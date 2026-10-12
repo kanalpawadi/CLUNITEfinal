@@ -107,7 +107,7 @@ export function Scanner({ events, initialEventId }: { events: ScannableEvent[]; 
     setCameraError(null)
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
       setCamera("unavailable")
-      setCameraError("Camera access needs HTTPS (or localhost). Use manual entry below.")
+      setCameraError("Camera access needs HTTPS (or localhost). On a phone, open the site over HTTPS (pnpm dev:https locally) or use manual entry below.")
       return
     }
     setCamera("starting")
@@ -117,7 +117,10 @@ export function Scanner({ events, initialEventId }: { events: ScannableEvent[]; 
       scannerRef.current = scanner as unknown as Html5QrcodeLike
       await scanner.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: (w: number, h: number) => ({ width: Math.min(w, h, 280) * 0.85, height: Math.min(w, h, 280) * 0.85 }) },
+        { fps: 10, qrbox: (w: number, h: number) => {
+          const size = Math.max(120, Math.floor(Math.min(w, h, 320) * 0.8))
+          return { width: size, height: size }
+        } },
         (decoded: string) => void submit(decoded),
         () => undefined, // per-frame "no QR found" callbacks are expected; ignore
       )
@@ -146,7 +149,7 @@ export function Scanner({ events, initialEventId }: { events: ScannableEvent[]; 
   if (events.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-muted p-4 text-sm text-muted-foreground">
-        No upcoming or ongoing events you can scan for. Events appear here from 2 days before until 1 day after they start.
+        No upcoming or ongoing events you can scan for. Published events appear here from the day before they start until 30 days ahead.
       </p>
     )
   }

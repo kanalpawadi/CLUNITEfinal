@@ -7,6 +7,7 @@ import { getStaffMemberships, isSuperAdmin } from "@/lib/auth/server"
 import { formatDateTime, formatMoney } from "@/lib/events"
 import { MembersTable, type MemberRow } from "@/components/admin/MembersTable"
 import { ClubSettings, PlansEditor } from "@/components/admin/PlansEditor"
+import { ClubSignatories } from "@/components/admin/ClubSignatories"
 import type { Enums } from "@/types/database"
 
 export const metadata: Metadata = { title: "Manage club · Clunite" }
@@ -25,7 +26,7 @@ export default async function AdminClubPage({ params }: { params: { id: string }
 
   const supabase = createClient()
   const [{ data: club }, { data: members }, { data: plans }, { data: events }, { data: payments }] = await Promise.all([
-    supabase.from("clubs").select("id, name, slug, requires_approval, members_count").eq("id", params.id).maybeSingle(),
+    supabase.from("clubs").select("id, name, slug, requires_approval, members_count, faculty_in_charge, hod_name").eq("id", params.id).maybeSingle(),
     supabase
       .from("club_memberships")
       .select("id, role, status, member_code, joined_at, expires_at, user:users!club_memberships_user_id_fkey(id, full_name, email), plan:membership_plans(name)")
@@ -76,6 +77,12 @@ export default async function AdminClubPage({ params }: { params: { id: string }
         ) : (
           <p className="text-sm text-muted-foreground tabular-nums">{club.members_count} active members.</p>
         )}
+      </section>
+
+      <section id="certificates" aria-labelledby="cert-h" className="space-y-4">
+        <h2 id="cert-h" className="text-lg font-semibold text-foreground">Certificate signatories</h2>
+        <p className="text-sm text-muted-foreground">Printed on every participation certificate for this club&apos;s events.</p>
+        <ClubSignatories club={club} canEdit={canEdit} />
       </section>
 
       <section id="plans" aria-labelledby="plans-h" className="space-y-4">

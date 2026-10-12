@@ -29,7 +29,8 @@
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "test": "node --test --experimental-strip-types --no-warnings \"tests/**/*.test.ts\"",
-    "test:db": "node supabase/tests/run-pglite.mjs"
+    "test:db": "node supabase/tests/run-pglite.mjs",
+    "dev:https": "next dev -p 3001 --experimental-https"
   },
   "engines": {
     "node": ">=18.0.0",

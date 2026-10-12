@@ -5,7 +5,7 @@ import { z } from "zod"
 import { ArrowLeft, CalendarDays, CheckCircle2, MapPin, Ticket, Users } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { getAuthUser } from "@/lib/auth/server"
-import { formatDateTime, formatFee, registrationAvailability, seatsLeft, teamRange } from "@/lib/events"
+import { formatDateTime, formatFee, getEventImageUrl, registrationAvailability, seatsLeft, teamRange } from "@/lib/events"
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { Button } from "@/components/ui/button"
 
@@ -62,10 +62,13 @@ export default async function EventDetailPage({ params }: Props) {
           <ArrowLeft className="h-4 w-4" aria-hidden /> All events
         </Link>
 
-        {event.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.image_url} alt="" className="mt-6 aspect-[16/6] w-full rounded-xl border border-border object-cover" />
-        )}
+        {/* Event Banner */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getEventImageUrl(event.image_url, event.category, event.title)}
+          alt={event.title}
+          className="mt-6 aspect-[16/6] w-full rounded-xl border border-border object-cover shadow-soft"
+        />
 
         <div className="mt-6 grid gap-8 md:grid-cols-[1fr_280px]">
           <div>

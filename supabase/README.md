@@ -5,7 +5,7 @@ Everything the app needs lives in three files:
 | File | What it does | Required |
 |---|---|---|
 | `schema.sql` | Enums, tables, functions, triggers, grants, RLS policies, storage buckets. Idempotent. | Yes |
-| `seed.sql` | Demo club + 3 events, tagged `[DEMO]`. Skips itself if no user exists yet. | No |
+| `seed.sql` | 10 demo clubs (plans, faculty coordinator + HOD), 30 events incl. some happening today, and one attended event so the owner gets a certificate. Tagged `[DEMO]`, slugs `demo-*`. Skips itself if no user exists yet. | No |
 | `tests/rls_test.sql` | Permission tests. Runs in one transaction and **rolls back** (leaves no data). | Recommended |
 
 ## Run order
@@ -16,7 +16,7 @@ Everything the app needs lives in three files:
 4. Optional: `seed.sql` (edit `v_owner_email` at the top first).
 5. Optional: `tests/rls_test.sql` to verify policies. "Success. No rows returned" means every check passed.
 
-`schema.sql` is safe to run again after changes; it never drops data.
+`schema.sql` is safe to run again after changes; it never drops data. **Re-run it after pulling schema changes** (e.g. the `clubs.hod_name` column used on certificates).
 
 ## How to apply
 

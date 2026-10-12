@@ -30,6 +30,7 @@ export default function CreateClubPage() {
     contact_email: "",
     official_email: "",
     faculty_in_charge: "",
+    hod_name: "",
     president_name: "",
     president_email: "",
     president_phone: "",
@@ -139,6 +140,7 @@ export default function CreateClubPage() {
             college: formData.college,
             founding_date: formData.founding_date,
             faculty_in_charge: formData.faculty_in_charge,
+            hod_name: formData.hod_name,
           },
         }),
       })
@@ -383,7 +385,7 @@ export default function CreateClubPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="faculty_in_charge" className="text-sm font-semibold text-foreground">Faculty In-Charge</Label>
+                <Label htmlFor="faculty_in_charge" className="text-sm font-semibold text-foreground">Faculty Coordinator</Label>
                 <Input
                   id="faculty_in_charge"
                   placeholder="Prof. John Doe"
@@ -391,6 +393,18 @@ export default function CreateClubPage() {
                   onChange={(e) => setFormData({ ...formData, faculty_in_charge: e.target.value })}
                   className="h-12 border-2 focus:border-primary focus:ring-ring"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hod_name" className="text-sm font-semibold text-foreground">Head of Department (HOD)</Label>
+                <Input
+                  id="hod_name"
+                  placeholder="Dr. Jane Smith"
+                  value={formData.hod_name}
+                  onChange={(e) => setFormData({ ...formData, hod_name: e.target.value })}
+                  className="h-12 border-2 focus:border-primary focus:ring-ring"
+                />
+                <p className="text-xs text-muted-foreground">Printed with the faculty coordinator on participation certificates.</p>
               </div>
             </div>
 

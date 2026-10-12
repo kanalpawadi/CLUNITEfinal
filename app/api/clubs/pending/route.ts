@@ -21,6 +21,7 @@ const bodySchema = z.object({
     college: text(200).optional().default(""),
     founding_date: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]).optional().default(""),
     faculty_in_charge: text(200).optional().default(""),
+    hod_name: text(200).optional().default(""),
   }),
 })
 

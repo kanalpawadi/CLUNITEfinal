@@ -2,6 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { signQrToken, verifyQrToken, QR_TTL_SECONDS } from "../lib/qr/token.ts"
 import { hmacHex, safeEqual } from "../lib/crypto.ts"
+import { signCertificateToken, verifyCertificateToken } from "../lib/certificates/token.ts"
 
 const SECRET = "test-secret-test-secret-test-secret-123"
 const NOW = 1_800_000_000
@@ -62,4 +63,17 @@ test("payment signature helpers (Razorpay format)", () => {
   assert.equal(safeEqual(sig, hmacHex("rzp_secret", "order_123|pay_456")), true)
   assert.equal(safeEqual(sig, hmacHex("rzp_secret", "order_123|pay_457")), false)
   assert.equal(safeEqual(sig, sig.slice(0, -1)), false)
+})
+
+
+test("certificate token verifies and rejects tampering or ID-card tokens", () => {
+  const aid = "00000000-0000-4000-8000-0000000000a1"
+  const token = signCertificateToken(aid, SECRET)
+  assert.deepEqual(verifyCertificateToken(token, SECRET), { ok: true, attendanceId: aid })
+  assert.deepEqual(verifyCertificateToken(token, `${SECRET}x`), { ok: false })
+  const [, , sig] = token.split(".")
+  const forged = Buffer.from(JSON.stringify({ aid: "00000000-0000-4000-8000-0000000000a2" })).toString("base64url")
+  assert.deepEqual(verifyCertificateToken(`CRT1.${forged}.${sig}`, SECRET), { ok: false })
+  // an ID-card QR must not verify as a certificate
+  assert.deepEqual(verifyCertificateToken(signQrToken(payload, SECRET), SECRET), { ok: false })
 })

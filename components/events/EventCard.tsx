@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { CalendarDays, MapPin, Users } from "lucide-react"
 import type { Club, Event } from "@/lib/supabase"
-import { formatDateTime, formatFee, seatsLeft } from "@/lib/events"
+import { formatDateTime, formatFee, getEventImageUrl, seatsLeft } from "@/lib/events"
 
 export type EventCardData = Pick<
   Event,
@@ -10,16 +10,17 @@ export type EventCardData = Pick<
 
 export function EventCard({ event }: { event: EventCardData }) {
   const left = seatsLeft(event)
+  const imageUrl = getEventImageUrl(event.image_url, event.category, event.title)
+
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-shadow hover:shadow-soft-lg">
-      {event.image_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={event.image_url} alt="" className="aspect-[16/7] w-full border-b border-border object-cover" loading="lazy" />
-      ) : (
-        <div aria-hidden className="flex aspect-[16/7] items-end border-b border-border bg-muted p-4 font-mono text-xs text-muted-foreground">
-          {`> ${event.category ?? "event"}`}
-        </div>
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imageUrl}
+        alt={event.title}
+        className="aspect-[16/7] w-full border-b border-border object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        loading="lazy"
+      />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-base font-semibold leading-snug text-foreground">
