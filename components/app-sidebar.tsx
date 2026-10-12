@@ -12,6 +12,7 @@ import {
   Building2,
   Medal,
   Sparkles,
+  Bookmark,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -44,6 +45,7 @@ const menuItems = [
     icon: Award,
   },
   { title: 'QR Code', url: '/dashboard/student/qr', icon: QrCode },
+  { title: 'Saved', url: '/dashboard/student/saved', icon: Bookmark },
   { title: 'For You', url: '/dashboard/student/for-you', icon: Sparkles },
   { title: 'Leaderboard', url: '/dashboard/student/rank', icon: Medal },
 ];

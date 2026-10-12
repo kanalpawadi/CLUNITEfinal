@@ -291,6 +291,20 @@ begin
   end if;
 end $$;
 
+-- Bookmarks ------------------------------------------------------------------------------
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+insert into public.event_bookmarks (user_id, event_id) values ('00000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-0000000000e1');
+do $$ begin
+  begin
+    insert into public.event_bookmarks (user_id, event_id) values ('00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-0000000000e1');
+    raise exception 'FAIL bookmarked for another user';
+  exception when insufficient_privilege then null; end;
+end $$;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$ begin
+  if exists (select 1 from public.event_bookmarks) then raise exception 'FAIL can read others bookmarks'; end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';

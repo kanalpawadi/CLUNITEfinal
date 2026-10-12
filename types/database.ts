@@ -804,6 +804,27 @@ export type Database = {
           { foreignKeyName: "event_results_registration_id_fkey"; columns: ["registration_id"]; isOneToOne: false; referencedRelation: "event_registrations"; referencedColumns: ["id"] },
         ]
       }
+      event_bookmarks: {
+        Row: {
+          created_at: string
+          event_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          { foreignKeyName: "event_bookmarks_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+          { foreignKeyName: "event_bookmarks_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: {
       pending_clubs_public: {
