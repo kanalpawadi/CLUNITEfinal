@@ -424,6 +424,66 @@ do $$ begin
   if exists (select 1 from public.notifications where user_id <> auth.uid()) then raise exception 'FAIL can read others notifications'; end if;
 end $$;
 
+-- Internships & jobs -----------------------------------------------------------------------
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+insert into public.opportunities (id, club_id, posted_by, kind, title, company, description, status, apply_deadline)
+values ('00000000-0000-0000-0000-0000000000f7', (select id from public.clubs where slug = 'rls-test-club'), auth.uid(), 'internship', 'Frontend intern', 'Acme', 'Build React components for our product.', 'published', now() + interval '7 days'),
+       ('00000000-0000-0000-0000-0000000000f8', (select id from public.clubs where slug = 'rls-test-club'), auth.uid(), 'job', 'Hidden draft', 'Acme', 'Not public yet, still drafting.', 'draft', null);
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000d","role":"authenticated"}', true);
+do $$ begin
+  -- treasurer is staff but not owner/admin: cannot post
+  begin
+    insert into public.opportunities (club_id, posted_by, kind, title, company, description)
+    values ((select id from public.clubs where slug = 'rls-test-club'), auth.uid(), 'job', 'Fake job', 'Evil', 'Should not be allowed to post this.');
+    raise exception 'FAIL treasurer posted an opportunity';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$ begin
+  if exists (select 1 from public.opportunities where id = '00000000-0000-0000-0000-0000000000f8') then raise exception 'FAIL draft opportunity visible'; end if;
+  insert into public.opportunity_applications (opportunity_id, user_id, resume_path, cover_note, status)
+  values ('00000000-0000-0000-0000-0000000000f7', auth.uid(), '00000000-0000-0000-0000-00000000000b/cv.pdf', 'I love React', 'hired');
+  if (select status from public.opportunity_applications where user_id = auth.uid()) <> 'applied' then raise exception 'FAIL applicant set own status'; end if;
+  begin
+    update public.opportunity_applications set status = 'hired' where user_id = auth.uid();
+    if (select status from public.opportunity_applications where user_id = auth.uid()) = 'hired' then raise exception 'FAIL applicant promoted self'; end if;
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into public.opportunity_applications (opportunity_id, user_id, resume_path) values ('00000000-0000-0000-0000-0000000000f7', '00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000c/cv.pdf');
+    raise exception 'FAIL applied as someone else';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into public.opportunity_applications (opportunity_id, user_id) values ('00000000-0000-0000-0000-0000000000f8', auth.uid());
+    raise exception 'FAIL applied to a draft';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$ begin
+  begin
+    insert into public.opportunity_applications (opportunity_id, user_id, resume_path) values ('00000000-0000-0000-0000-0000000000f7', auth.uid(), '00000000-0000-0000-0000-00000000000b/cv.pdf');
+    raise exception 'FAIL used another user resume path';
+  exception when insufficient_privilege then null; end;
+  if exists (select 1 from public.opportunity_applications) then raise exception 'FAIL sees other applications'; end if;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+do $$ begin
+  if not exists (select 1 from public.opportunity_applications where user_id = '00000000-0000-0000-0000-00000000000b') then raise exception 'FAIL owner cannot see applications'; end if;
+  update public.opportunity_applications set status = 'shortlisted' where user_id = '00000000-0000-0000-0000-00000000000b';
+  begin
+    update public.opportunity_applications set cover_note = 'edited by staff' where user_id = '00000000-0000-0000-0000-00000000000b';
+    raise exception 'FAIL staff edited the cover note';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$ begin
+  if not exists (select 1 from public.notifications where title like 'Shortlisted: Frontend intern%') then raise exception 'FAIL applicant not notified'; end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';

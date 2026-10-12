@@ -959,6 +959,111 @@ export type Database = {
           { foreignKeyName: "notifications_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
         ]
       }
+      opportunities: {
+        Row: {
+          apply_deadline: string | null
+          club_id: string | null
+          company: string
+          created_at: string
+          description: string
+          eligibility: string | null
+          id: string
+          kind: "internship" | "job"
+          location: string | null
+          mode: "remote" | "onsite" | "hybrid"
+          openings: number | null
+          posted_by: string | null
+          skills: string[]
+          status: "draft" | "published" | "closed"
+          stipend: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          apply_deadline?: string | null
+          club_id?: string | null
+          company: string
+          created_at?: string
+          description: string
+          eligibility?: string | null
+          id?: string
+          kind: "internship" | "job"
+          location?: string | null
+          mode?: "remote" | "onsite" | "hybrid"
+          openings?: number | null
+          posted_by?: string | null
+          skills?: string[]
+          status?: "draft" | "published" | "closed"
+          stipend?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          apply_deadline?: string | null
+          club_id?: string | null
+          company?: string
+          created_at?: string
+          description?: string
+          eligibility?: string | null
+          id?: string
+          kind?: "internship" | "job"
+          location?: string | null
+          mode?: "remote" | "onsite" | "hybrid"
+          openings?: number | null
+          posted_by?: string | null
+          skills?: string[]
+          status?: "draft" | "published" | "closed"
+          stipend?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "opportunities_club_id_fkey"; columns: ["club_id"]; isOneToOne: false; referencedRelation: "clubs"; referencedColumns: ["id"] },
+          { foreignKeyName: "opportunities_posted_by_fkey"; columns: ["posted_by"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      opportunity_applications: {
+        Row: {
+          cover_note: string | null
+          created_at: string
+          id: string
+          opportunity_id: string
+          phone: string | null
+          portfolio_url: string | null
+          resume_path: string | null
+          status: "applied" | "shortlisted" | "rejected" | "hired"
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_note?: string | null
+          created_at?: string
+          id?: string
+          opportunity_id: string
+          phone?: string | null
+          portfolio_url?: string | null
+          resume_path?: string | null
+          status?: "applied" | "shortlisted" | "rejected" | "hired"
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_note?: string | null
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+          phone?: string | null
+          portfolio_url?: string | null
+          resume_path?: string | null
+          status?: "applied" | "shortlisted" | "rejected" | "hired"
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          { foreignKeyName: "opportunity_applications_opportunity_id_fkey"; columns: ["opportunity_id"]; isOneToOne: false; referencedRelation: "opportunities"; referencedColumns: ["id"] },
+          { foreignKeyName: "opportunity_applications_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: {
       pending_clubs_public: {
@@ -979,6 +1084,7 @@ export type Database = {
         Args: { p_club_id: string; p_email: string; p_role?: Database["public"]["Enums"]["club_role"] }
         Returns: Json
       }
+      can_manage_opportunity: { Args: { p_club_id: string }; Returns: boolean }
       can_self_activate: { Args: { club: string; plan: string }; Returns: boolean }
       can_view_user: { Args: { target: string }; Returns: boolean }
       expire_memberships: { Args: Record<PropertyKey, never>; Returns: number }

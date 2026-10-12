@@ -6,6 +6,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell"
 const nav = [
   { href: "/events", label: "Events" },
   { href: "/clubs", label: "Clubs" },
+  { href: "/opportunities", label: "Jobs" },
 ]
 
 /** Public header: shows sign-in actions to visitors and a dashboard link to members. */

@@ -114,6 +114,27 @@ begin
             'hackathon', 'offline', now() + interval '5 days', 'group_4+', 'intermediate', 15000, v_owner);
   end if;
 
+  -- Demo internships & jobs (requires the opportunities feature)
+  if to_regclass('public.opportunities') is not null
+     and not exists (select 1 from public.opportunities where company like '[DEMO]%') then
+    insert into public.opportunities (club_id, posted_by, kind, title, company, location, mode, stipend, description, skills,
+                                      eligibility, openings, apply_deadline, status)
+    select cl.id, v_owner, x.kind, x.title, x.company, x.location, x.mode, x.stipend, x.description, x.skills, x.eligibility, x.openings,
+           now() + make_interval(days => x.days), 'published'
+      from (values
+        ('demo-coding-club', 'internship', 'Frontend Developer Intern', '[DEMO] PixelForge Labs', 'Bengaluru', 'hybrid', '₹15,000/month',
+         'Build React interfaces with our product team for 3 months. You will ship real features and get weekly mentorship.',
+         array['React','TypeScript','CSS'], '2nd-4th year students', 3, 21),
+        ('demo-ai-data', 'internship', 'Data Analyst Intern', '[DEMO] InsightWorks', null, 'remote', '₹12,000/month',
+         'Clean, analyse and visualise product data. Python and SQL required; dashboards a plus.',
+         array['Python','SQL','Pandas'], 'Any branch, basic statistics', 2, 14),
+        ('demo-ecell', 'job', 'Associate Product Manager', '[DEMO] LaunchPad Ventures', 'Pune', 'onsite', '₹9-12 LPA',
+         'Own small product areas end-to-end with engineers and designers at an early-stage startup.',
+         array['Product sense','Communication','Analytics'], 'Final-year students and recent graduates', 1, 30)
+      ) as x(slug, kind, title, company, location, mode, stipend, description, skills, eligibility, openings, days)
+      join public.clubs cl on cl.slug = x.slug;
+  end if;
+
   -- One attended past event -> one real certificate for the owner
   if v_first_past is not null then
     insert into public.event_registrations (event_id, user_id, status, registration_data, participant_count)

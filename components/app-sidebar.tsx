@@ -13,6 +13,7 @@ import {
   Medal,
   Sparkles,
   Bookmark,
+  Briefcase,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -46,6 +47,7 @@ const menuItems = [
   },
   { title: 'QR Code', url: '/dashboard/student/qr', icon: QrCode },
   { title: 'Saved', url: '/dashboard/student/saved', icon: Bookmark },
+  { title: 'Applications', url: '/dashboard/student/applications', icon: Briefcase },
   { title: 'For You', url: '/dashboard/student/for-you', icon: Sparkles },
   { title: 'Leaderboard', url: '/dashboard/student/rank', icon: Medal },
 ];

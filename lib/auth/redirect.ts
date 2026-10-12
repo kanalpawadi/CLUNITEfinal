@@ -15,6 +15,7 @@ const PROTECTED_PATTERNS: RegExp[] = [
   /^\/events\/[^/]+\/teams(\/|$)/, // team finder shows students' names: members only
   /^\/teams(\/|$)/,
   /^\/notifications(\/|$)/,
+  /^\/opportunities\/[^/]+\/apply(\/|$)/,
   /^\/payments(\/|$)/,
   /^\/update-password(\/|$)/,
 ]

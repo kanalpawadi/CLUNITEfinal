@@ -65,6 +65,7 @@ export default async function AdminClubPage({ params }: { params: { id: string }
           <a href="#plans" className="text-primary underline-offset-4 hover:underline">Plans</a>
           <a href="#events" className="text-primary underline-offset-4 hover:underline">Events</a>
           {canSeeMoney && <a href="#payments" className="text-primary underline-offset-4 hover:underline">Payments</a>}
+          {canEdit && <Link href={`/admin/clubs/${club.id}/opportunities`} className="text-primary underline-offset-4 hover:underline">Jobs</Link>}
           <Link href={`/clubs/${club.slug}`} className="text-muted-foreground underline-offset-4 hover:underline">Public page</Link>
         </nav>
       </header>
