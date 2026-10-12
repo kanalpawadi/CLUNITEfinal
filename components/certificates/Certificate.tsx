@@ -74,7 +74,7 @@ export function Certificate({ data }: { data: CertificateData }) {
         <div
           ref={ref}
           role="img"
-          aria-label={`Certificate of participation for ${data.studentName}, ${data.eventName}, organised by ${data.clubName}`}
+          aria-label={`Certificate of ${data.kind === "achievement" ? `achievement (${data.achievementTitle ?? ""})` : "participation"} for ${data.studentName}, ${data.eventName}, organised by ${data.clubName}`}
           className="relative aspect-[1.414/1] w-full min-w-[680px] overflow-hidden rounded-xl border border-border bg-card shadow-soft-lg print:rounded-none print:shadow-none"
         >
           {/* inner frame */}
@@ -93,7 +93,7 @@ export function Certificate({ data }: { data: CertificateData }) {
 
             <div className="flex flex-1 flex-col items-center justify-center text-center">
               <p className="uppercase tracking-[0.3em] text-primary" style={{ fontSize: "13px" }}>
-                Certificate of Participation
+                {data.kind === "achievement" ? "Certificate of Achievement" : "Certificate of Participation"}
               </p>
               <p className="mt-[2%] text-muted-foreground" style={{ fontSize: "13px" }}>
                 This is to certify that
@@ -103,7 +103,14 @@ export function Certificate({ data }: { data: CertificateData }) {
               </p>
               <div className="mx-auto mt-[1%] h-px w-1/2 bg-border" aria-hidden />
               <p className="mt-[2%] max-w-[85%] text-muted-foreground" style={{ fontSize: "14px", lineHeight: 1.6 }}>
-                participated in <span className="font-semibold text-foreground">{data.eventName}</span>, organised by{" "}
+                {data.kind === "achievement" ? (
+                  <>
+                    secured <span className="font-semibold text-primary">{data.achievementTitle ?? "a top position"}</span> in{" "}
+                  </>
+                ) : (
+                  "participated in "
+                )}
+                <span className="font-semibold text-foreground">{data.eventName}</span>, organised by{" "}
                 <span className="font-semibold text-foreground">{data.clubName}</span>, held on{" "}
                 <span className="text-foreground">{dateFmt.format(new Date(data.eventDate))}</span>.
               </p>

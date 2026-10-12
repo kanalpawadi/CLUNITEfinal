@@ -2,10 +2,11 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { z } from "zod"
-import { ArrowLeft, CalendarDays, CheckCircle2, MapPin, Ticket, Users } from "lucide-react"
+import { ArrowLeft, CalendarDays, CheckCircle2, MapPin, Ticket, Trophy, Users } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { getAuthUser } from "@/lib/auth/server"
 import { formatDateTime, formatFee, getEventImageUrl, registrationAvailability, seatsLeft, teamRange } from "@/lib/events"
+import { roundState } from "@/lib/competitions"
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { Button } from "@/components/ui/button"
 
@@ -49,6 +50,11 @@ export default async function EventDetailPage({ params }: Props) {
   ])
 
   const availability = registrationAvailability(event)
+  const [{ data: rounds }, { data: results }] = await Promise.all([
+    supabase.from("event_rounds").select("id, round_no, title, starts_at, ends_at, results_published").eq("event_id", event.id).order("round_no"),
+    supabase.from("event_results").select("id, position, title, registration_id").eq("event_id", event.id).eq("published", true).order("position"),
+  ])
+  const { data: board } = results && results.length > 0 ? await supabase.rpc("get_event_leaderboard", { p_event_id: event.id }) : { data: null }
   const left = seatsLeft(event)
   const team = teamRange(event.team_size)
   const isRegistered = registration && registration.status !== "cancelled"
@@ -86,6 +92,55 @@ export default async function EventDetailPage({ params }: Props) {
                     <li key={r}>{r}</li>
                   ))}
                 </ul>
+              </section>
+            )}
+
+            {rounds && rounds.length > 0 && (
+              <section aria-labelledby="stages" className="mt-8">
+                <div className="flex items-end justify-between gap-2">
+                  <h2 id="stages" className="text-sm font-semibold text-foreground">Stages</h2>
+                  <Link href={`/events/${event.id}/leaderboard`} className="text-sm text-primary underline-offset-4 hover:underline">
+                    Leaderboard →
+                  </Link>
+                </div>
+                <ol className="mt-3 space-y-2 border-l border-border pl-4">
+                  {rounds.map((r) => {
+                    const state = roundState(r)
+                    return (
+                      <li key={r.id} className="relative text-sm">
+                        <span aria-hidden className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ${state === "open" ? "bg-success" : state === "closed" ? "bg-muted-foreground" : "bg-border"}`} />
+                        <p className="font-medium text-foreground">
+                          Round {r.round_no}: {r.title}
+                          <span className="ml-2 text-xs font-normal capitalize text-muted-foreground">{state}</span>
+                        </p>
+                        <p className="text-xs tabular-nums text-muted-foreground">
+                          {formatDateTime(r.starts_at)} → {formatDateTime(r.ends_at)}
+                        </p>
+                      </li>
+                    )
+                  })}
+                </ol>
+              </section>
+            )}
+
+            {results && results.length > 0 && (
+              <section aria-labelledby="winners" className="mt-8 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <h2 id="winners" className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Trophy className="h-4 w-4 text-primary" aria-hidden /> Results
+                </h2>
+                <ol className="mt-2 space-y-1 text-sm">
+                  {results.map((res) => {
+                    const row = board?.find((b) => b.result_title === res.title)
+                    return (
+                      <li key={res.id} className="flex justify-between gap-2">
+                        <span className="text-foreground">
+                          <span className="tabular-nums text-muted-foreground">#{res.position}</span> {res.title}
+                        </span>
+                        <span className="font-medium text-foreground">{row?.name ?? "—"}</span>
+                      </li>
+                    )
+                  })}
+                </ol>
               </section>
             )}
           </div>

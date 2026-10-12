@@ -9,6 +9,7 @@ import { formatDateTime, formatFee, registrationAvailability, teamRange } from "
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { RegisterForm } from "@/components/events/RegisterForm"
 import { EventPaymentPanel } from "@/components/payments/EventPaymentPanel"
+import { CompetitionPanel } from "@/components/competitions/CompetitionPanel"
 
 export const metadata: Metadata = { title: "Register · Clunite" }
 
@@ -32,6 +33,13 @@ export default async function RegisterPage({ params }: { params: { id: string } 
   const active = registration && registration.status !== "cancelled"
   const availability = registrationAvailability(event)
   const paid = registration?.payment_status === "paid"
+
+  // Competition rounds (RLS: rounds of published events; own team's submissions only)
+  const { data: rounds } = await supabase.from("event_rounds").select("*").eq("event_id", event.id).order("round_no")
+  const { data: mySubmissions } =
+    active && rounds && rounds.length > 0
+      ? await supabase.from("round_submissions").select("*").eq("registration_id", registration.id)
+      : { data: [] }
 
   return (
     <>
@@ -94,6 +102,16 @@ export default async function RegisterPage({ params }: { params: { id: string } 
             <p className="text-sm text-muted-foreground">{availability.message}</p>
           )}
         </div>
+
+        {active && rounds && rounds.length > 0 && (
+          <div className="mt-8">
+            <CompetitionPanel
+              rounds={rounds}
+              submissions={mySubmissions ?? []}
+              blockedReason={event.fee > 0 && !paid ? "Complete your payment above to unlock submissions." : undefined}
+            />
+          </div>
+        )}
       </main>
       <SiteFooter />
     </>

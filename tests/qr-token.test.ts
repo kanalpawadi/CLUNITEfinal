@@ -69,7 +69,9 @@ test("payment signature helpers (Razorpay format)", () => {
 test("certificate token verifies and rejects tampering or ID-card tokens", () => {
   const aid = "00000000-0000-4000-8000-0000000000a1"
   const token = signCertificateToken(aid, SECRET)
-  assert.deepEqual(verifyCertificateToken(token, SECRET), { ok: true, attendanceId: aid })
+  assert.deepEqual(verifyCertificateToken(token, SECRET), { ok: true, ref: { aid } })
+  const rid = "00000000-0000-4000-8000-0000000000b1"
+  assert.deepEqual(verifyCertificateToken(signCertificateToken({ rid }, SECRET), SECRET), { ok: true, ref: { rid } })
   assert.deepEqual(verifyCertificateToken(token, `${SECRET}x`), { ok: false })
   const [, , sig] = token.split(".")
   const forged = Buffer.from(JSON.stringify({ aid: "00000000-0000-4000-8000-0000000000a2" })).toString("base64url")

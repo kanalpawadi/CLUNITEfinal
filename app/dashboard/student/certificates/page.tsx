@@ -24,15 +24,47 @@ export default async function CertificatesPage() {
     .eq("user_id", user.id)
     .order("checked_in_at", { ascending: false })
 
+  // Achievements: published results for registrations the user leads
+  const { data: myRegs } = await supabase.from("event_registrations").select("id").eq("user_id", user.id)
+  const regIds = (myRegs ?? []).map((r) => r.id)
+  const { data: wins } = regIds.length
+    ? await supabase
+        .from("event_results")
+        .select("id, title, event:events(title, starts_at, club:clubs(name, faculty_in_charge, hod_name))")
+        .in("registration_id", regIds)
+        .eq("published", true)
+    : { data: [] }
+
   const studentName = profile?.full_name ?? user.email?.split("@")[0] ?? "Participant"
   const origin = requestOrigin()
-  const certificates: CertificateData[] = await Promise.all(
+  const achievements: CertificateData[] = await Promise.all(
+    (wins ?? [])
+      .filter((w) => w.event)
+      .map((w) =>
+        buildCertificate(
+          {
+            attendanceId: w.id,
+            kind: "achievement",
+            achievementTitle: w.title,
+            studentName,
+            eventName: w.event?.title ?? "Event",
+            eventDate: w.event?.starts_at ?? new Date().toISOString(),
+            clubName: w.event?.club?.name ?? "Club",
+            facultyCoordinator: w.event?.club?.faculty_in_charge ?? null,
+            hodName: w.event?.club?.hod_name ?? null,
+          },
+          origin,
+        ),
+      ),
+  )
+  const participation: CertificateData[] = await Promise.all(
     (rows ?? [])
       .filter((r) => r.event)
       .map((r) =>
         buildCertificate(
           {
             attendanceId: r.id,
+            kind: "participation",
             studentName,
             eventName: r.event?.title ?? "Event",
             eventDate: r.event?.starts_at ?? r.checked_in_at,
@@ -44,6 +76,7 @@ export default async function CertificatesPage() {
         ),
       ),
   )
+  const certificates = [...achievements, ...participation]
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -63,7 +96,7 @@ export default async function CertificatesPage() {
       {certificates.length > 0 ? (
         <ul className="space-y-10">
           {certificates.map((c) => (
-            <li key={c.attendanceId}>
+            <li key={`${c.kind}-${c.attendanceId}`}>
               <Certificate data={c} />
             </li>
           ))}

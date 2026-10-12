@@ -6,7 +6,11 @@ import { publicEnv } from "@/lib/env"
 import { signCertificateToken } from "./token.ts"
 
 export type CertificateData = {
+  /** attendance id (participation) or result id (achievement) */
   attendanceId: string
+  kind: "participation" | "achievement"
+  /** e.g. "Winner", for achievement certificates */
+  achievementTitle?: string | null
   certificateNo: string
   studentName: string
   eventName: string
@@ -30,7 +34,8 @@ export function requestOrigin(): string {
 export const certificateNumber = (attendanceId: string) => `CLU-${attendanceId.replace(/-/g, "").slice(0, 10).toUpperCase()}`
 
 export async function buildCertificate(input: Omit<CertificateData, "certificateNo" | "verifyUrl" | "qrDataUrl">, origin: string) {
-  const token = signCertificateToken(input.attendanceId, requireServerEnv("QR_SIGNING_SECRET"))
+  const ref = input.kind === "achievement" ? { rid: input.attendanceId } : { aid: input.attendanceId }
+  const token = signCertificateToken(ref, requireServerEnv("QR_SIGNING_SECRET"))
   const verifyUrl = `${origin}/verify/certificate/${token}`
   const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
     errorCorrectionLevel: "M",

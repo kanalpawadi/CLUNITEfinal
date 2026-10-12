@@ -671,6 +671,139 @@ export type Database = {
         }
         Relationships: []
       }
+      event_rounds: {
+        Row: {
+          created_at: string
+          description: string | null
+          ends_at: string
+          event_id: string
+          id: string
+          max_score: number
+          results_published: boolean
+          round_no: number
+          starts_at: string
+          submission_type: "none" | "link" | "file" | "text"
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          event_id: string
+          id?: string
+          max_score?: number
+          results_published?: boolean
+          round_no: number
+          starts_at: string
+          submission_type?: "none" | "link" | "file" | "text"
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          event_id?: string
+          id?: string
+          max_score?: number
+          results_published?: boolean
+          round_no?: number
+          starts_at?: string
+          submission_type?: "none" | "link" | "file" | "text"
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "event_rounds_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+        ]
+      }
+      round_submissions: {
+        Row: {
+          feedback: string | null
+          file_path: string | null
+          id: string
+          judged_at: string | null
+          judged_by: string | null
+          link_url: string | null
+          registration_id: string
+          round_id: string
+          score: number | null
+          status: "submitted" | "shortlisted" | "eliminated"
+          submitted_at: string | null
+          submitted_by: string | null
+          text_content: string | null
+        }
+        Insert: {
+          feedback?: string | null
+          file_path?: string | null
+          id?: string
+          judged_at?: string | null
+          judged_by?: string | null
+          link_url?: string | null
+          registration_id: string
+          round_id: string
+          score?: number | null
+          status?: "submitted" | "shortlisted" | "eliminated"
+          submitted_at?: string | null
+          submitted_by?: string | null
+          text_content?: string | null
+        }
+        Update: {
+          feedback?: string | null
+          file_path?: string | null
+          id?: string
+          judged_at?: string | null
+          judged_by?: string | null
+          link_url?: string | null
+          registration_id?: string
+          round_id?: string
+          score?: number | null
+          status?: "submitted" | "shortlisted" | "eliminated"
+          submitted_at?: string | null
+          submitted_by?: string | null
+          text_content?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "round_submissions_round_id_fkey"; columns: ["round_id"]; isOneToOne: false; referencedRelation: "event_rounds"; referencedColumns: ["id"] },
+          { foreignKeyName: "round_submissions_registration_id_fkey"; columns: ["registration_id"]; isOneToOne: false; referencedRelation: "event_registrations"; referencedColumns: ["id"] },
+          { foreignKeyName: "round_submissions_submitted_by_fkey"; columns: ["submitted_by"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+          { foreignKeyName: "round_submissions_judged_by_fkey"; columns: ["judged_by"]; isOneToOne: false; referencedRelation: "users"; referencedColumns: ["id"] },
+        ]
+      }
+      event_results: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          position: number
+          published: boolean
+          registration_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          position: number
+          published?: boolean
+          registration_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          position?: number
+          published?: boolean
+          registration_id?: string
+          title?: string
+        }
+        Relationships: [
+          { foreignKeyName: "event_results_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+          { foreignKeyName: "event_results_registration_id_fkey"; columns: ["registration_id"]; isOneToOne: false; referencedRelation: "event_registrations"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: {
       pending_clubs_public: {
@@ -727,6 +860,19 @@ export type Database = {
           is_me: boolean
         }[]
       }
+      submit_round_entry: {
+        Args: { p_round_id: string; p_link_url?: string; p_text?: string; p_file_path?: string }
+        Returns: Database["public"]["Tables"]["round_submissions"]["Row"]
+      }
+      judge_round_entry: {
+        Args: { p_round_id: string; p_registration_id: string; p_score?: number; p_status?: string; p_feedback?: string }
+        Returns: Database["public"]["Tables"]["round_submissions"]["Row"]
+      }
+      get_event_leaderboard: {
+        Args: { p_event_id: string }
+        Returns: { rank: number; name: string; total_score: number; rounds_cleared: number; result_title: string | null; is_mine: boolean }[]
+      }
+      is_registration_member: { Args: { reg: string }; Returns: boolean }
       increment_event_views: { Args: { p_event_id: string }; Returns: undefined }
       is_club_role: {
         Args: { club: string; roles: Database["public"]["Enums"]["club_role"][] }

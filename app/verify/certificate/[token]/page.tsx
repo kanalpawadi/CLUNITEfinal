@@ -21,6 +21,8 @@ export default async function VerifyCertificatePage({ params }: { params: { toke
 
   let record: {
     certificateNo: string
+    kind: "participation" | "achievement"
+    title: string | null
     student: string
     event: string
     date: string
@@ -31,20 +33,45 @@ export default async function VerifyCertificatePage({ params }: { params: { toke
 
   if (check.ok) {
     const admin = createAdminClient()
-    const { data } = await admin
-      .from("attendance")
-      .select("id, checked_in_at, user:users!attendance_user_id_fkey(full_name), event:events(title, starts_at, club:clubs(name, faculty_in_charge, hod_name))")
-      .eq("id", check.attendanceId)
-      .maybeSingle()
-    if (data?.event) {
-      record = {
-        certificateNo: certificateNumber(data.id),
-        student: data.user?.full_name ?? "Participant",
-        event: data.event.title,
-        date: data.event.starts_at,
-        club: data.event.club?.name ?? "—",
-        faculty: data.event.club?.faculty_in_charge ?? null,
-        hod: data.event.club?.hod_name ?? null,
+    if ("aid" in check.ref) {
+      const { data } = await admin
+        .from("attendance")
+        .select("id, user:users!attendance_user_id_fkey(full_name), event:events(title, starts_at, club:clubs(name, faculty_in_charge, hod_name))")
+        .eq("id", check.ref.aid)
+        .maybeSingle()
+      if (data?.event) {
+        record = {
+          certificateNo: certificateNumber(data.id),
+          kind: "participation",
+          title: null,
+          student: data.user?.full_name ?? "Participant",
+          event: data.event.title,
+          date: data.event.starts_at,
+          club: data.event.club?.name ?? "—",
+          faculty: data.event.club?.faculty_in_charge ?? null,
+          hod: data.event.club?.hod_name ?? null,
+        }
+      }
+    } else {
+      const { data } = await admin
+        .from("event_results")
+        .select(
+          "id, title, published, registration:event_registrations(team_name, user:users!event_registrations_user_id_fkey(full_name)), event:events(title, starts_at, club:clubs(name, faculty_in_charge, hod_name))",
+        )
+        .eq("id", check.ref.rid)
+        .maybeSingle()
+      if (data?.published && data.event) {
+        record = {
+          certificateNo: certificateNumber(data.id),
+          kind: "achievement",
+          title: data.title,
+          student: data.registration?.user?.full_name ?? data.registration?.team_name ?? "Participant",
+          event: data.event.title,
+          date: data.event.starts_at,
+          club: data.event.club?.name ?? "—",
+          faculty: data.event.club?.faculty_in_charge ?? null,
+          hod: data.event.club?.hod_name ?? null,
+        }
       }
     }
   }
@@ -64,6 +91,8 @@ export default async function VerifyCertificatePage({ params }: { params: { toke
               <dd className="font-mono text-foreground">{record.certificateNo}</dd>
               <dt className="text-muted-foreground">Student</dt>
               <dd className="font-semibold text-foreground">{record.student}</dd>
+              <dt className="text-muted-foreground">Type</dt>
+              <dd className="text-foreground">{record.kind === "achievement" ? `Achievement: ${record.title}` : "Participation"}</dd>
               <dt className="text-muted-foreground">Event</dt>
               <dd className="text-foreground">{record.event}</dd>
               <dt className="text-muted-foreground">Date</dt>
@@ -82,7 +111,7 @@ export default async function VerifyCertificatePage({ params }: { params: { toke
               <ShieldX className="h-6 w-6" aria-hidden /> Not a valid certificate
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              This code was not issued by Clunite, has been altered, or the attendance record behind it no longer exists.
+              This code was not issued by Clunite, has been altered, or the record behind it no longer exists.
             </p>
           </section>
         )}

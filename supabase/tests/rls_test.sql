@@ -221,6 +221,76 @@ do $$ begin
   end if;
 end $$;
 
+-- Competitions ---------------------------------------------------------------------------
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+insert into public.event_rounds (id, event_id, round_no, title, starts_at, ends_at, submission_type, max_score)
+values ('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-0000000000e2', 1, 'Idea round', now() - interval '1 hour', now() + interval '1 day', 'link', 100),
+       ('00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-0000000000e2', 2, 'Finals', now() - interval '1 hour', now() + interval '2 days', 'text', 100);
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+begin
+  perform public.submit_round_entry('00000000-0000-0000-0000-0000000000a1', 'https://github.com/max/idea');
+  begin
+    perform public.submit_round_entry('00000000-0000-0000-0000-0000000000a2', null, 'final answer');
+    raise exception 'FAIL submitted to round 2 without being shortlisted';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.judge_round_entry('00000000-0000-0000-0000-0000000000a1', (select id from public.event_registrations where user_id = auth.uid() and event_id = '00000000-0000-0000-0000-0000000000e2'), 100, 'shortlisted');
+    raise exception 'FAIL participant judged their own entry';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into public.round_submissions (round_id, registration_id, score) values ('00000000-0000-0000-0000-0000000000a1', (select id from public.event_registrations where user_id = auth.uid() and event_id = '00000000-0000-0000-0000-0000000000e2'), 100);
+    raise exception 'FAIL participant inserted a scored submission directly';
+  exception when insufficient_privilege then null; end;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+do $$
+begin
+  begin
+    perform public.submit_round_entry('00000000-0000-0000-0000-0000000000a1', 'https://evil.example');
+    raise exception 'FAIL unregistered user submitted';
+  exception when insufficient_privilege then null; end;
+  if exists (select 1 from public.round_submissions) then raise exception 'FAIL outsider can read submissions'; end if;
+  if exists (select 1 from public.get_event_leaderboard('00000000-0000-0000-0000-0000000000e2')) then raise exception 'FAIL unpublished scores visible'; end if;
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
+do $$
+declare v_reg uuid := (select id from public.event_registrations where user_id = '00000000-0000-0000-0000-00000000000b' and event_id = '00000000-0000-0000-0000-0000000000e2');
+begin
+  begin
+    perform public.judge_round_entry('00000000-0000-0000-0000-0000000000a1', v_reg, 150, 'shortlisted');
+    raise exception 'FAIL score above max accepted';
+  exception when invalid_parameter_value then null; end;
+  perform public.judge_round_entry('00000000-0000-0000-0000-0000000000a1', v_reg, 80, 'shortlisted', 'Strong idea');
+  update public.event_rounds set results_published = true where id = '00000000-0000-0000-0000-0000000000a1';
+  insert into public.event_results (event_id, registration_id, position, title, published) values ('00000000-0000-0000-0000-0000000000e2', v_reg, 1, 'Winner', true);
+end $$;
+
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+declare r record;
+begin
+  begin
+    perform public.submit_round_entry('00000000-0000-0000-0000-0000000000a1', 'https://github.com/max/changed');
+    raise exception 'FAIL judged entry was changed';
+  exception when raise_exception then
+    if sqlerrm like 'FAIL%' then raise; end if;
+  end;
+  perform public.submit_round_entry('00000000-0000-0000-0000-0000000000a2', null, 'Our final pitch');
+  select * into r from public.get_event_leaderboard('00000000-0000-0000-0000-0000000000e2') where is_mine;
+  if r.total_score <> 80 or r.rounds_cleared <> 1 or r.result_title <> 'Winner' then
+    raise exception 'FAIL event leaderboard wrong: %', row_to_json(r);
+  end if;
+  if (select feedback from public.round_submissions where round_id = '00000000-0000-0000-0000-0000000000a1') <> 'Strong idea' then
+    raise exception 'FAIL participant cannot read their feedback';
+  end if;
+end $$;
+
 -- Leaderboards ---------------------------------------------------------------------------
 reset role;
 update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';
@@ -266,6 +336,11 @@ do $$ begin
     raise exception 'FAIL anon can read the student leaderboard';
   exception when insufficient_privilege then null; end;
   perform public.get_club_leaderboard();
+  if (select count(*) from public.event_results) <> 1 then raise exception 'FAIL anon cannot see published results'; end if;
+  begin
+    perform 1 from public.round_submissions;
+    raise exception 'FAIL anon can read submissions';
+  exception when insufficient_privilege then null; end;
 end $$;
 
 reset role;

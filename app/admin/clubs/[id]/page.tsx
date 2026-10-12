@@ -115,6 +115,7 @@ export default async function AdminClubPage({ params }: { params: { id: string }
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex justify-end gap-3">
+                      <Link href={`/admin/events/${e.id}/competition`} className="text-primary underline-offset-4 hover:underline">Competition</Link>
                       <Link href={`/admin/events/${e.id}/attendance`} className="text-primary underline-offset-4 hover:underline">Attendance</Link>
                       <Link href={`/dashboard/organizer/events/${e.id}/participants`} className="text-muted-foreground underline-offset-4 hover:underline">Participants</Link>
                     </div>

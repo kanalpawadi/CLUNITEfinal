@@ -89,6 +89,21 @@ begin
     end if;
   end loop;
 
+  -- A multi-round hackathon (competition demo) for the first club
+  select id into v_club from public.clubs where slug = 'demo-coding-club';
+  if v_club is not null and not exists (select 1 from public.events where club_id = v_club and title = 'Demo Code Sprint Hackathon') then
+    insert into public.events (club_id, title, description, venue, starts_at, ends_at, capacity, fee, status, category, type, mode,
+                               registration_deadline, team_size, level, prize_pool, created_by)
+    values (v_club, 'Demo Code Sprint Hackathon',
+            '[DEMO] Two rounds: submit your idea (link) now, finalists pitch in round 2.',
+            'Innovation Lab', now() - interval '1 hour', now() + interval '10 days', 200, 0, 'published', 'Technical',
+            'hackathon', 'hybrid', now() + interval '3 days', 'solo', 'intermediate', 25000, v_owner)
+    returning id into v_past;
+    insert into public.event_rounds (event_id, round_no, title, description, starts_at, ends_at, submission_type, max_score)
+    values (v_past, 1, 'Idea submission', 'Share a link to your idea doc or repo.', now() - interval '1 hour', now() + interval '3 days', 'link', 100),
+           (v_past, 2, 'Final pitch', 'Shortlisted teams upload their pitch deck.', now() + interval '4 days', now() + interval '9 days', 'file', 100);
+  end if;
+
   -- One attended past event -> one real certificate for the owner
   if v_first_past is not null then
     insert into public.event_registrations (event_id, user_id, status, registration_data, participant_count)
