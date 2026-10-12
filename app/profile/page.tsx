@@ -6,6 +6,8 @@ import { getProfile, requireAuthUser } from "@/lib/auth/server"
 import { formatDate } from "@/lib/events"
 import { SiteFooter, SiteHeader } from "@/components/site/SiteHeader"
 import { ProfileForm } from "@/components/profile/ProfileForm"
+import { LeaderboardToggle } from "@/components/profile/LeaderboardToggle"
+import { InterestPicker } from "@/components/interests/InterestPicker"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = { title: "Profile · Clunite" }
@@ -42,6 +44,24 @@ export default async function ProfilePage() {
             </p>
           )}
         </section>
+
+        {profile && (
+          <section aria-labelledby="interests" className="mt-10 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-6">
+            <h2 id="interests" className="text-lg font-semibold text-foreground">
+              Interests
+            </h2>
+            <p className="mb-4 mt-1 text-sm text-muted-foreground">
+              Used to recommend clubs.{" "}
+              <Link href="/dashboard/student/for-you" className="text-primary underline-offset-4 hover:underline">
+                See your recommendations
+              </Link>
+            </p>
+            <InterestPicker userId={profile.id} initial={profile.interests} compact />
+            <div className="mt-6 border-t border-border pt-5">
+              <LeaderboardToggle userId={profile.id} initial={profile.show_on_leaderboard} />
+            </div>
+          </section>
+        )}
 
         <section aria-labelledby="memberships" className="mt-10">
           <h2 id="memberships" className="text-lg font-semibold text-foreground">

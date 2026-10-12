@@ -10,6 +10,8 @@ import {
   Settings,
   LogOut,
   Building2,
+  Medal,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -42,6 +44,8 @@ const menuItems = [
     icon: Award,
   },
   { title: 'QR Code', url: '/dashboard/student/qr', icon: QrCode },
+  { title: 'For You', url: '/dashboard/student/for-you', icon: Sparkles },
+  { title: 'Leaderboard', url: '/dashboard/student/rank', icon: Medal },
 ];
 
 export function AppSidebar() {

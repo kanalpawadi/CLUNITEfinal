@@ -221,6 +221,32 @@ do $$ begin
   end if;
 end $$;
 
+-- Leaderboards ---------------------------------------------------------------------------
+reset role;
+update public.users set show_on_leaderboard = false where id = '00000000-0000-0000-0000-00000000000c';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+do $$
+declare r record;
+begin
+  if not exists (select 1 from public.get_student_leaderboard() where is_me) then
+    raise exception 'FAIL leaderboard does not include the caller';
+  end if;
+  if exists (select 1 from public.get_student_leaderboard() where display_name like 'Oscar%') then
+    raise exception 'FAIL opted-out student is visible on the leaderboard';
+  end if;
+  select * into r from public.get_student_leaderboard() where is_me;
+  if r.points <> r.events_attended * 10 + r.registrations * 2 + r.clubs_joined * 5 or r.events_attended < 1 then
+    raise exception 'FAIL leaderboard points wrong: %', row_to_json(r);
+  end if;
+  if exists (select 1 from public.get_student_leaderboard() where display_name like '%@%') then
+    raise exception 'FAIL leaderboard leaks emails';
+  end if;
+  if not exists (select 1 from public.get_club_leaderboard() where slug = 'rls-test-club' and attendance >= 1) then
+    raise exception 'FAIL club leaderboard missing attendance';
+  end if;
+end $$;
+
 -- Anonymous visitor -----------------------------------------------------------------------
 reset role;
 set local role anon;
@@ -235,6 +261,11 @@ do $$ begin
     perform public.register_for_event('00000000-0000-0000-0000-0000000000e2');
     raise exception 'FAIL anon can register';
   exception when insufficient_privilege then null; end;
+  begin
+    perform public.get_student_leaderboard();
+    raise exception 'FAIL anon can read the student leaderboard';
+  exception when insufficient_privilege then null; end;
+  perform public.get_club_leaderboard();
 end $$;
 
 reset role;

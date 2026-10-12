@@ -632,7 +632,9 @@ export type Database = {
           gender: string | null
           global_role: Database["public"]["Enums"]["global_role"]
           id: string
+          interests: string[]
           phone: string | null
+          show_on_leaderboard: boolean
           updated_at: string
         }
         Insert: {
@@ -646,7 +648,9 @@ export type Database = {
           gender?: string | null
           global_role?: Database["public"]["Enums"]["global_role"]
           id: string
+          interests?: string[]
           phone?: string | null
+          show_on_leaderboard?: boolean
           updated_at?: string
         }
         Update: {
@@ -660,7 +664,9 @@ export type Database = {
           gender?: string | null
           global_role?: Database["public"]["Enums"]["global_role"]
           id?: string
+          interests?: string[]
           phone?: string | null
+          show_on_leaderboard?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -691,6 +697,35 @@ export type Database = {
       finalize_payment: {
         Args: { p_failure_reason?: string; p_order_id: string; p_payment_id: string; p_success: boolean }
         Returns: Database["public"]["Tables"]["payments"]["Row"]
+      }
+      get_club_leaderboard: {
+        Args: { p_days?: number; p_limit?: number }
+        Returns: {
+          rank: number
+          club_id: string
+          name: string
+          slug: string
+          logo_url: string | null
+          category: string | null
+          members: number
+          events: number
+          attendance: number
+          points: number
+        }[]
+      }
+      get_student_leaderboard: {
+        Args: { p_days?: number; p_limit?: number }
+        Returns: {
+          rank: number
+          display_name: string
+          avatar_url: string | null
+          college: string | null
+          points: number
+          events_attended: number
+          registrations: number
+          clubs_joined: number
+          is_me: boolean
+        }[]
       }
       increment_event_views: { Args: { p_event_id: string }; Returns: undefined }
       is_club_role: {

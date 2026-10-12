@@ -57,11 +57,15 @@ create table if not exists public.users (
   college     text,
   branch      text,
   bio         text,
+  interests   text[] not null default '{}', -- interest tags used for club recommendations
+  show_on_leaderboard boolean not null default true,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
 comment on column public.users.gender is 'Self-described gender (free text, max 50 chars). Used for default avatar selection and aggregate analytics only.';
 create index if not exists idx_users_gender on public.users (gender);
+alter table public.users add column if not exists interests text[] not null default '{}';
+alter table public.users add column if not exists show_on_leaderboard boolean not null default true;
 create index if not exists idx_users_email on public.users (lower(email));
 
 -- clubs
@@ -988,6 +992,83 @@ as $$
   select count(*)::int from updated;
 $$;
 
+-- Leaderboards ---------------------------------------------------------------------
+-- RLS hides other users' rows, so ranking runs as SECURITY DEFINER and returns only what a
+-- leaderboard needs: a short display name ("Asha K."), avatar, college and points.
+-- Students who set show_on_leaderboard = false are hidden from everyone but themselves.
+-- Points: 10 per event attended, 2 per active registration, 5 per active club membership.
+create or replace function public.get_student_leaderboard(p_days integer default null, p_limit integer default 50)
+returns table (
+  rank bigint, display_name text, avatar_url text, college text,
+  points integer, events_attended integer, registrations integer, clubs_joined integer, is_me boolean
+)
+language sql stable security definer set search_path = ''
+as $$
+  with since as (
+    select case when p_days is null then '-infinity'::timestamptz else now() - make_interval(days => p_days) end as t
+  ),
+  stats as (
+    select u.id, u.full_name, u.email, u.avatar_url, u.college, u.show_on_leaderboard,
+      (select count(*) from public.attendance a, since where a.user_id = u.id and a.checked_in_at >= since.t)::int as attended,
+      (select count(*) from public.event_registrations r, since
+        where r.user_id = u.id and r.status = 'registered' and r.created_at >= since.t)::int as regs,
+      (select count(*) from public.club_memberships m
+        where m.user_id = u.id and m.status = 'active' and (m.expires_at is null or m.expires_at > now()))::int as clubs
+    from public.users u
+  ),
+  scored as (
+    select s.*, (s.attended * 10 + s.regs * 2 + s.clubs * 5) as pts
+    from stats s
+    where (s.show_on_leaderboard or s.id = auth.uid())
+  ),
+  ranked as (
+    select dense_rank() over (order by pts desc) as rnk, sc.*
+    from scored sc
+    where sc.pts > 0 or sc.id = auth.uid()
+  )
+  select
+    rnk,
+    coalesce(
+      nullif(trim(split_part(coalesce(full_name, ''), ' ', 1) ||
+        case when position(' ' in trim(coalesce(full_name, ''))) > 0
+             then ' ' || upper(left(split_part(trim(full_name), ' ', array_length(string_to_array(trim(full_name), ' '), 1)), 1)) || '.'
+             else '' end), ''),
+      'Student'
+    ),
+    avatar_url, college, pts, attended, regs, clubs, id = auth.uid()
+  from ranked
+  where auth.uid() is not null
+    and (rnk <= least(greatest(coalesce(p_limit, 50), 1), 200) or id = auth.uid())
+  order by rnk, full_name;
+$$;
+
+-- Club ranking (clubs are public): attendance and events in the period, plus active members.
+create or replace function public.get_club_leaderboard(p_days integer default null, p_limit integer default 50)
+returns table (
+  rank bigint, club_id uuid, name text, slug text, logo_url text, category text,
+  members integer, events integer, attendance integer, points integer
+)
+language sql stable security definer set search_path = ''
+as $$
+  with since as (
+    select case when p_days is null then '-infinity'::timestamptz else now() - make_interval(days => p_days) end as t
+  ),
+  stats as (
+    select c.id, c.name, c.slug, c.logo_url, c.category, c.members_count::int as members,
+      (select count(*) from public.events e, since
+        where e.club_id = c.id and e.status in ('published', 'completed') and e.starts_at >= since.t and e.starts_at <= now())::int as evs,
+      (select count(*) from public.attendance a join public.events e on e.id = a.event_id, since
+        where e.club_id = c.id and a.checked_in_at >= since.t)::int as att
+    from public.clubs c
+    where c.is_active
+  )
+  select dense_rank() over (order by (att + evs * 5 + members * 2) desc), id, name, slug, logo_url, category,
+         members, evs, att, (att + evs * 5 + members * 2)
+  from stats
+  order by 1, name
+  limit least(greatest(coalesce(p_limit, 50), 1), 200);
+$$;
+
 -- -----------------------------------------------------------------------------
 -- 6. Privileges (defence in depth on top of RLS)
 -- -----------------------------------------------------------------------------
@@ -996,7 +1077,7 @@ grant select on public.clubs, public.events, public.membership_plans to anon;
 
 -- users: only profile fields are writable by the owner of the row
 revoke insert, update, delete on public.users from authenticated;
-grant update (full_name, phone, gender, avatar_url, college, branch, bio) on public.users to authenticated;
+grant update (full_name, phone, gender, avatar_url, college, branch, bio, interests, show_on_leaderboard) on public.users to authenticated;
 
 -- clubs: created only via verify_and_create_club; staff may edit presentation fields
 revoke insert, update, delete on public.clubs from authenticated;
@@ -1042,6 +1123,9 @@ grant execute on function public.register_for_event(uuid, text, jsonb, integer) 
 grant execute on function public.verify_and_create_club(uuid, text, text) to authenticated;
 grant execute on function public.add_club_staff(uuid, text, public.club_role) to authenticated;
 grant execute on function public.increment_event_views(uuid) to anon, authenticated;
+revoke execute on function public.get_student_leaderboard(integer, integer) from public, anon;
+grant execute on function public.get_student_leaderboard(integer, integer) to authenticated;
+grant execute on function public.get_club_leaderboard(integer, integer) to anon, authenticated;
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'service_role') then
     grant execute on function public.finalize_payment(text, text, boolean, text) to service_role;

@@ -24,6 +24,7 @@ import {
   Award,
   Users,
   QrCode,
+  Medal,
   Clock,
   MapPin,
   Star,
@@ -400,6 +401,20 @@ export default function StudentDashboard() {
                 <Link href="/dashboard/student/qr">
                   <QrCode className="h-4 w-4 mr-2" />
                   Show my check-in QR
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" className="w-full justify-start rounded-lg">
+                <Link href="/dashboard/student/for-you">
+                  <Sparkles className="h-4 w-4 mr-2" aria-hidden />
+                  Clubs for you
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" className="w-full justify-start rounded-lg">
+                <Link href="/dashboard/student/rank">
+                  <Medal className="h-4 w-4 mr-2" aria-hidden />
+                  Leaderboard
                 </Link>
               </Button>
 
